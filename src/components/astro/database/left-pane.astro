@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { certification } = Astro.props;
-const provider = title(certification.slug.split("/")[0]);
+const provider = title(certification.id.split("/")[0]);
 ---
 
 <aside class="relative lg:col-span-6 xl:col-span-3 p-2 sm:p-8 lg:m-0 lg:p-0 xl:p-8 row-start-2">

@@ -1,7 +1,8 @@
 import { ChevronRight } from "@components/icon/chevron-right.tsx";
 import type { FC } from "react";
 import { padWithSpaces } from "src/lib/pad-with-spaces.ts";
-import type { CertificationMetadata } from "src/pages/database/data.json.ts";
+
+import type { CertificationMetadata } from "../../../../types/certification-metadata.ts";
 
 export const ColMoreDetails: FC<Pick<CertificationMetadata, "slug" | "price" | "currency">> = (certification) => {
     return (

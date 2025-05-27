@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import type { CertificationMetadata } from "src/pages/database/data.json.ts";
+
+import type { CertificationMetadata } from "../../../../types/certification-metadata.ts";
 
 export const ColCertificationPath: FC<Pick<CertificationMetadata, "career_paths">> = ({ career_paths }) => {
     return (

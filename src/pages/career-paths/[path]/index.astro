@@ -1,5 +1,4 @@
 ---
-import { AstroSeo } from "@astrolib/seo";
 import {
     dash,
     zip,
@@ -87,16 +86,16 @@ const json_ld = makeJsonLd<WebPage>({
             canonical:          `https://cyberpath-hq.com/career-paths/${ path }`,
             description:        `Explore the certification that make up the ${ career_path } career path. Find career paths, costs, and detailed info to advance your cybersecurity career.`,
             openGraph:          {
-                url:       `https://cyberpath-hq.com/career-paths/${ path }`,
-                title:     `CyberPath | ${ career_path }`,
+                url:         `https://cyberpath-hq.com/career-paths/${ path }`,
+                title:       `CyberPath | ${ career_path }`,
                 description: `Explore the certification that make up the ${ career_path } career path. Find career paths, costs, and detailed info to advance your cybersecurity career.`,
-                site_name: "CyberPath",
-                images:    [
+                site_name:   "CyberPath",
+                images:      [
                     {
-                        url:   "https://cyberpath-hq.com/CyberPath-og.webp",
-                        width: 1920,
+                        url:    "https://cyberpath-hq.com/CyberPath-og.webp",
+                        width:  1920,
                         height: 933,
-                        alt:   "CyberPath - Explore Cybersecurity Certifications",
+                        alt:    "CyberPath - Explore Cybersecurity Certifications",
                     },
                 ],
             },
@@ -133,7 +132,7 @@ const json_ld = makeJsonLd<WebPage>({
                                base_url={ `/career-paths/${ path }` }
                                loading={ null }
             >
-                <RowLoadingState slot="loading" />
+                <RowLoadingState slot="loading"/>
             </ReactiveDatatable>
         </div>
     </div>

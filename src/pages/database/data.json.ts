@@ -1,28 +1,7 @@
 import type { APIRoute } from "astro";
-import {
-    type CollectionEntry,
-    getCollection,
-} from "astro:content";
-import {
-    omit,
-    title,
-} from "radash";
-
-export interface CertificationMetadata {
-    image: string;
-    provider: string;
-    title: string;
-    acronym: string;
-    last_updated_at: Date;
-    reference: string;
-    aliases?: string[] | undefined;
-    career_paths: string[];
-    price: string;
-    currency: string;
-    slug: string;
-}
-
-export type CertificationMetadataCollection = CertificationMetadata[];
+import { type CollectionEntry, getCollection } from "astro:content";
+import { omit, title } from "radash";
+import type { CertificationMetadata, CertificationMetadataCollection } from "../../types/certification-metadata.ts";
 
 /**
  * Get all the certifications metadata
@@ -46,8 +25,8 @@ export async function getCertificationMetadata(filter?: (entry: CollectionEntry<
             ({
                 ...omit(certification.data, [ "draft" ]),
                 image:    certification.data.image.src,
-                provider: title(certification.slug.split("/")[0]),
-                slug:     certification.slug,
+                provider: title(certification.id.split("/")[0]),
+                slug:     certification.id,
             }) as CertificationMetadata,
     ) as CertificationMetadataCollection;
 }

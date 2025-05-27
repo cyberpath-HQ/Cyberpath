@@ -1,12 +1,12 @@
 ---
+import { render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import { title } from "radash";
 interface Props {
     certification: CollectionEntry<"certifications">;
 }
 
 const { certification } = Astro.props;
-const { headings } = await certification.render();
+const { headings } = await render(certification);
 ---
 
 <aside class="relative xl:col-start-10 xl:col-span-3 lg:col-span-6 lg:m-0 xl:p-8 hidden lg:block">

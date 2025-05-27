@@ -90,8 +90,8 @@ const random_certs = shuffle(await getCollection("certifications")).slice(0, 5);
                                             <td class="relative py-5 px-6">
                                                 {/*This is kept de-hydrated as no interactivity is needed (aka no React)*/ }
                                                 <ColCertification {...omit(cert.data, ["image"])}
-                                                                  provider={ title(cert.slug.split("/")[0]) }
-                                                                  slug={ cert.slug }
+                                                                  provider={ title(cert.id.split("/")[0]) }
+                                                                  slug={ cert.id }
                                                                   image={ cert.data.image.src }
                                                 />
                                             </td>
@@ -103,7 +103,7 @@ const random_certs = shuffle(await getCollection("certifications")).slice(0, 5);
                                                 {/*This is kept de-hydrated as no interactivity is needed (aka no React)*/ }
                                                 <ColMoreDetails price={ cert.data.price }
                                                                 currency={ cert.data.currency }
-                                                                slug={ cert.slug }
+                                                                slug={ cert.id }
                                                 />
                                             </td>
                                         </tr>

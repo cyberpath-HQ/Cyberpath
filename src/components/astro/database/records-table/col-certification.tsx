@@ -5,7 +5,8 @@ import {
     useMemo,
 } from "react";
 import { providerCustomNamesMapping } from "src/lib/provider-custom-names-mapping.ts";
-import type { CertificationMetadata } from "src/pages/database/data.json.ts";
+
+import type { CertificationMetadata } from "../../../../types/certification-metadata.ts";
 
 export const ColCertification: FC<CertificationMetadata> = (certification) => {
     const provider = useMemo(() => {

@@ -19,18 +19,30 @@ const url = "http://localhost:4321/database/";
 
 /**
  * Start the Astro development server and return the ChildProcess instance
- * @returns {Promise<ChildProcess>}
+ * @returns {Promise<ChildProcessWithoutNullStreams>}
  */
 async function startServer() {
     // Start the Astro development server
-    const devServer = spawn(
-        "npm",
-        [
-            "run",
-            "dev",
-        ],
-        { stdio: "inherit" },
-    );
+    let devServer;
+    try {
+        devServer = spawn(
+            "npm",
+            [
+                "run",
+                "dev",
+            ],
+            {
+                stdio:  "inherit",
+                cwd: process.cwd(),
+                shell: true
+            },
+        );
+    }
+    catch (e) {
+        console.error(e.message)
+        process.exit(1);
+    }
+
     // Give the server a moment to start
     await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 second
 

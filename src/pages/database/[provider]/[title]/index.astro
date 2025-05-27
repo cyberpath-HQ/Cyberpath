@@ -1,5 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import CertBanner from "@components/astro/database/cert-banner.astro";
 import LeftPane from "@components/astro/database/left-pane.astro";
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
     });
 
     return certifications.map((certification) => {
-        const [ provider, title ] = certification.slug.split("/");
+        const [ provider, title ] = certification.id.split("/");
 
         return {
             params: {
@@ -37,14 +38,14 @@ const {
       } = Astro.props;
 const {
           Content,
-      } = await certification.render();
+      } = await render(certification);
 
 const date = new Date();
 const json_ld = makeJsonLd<WebPage>({
     "@type":          "WebPage",
     "@context":       "https://schema.org",
-    "@id":            `https://cyberpath-hq.com/database/${ certification.slug }`,
-    url:              `https://cyberpath-hq.com/database/${ certification.slug }`,
+    "@id":            `https://cyberpath-hq.com/database/${ certification.id }`,
+    url:              `https://cyberpath-hq.com/database/${ certification.id }`,
     name:             `CyberPath | ${ certification.data.title }`,
     description:      `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
     inLanguage:       "en-US",
@@ -78,10 +79,10 @@ const json_ld = makeJsonLd<WebPage>({
         seo={ {
             title:              `CyberPath | ${ certification.data.title }`,
             description:        `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
-            canonical:          `https://cyberpath-hq.com/database/${ certification.slug }`,
+            canonical:          `https://cyberpath-hq.com/database/${ certification.id }`,
             openGraph:          {
-                url:   `https://cyberpath-hq.com/database/${ certification.slug }`,
-                title: `CyberPath | ${ certification.data.title }`,
+                url:         `https://cyberpath-hq.com/database/${ certification.id }`,
+                title:       `CyberPath | ${ certification.data.title }`,
                 description: `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
                 site_name:   "CyberPath",
                 images:      [
@@ -112,7 +113,7 @@ const json_ld = makeJsonLd<WebPage>({
         <CertBanner title={ certification.data.title }
                     banner={ certification.data.image }
         />
-        <LeftPane certification={ certification } />
+        <LeftPane certification={ certification }/>
         <article class="w-full max-w-full sm:max-w-5xl lg:col-start-2 lg:col-span-10 xl:row-start-2 xl:col-start-4 xl:col-span-6 row-start-3
             rounded-md sm:p-12 p-4 text-base leading-7 text-gray-700"
         >
@@ -125,10 +126,10 @@ const json_ld = makeJsonLd<WebPage>({
             <div class="prose prose-zinc max-w-full sm:max-w-5xl prose-h1:hidden prose-a:text-indigo-600 prose-a:font-semibold
                 hover:prose-a:underline prose-a:no-underline"
             >
-                <Content />
+                <Content/>
             </div>
         </article>
-        <RightPane certification={ certification } />
+        <RightPane certification={ certification }/>
         <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
              aria-hidden="true"
         >

@@ -29,11 +29,9 @@ import {
     useMemo,
     useState,
 } from "react";
-import { FuseConfig } from "src/pages/database/data-index.json.ts";
-import type {
-    CertificationMetadata,
-    CertificationMetadataCollection,
-} from "src/pages/database/data.json.ts";
+
+import { FuseConfig } from "../../../pages/database/fuse.config.ts";
+import type { CertificationMetadata, CertificationMetadataCollection } from "../../../types/certification-metadata.ts";
 
 interface ReactiveDatatableProps {
     loading: ReactNode;
@@ -254,7 +252,7 @@ export const ReactiveDatatable: FC<ReactiveDatatableProps> = ({
                 <TableHead>
                     <TableRow>
                         <TableHeader>Certification</TableHeader>
-                        <TableHeader className="hidden sm:table-cell ">Certification paths</TableHeader>
+                        <TableHeader className="hidden sm:table-cell">Certification paths</TableHeader>
                         <TableHeader className="hidden sm:table-cell text-right">More details</TableHeader>
                     </TableRow>
                 </TableHead>

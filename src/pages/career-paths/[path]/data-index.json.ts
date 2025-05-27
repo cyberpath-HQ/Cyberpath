@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import Fuse from "fuse.js";
-import { FuseConfig } from "src/pages/database/data-index.json";
 import { getCertificationMetadata } from "src/pages/database/data.json";
+import { FuseConfig } from "../../database/fuse.config.ts";
 import {
     getStaticPaths,
     makeCareerPathLookupTable,
