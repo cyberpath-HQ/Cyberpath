@@ -1,7 +1,5 @@
 # CyberPath
 
-<!-- GitAds-Verify: WT6W979NZF2AX97S6ORYK31TNJOVBVHW -->
-
 Welcome to **CyberPath**, this project is dedicated to empowering individuals and organizations in their
 cybersecurity journey. Our mission is to provide accessible resources, tools and more to help you navigate the complex
 world of cybersecurity certification and training.
@@ -14,6 +12,9 @@ world of cybersecurity certification and training.
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+
+## GitAds Sponsored
+[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=ebalo55/cyberpath@github)](https://gitads.dev/v1/ad-track?source=ebalo55/cyberpath@github)
 
 ## Features
 
