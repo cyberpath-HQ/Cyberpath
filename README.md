@@ -1,5 +1,7 @@
 # CyberPath
 
+<!-- GitAds-Verify: WT6W979NZF2AX97S6ORYK31TNJOVBVHW -->
+
 Welcome to **CyberPath**, this project is dedicated to empowering individuals and organizations in their
 cybersecurity journey. Our mission is to provide accessible resources, tools and more to help you navigate the complex
 world of cybersecurity certification and training.
