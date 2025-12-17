@@ -22,7 +22,7 @@
     "@sentry/astro": "^8.55.0",
     "@spotlightjs/astro": "^2.4.3",
     "@tailwindcss/aspect-ratio": "^0.4.2",
-    "astro": "^5.8.0",
+    "astro": "^5.15.9",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",
     "fuse.js": "^7.1.0",
