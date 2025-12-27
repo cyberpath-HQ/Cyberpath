@@ -10,10 +10,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/mdx": "^4.3.0",
-    "@astrojs/react": "^4.3.0",
-    "@astrojs/sitemap": "^3.4.0",
+    "@astrojs/check": "^0.9.6",
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.6.0",
     "@astrojs/tailwind": "^6.0.2",
     "@astrolib/seo": "1.0.0-beta.6",
     "@fontsource-variable/nunito": "^5.2.5",
@@ -22,7 +22,7 @@
     "@sentry/astro": "^8.55.0",
     "@spotlightjs/astro": "^2.4.3",
     "@tailwindcss/aspect-ratio": "^0.4.2",
-    "astro": "^5.8.0",
+    "astro": "^5.16.6",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",
     "fuse.js": "^7.1.0",
@@ -32,14 +32,19 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin-js": "^4.4.1",
+    "@stylistic/eslint-plugin-ts": "^4.4.1",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
     "puppeteer": "^23.11.1",
     "schema-dts": "^1.1.5",
     "sharp": "^0.33.5",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "typescript-eslint": "^8.50.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
