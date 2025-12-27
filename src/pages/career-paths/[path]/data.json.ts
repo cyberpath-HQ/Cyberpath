@@ -28,7 +28,7 @@ export function getStaticPaths() {
 }
 
 /**
- * Dynamically generate a json with all the metadata from the certifications
+ * Redirect to the certification database for career path metadata
  */
 export const GET: APIRoute = async ({ params, redirect }) => {
     return redirect(`https://certdb.cyberpath-hq.com/career-paths/${params.path}/data.json`, 301);
