@@ -1,12 +1,5 @@
 ---
-import Layout from "@layouts/Layout.astro";
-import { render } from "astro:content";
 import { getCollection } from "astro:content";
-import CertBanner from "@components/astro/database/cert-banner.astro";
-import LeftPane from "@components/astro/database/left-pane.astro";
-import RightPane from "@components/astro/database/right-pane.astro";
-import type { WebPage } from "schema-dts";
-import { makeJsonLd } from "src/lib/make-json-ld";
 
 /**
  * Get the paths for the static site generation.
@@ -33,109 +26,24 @@ export async function getStaticPaths() {
 }
 
 const {
-          certification,
           provider,
-      } = Astro.props;
-const {
-          Content,
-      } = await render(certification);
+          title,
+      } = Astro.params;
 
-const date = new Date();
-const json_ld = makeJsonLd<WebPage>({
-    "@type":          "WebPage",
-    "@context":       "https://schema.org",
-    "@id":            `https://cyberpath-hq.com/database/${ certification.id }`,
-    url:              `https://cyberpath-hq.com/database/${ certification.id }`,
-    name:             `CyberPath | ${ certification.data.title }`,
-    description:      `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
-    inLanguage:       "en-US",
-    author:           "Emanuele (ebalo) Balsamo <emanuele.balsamo@cyberpath-hq.com>",
-    image:            {
-        "@type":     "ImageObject",
-        url:         "https://cyberpath-hq.com/CyberPath-og.webp",
-        width:       "1920",
-        height:      "933",
-        description: "CyberPath - Explore Cybersecurity Certifications",
-    },
-    mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id":   "https://cyberpath-hq.com/",
-    },
-    datePublished:    `${ date.getFullYear() }-${ date.getMonth() + 1 }-${ date.getDate() }`,
-    dateModified:     `${ date.getFullYear() }-${ date.getMonth() + 1 }-${ date.getDate() }`,
-    publisher:        {
-        "@type": "Person",
-        name:    "Emanuele (ebalo) Balsamo",
-        email:   "emanuele.balsamo@cyberpath-hq.com",
-    },
-    potentialAction:  {
-        "@type": "SearchAction",
-        target:  "https://cyberpath-hq.com/database/?query={search_term_string}",
-    },
-});
+const url = `https://certdb.cyberpath-hq.com/database/${provider}/${title}`
+const content = `0; url=${url}`
 ---
-
-<Layout JSON_LD={ json_ld }
-        seo={ {
-            title:              `CyberPath | ${ certification.data.title }`,
-            description:        `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
-            canonical:          `https://cyberpath-hq.com/database/${ certification.id }`,
-            openGraph:          {
-                url:         `https://cyberpath-hq.com/database/${ certification.id }`,
-                title:       `CyberPath | ${ certification.data.title }`,
-                description: `Learn more about the ${ certification.data.title } certification, including career paths, costs, and more.`,
-                site_name:   "CyberPath",
-                images:      [
-                    {
-                        url:    "https://cyberpath-hq.com/CyberPath-og.webp",
-                        width:  1920,
-                        height: 933,
-                        alt:    "CyberPath - Explore Cybersecurity Certifications",
-                    },
-                ],
-            },
-            additionalMetaTags: [
-                {
-                    name:    "keywords",
-                    content: `cybersecurity, certifications, career, paths, costs, info, cybersecurity career, ${ certification.data.title }, ${ certification.data.acronym }, ${ provider }`,
-                },
-            ],
-        } }
->
-    <div class="pb-24 grid grid-cols-1 lg:grid-cols-12 relative isolate">
-        <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-             aria-hidden="true"
-        >
-            <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                 style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-            ></div>
-        </div>
-        <CertBanner title={ certification.data.title }
-                    banner={ certification.data.image }
-        />
-        <LeftPane certification={ certification }/>
-        <article class="w-full max-w-full sm:max-w-5xl lg:col-start-2 lg:col-span-10 xl:row-start-2 xl:col-start-4 xl:col-span-6 row-start-3
-            rounded-md sm:p-12 p-4 text-base leading-7 text-gray-700"
-        >
-            <h2 class="text-base font-semibold leading-7 text-indigo-600">
-                { certification.data.acronym }
-            </h2>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                { certification.data.title }
-            </h1>
-            <div class="prose prose-zinc max-w-full sm:max-w-5xl prose-h1:hidden prose-a:text-indigo-600 prose-a:font-semibold
-                hover:prose-a:underline prose-a:no-underline"
-            >
-                <Content/>
-            </div>
-        </article>
-        <RightPane certification={ certification }/>
-        <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
-             aria-hidden="true"
-        >
-            <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-                 style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-            ></div>
-        </div>
-    </div>
-</Layout>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="refresh" content={content} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="canonical" href={url} />
+        <title>Redirecting...</title>
+    </head>
+    <body>
+        <h1>
+            Redirecting to <a href={url}>Cyberpath CertDb</a>
+        </h1>
+    </body>
+</html>

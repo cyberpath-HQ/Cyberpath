@@ -82,32 +82,6 @@ const random_certs = shuffle(await getCollection("certifications")).slice(0, 5);
                         </thead>
                         <tbody>
                             {
-                                random_certs.map((cert, i, arr) => (
-                                        <tr class:list={ [
-                                            { "border-b": i !== arr.length },
-                                        ] }
-                                        >
-                                            <td class="relative py-5 px-6">
-                                                {/*This is kept de-hydrated as no interactivity is needed (aka no React)*/ }
-                                                <ColCertification {...omit(cert.data, ["image"])}
-                                                                  provider={ title(cert.id.split("/")[0]) }
-                                                                  slug={ cert.id }
-                                                                  image={ cert.data.image.src }
-                                                />
-                                            </td>
-                                            <td class="hidden py-5 px-6 sm:table-cell">
-                                                {/*This is kept de-hydrated as no interactivity is needed (aka no React)*/ }
-                                                <ColCertificationPath career_paths={ cert.data.career_paths } />
-                                            </td>
-                                            <td class="hidden sm:table-cell py-5 px-6 text-right">
-                                                {/*This is kept de-hydrated as no interactivity is needed (aka no React)*/ }
-                                                <ColMoreDetails price={ cert.data.price }
-                                                                currency={ cert.data.currency }
-                                                                slug={ cert.id }
-                                                />
-                                            </td>
-                                        </tr>
-                                ))
                             }
                         </tbody>
                     </table>

@@ -13,6 +13,8 @@ import { defineConfig } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
     site:         "https://cyberpath-hq.com",
+    base:         "/",
+    trailingSlash: "ignore",
     integrations: [
         tailwind({
             nesting: true,
@@ -30,5 +32,5 @@ export default defineConfig({
     ],
     build:        {
         assets: "assets",
-    },
+    }
 });

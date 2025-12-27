@@ -15,7 +15,7 @@ import { promisify } from "util";
 
 const readdir = promisify(fs.readdir);
 
-const url = "http://localhost:4321/database/";
+const url = "http://localhost:4321/";
 
 /**
  * Start the Astro development server and return the ChildProcess instance
@@ -26,10 +26,12 @@ async function startServer() {
     let devServer;
     try {
         devServer = spawn(
-            "npm",
+            "timeout",
             [
+                "30",
+                "pnpm",
                 "run",
-                "dev",
+                "preview",
             ],
             {
                 stdio:  "inherit",
@@ -39,8 +41,10 @@ async function startServer() {
         );
     }
     catch (e) {
-        console.error(e.message)
-        process.exit(1);
+        // expect to timeout after 30 seconds
+
+        // console.error(e.message)
+        // process.exit(1);
     }
 
     // Give the server a moment to start
@@ -84,13 +88,7 @@ async function focusOnTarget(page) {
         if (termly) {
             termly.remove();
         }
-
-        // Scroll down by 130 pixels, we don't care about the header
-        window.scrollBy(0, 130);
     });
-
-    // Let React load the data and render them, wait for 10 seconds
-    await new Promise((resolve) => setTimeout(resolve, 10000));
 }
 
 /**
@@ -98,14 +96,14 @@ async function focusOnTarget(page) {
  * @returns {Promise<string>}
  */
 async function getTargetFilename() {
-    const files = await readdir("./dist/assets");
+    const files = await readdir(".");
 
     const target = files.filter(file =>
-        file.startsWith("CyberPath-Database") && file.endsWith(".webp"),
+        file.startsWith("CyberPath") && file.endsWith(".webp"),
     );
 
     if (target.length === 0) {
-        throw new Error("No file found, cannot save the screenshot");
+        return "./CyberPath-og.webp";
     }
 
     return target[0];
