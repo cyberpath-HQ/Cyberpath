@@ -20,11 +20,6 @@ const certification_count = (await getCollection("certifications", (entry) => {
 })).length;
 ---
 
-<Image src={ CareerPathsData[career_path].image }
-       alt={ career_path }
-       class="object-cover object-center transition-all duration-300 group-hover:scale-105 max-w-full"
-       loading={ loading }
-/>
 <CardOverlay />
 <div class="flex items-end p-3 sm:p-6 sm:absolute sm:inset-0">
     <div>
