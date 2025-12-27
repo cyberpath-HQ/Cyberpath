@@ -1,11 +1,13 @@
 ---
-const content = `0; url=https://certdb.cyberpath-hq.com/contributors`
+const url = 'https://certdb.cyberpath-hq.com/contributors'
+const content = `0; url=${url}`
 ---
 <html>
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="refresh" content={content} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="canonical" href={content} />
         <title>Redirecting...</title>
     </head>
 </html>
