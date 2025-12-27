@@ -43,7 +43,8 @@ const projects = [
         tags: ["Database", "Certifications", "Career", "Open Source"],
         color: "from-blue-500/20 to-cyan-500/20",
         borderColor: "border-blue-500/30",
-        hoverBorder: "hover:border-blue-500/60"
+        hoverBorder: "hover:border-blue-500/60",
+        delay: "delay-300"
     },
     {
         name: "Orbis",
@@ -54,7 +55,8 @@ const projects = [
         tags: ["Desktop App", "Plugins", "WASM", "Open Source"],
         color: "from-purple-500/20 to-pink-500/20",
         borderColor: "border-purple-500/30",
-        hoverBorder: "hover:border-purple-500/60"
+        hoverBorder: "hover:border-purple-500/60",
+        delay: "delay-400"
     }
 ];
 ---
@@ -265,7 +267,7 @@ const projects = [
 
             <div class="mx-auto max-w-6xl grid gap-8 md:grid-cols-2">
                 {projects.map((project, index) => (
-                    <div class={`project-card relative rounded-2xl border-2 ${project.borderColor} ${project.hoverBorder} bg-white p-8 shadow-lg hover:shadow-2xl opacity-0 animate-fade-in-up delay-${(index + 3) * 100}`}>
+                    <div class={`project-card relative rounded-2xl border-2 ${project.borderColor} ${project.hoverBorder} bg-white p-8 shadow-lg hover:shadow-2xl opacity-0 animate-fade-in-up ${project.delay}`}>
                         <!-- Gradient Background -->
                         <div class={`gradient-bg absolute inset-0 rounded-2xl bg-gradient-to-br ${project.color} opacity-0 transition-opacity duration-500 pointer-events-none`}></div>
                         
