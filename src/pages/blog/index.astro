@@ -1,176 +1,261 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthorAvatar } from "@/components/react/author-avatar";
 import { getAuthor } from "@/data/authors";
 import "@/styles/globals.css";
+import type { WebSite } from "schema-dts";
+import { makeJsonLd } from "@/lib/make-json-ld";
+import type { title } from "radash";
 
 // Get all blog posts and sort by date
 const allPosts = await getCollection("blog", ({ data }) => {
-    return data.draft !== true;
+  return data.draft !== true;
 });
 
-const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 
 // Get unique tags
-const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags))].sort();
+const allTags = [
+  ...new Set(sortedPosts.flatMap((post) => post.data.tags)),
+].sort();
 
 // Format date helper
 const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
-// Prepare SEO props for Layout
-const seoProps = {
-    title: "Blog - Cyberpath",
-    description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
-    canonical: new URL("/blog", Astro.site).toString(),
-    openGraph: {
-        title: "Blog - Cyberpath",
-        description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
-        type: "website" as const,
-        url: new URL("/blog", Astro.site).toString(),
-        images: [{
-            url: new URL("/og-image-blog.png", Astro.site).toString(),
-            alt: "Cyberpath Blog"
-        }],
-        site_name: "Cyberpath",
-    },
-    twitter: {
-        site: "@cyberpath_hq",
-    },
-};
+const json_ld = makeJsonLd<WebSite>({
+  "@type": "WebSite",
+  "@context": "https://schema.org",
+  "@id": "https://cyberpath-hq.com/",
+  url: new URL("/blog", Astro.site).toString(),
+  name: "Cyberpath Blog",
+  description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+  inLanguage: "en-US",
+  author: {
+    "@type": "Person",
+    name: "Cyberpath",
+    email: "support@cyberpath-hq.com",
+    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    url: "https://cyberpath-hq.com",
+  },
+  image: {
+    "@type": "ImageObject",
+    url: new URL("/CyberPath-og.webp", Astro.site).toString(),
+    width: "1920",
+    height: "933",
+    description: "Cyberpath Blog",
+  },
+  datePublished: new Date(2025, 12, 29).toISOString(),
+  dateModified: new Date().toISOString(),
+  publisher: {
+    "@type": "Person",
+    name: "Cyberpath",
+    email: "support@cyberpath-hq.com",
+    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    url: "https://cyberpath-hq.com",
+  },
+});
+
 ---
 
-<Layout seo={seoProps}>
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <header class="mb-12 text-center">
-            <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Blog
-            </h1>
-            <p class="mx-auto max-w-2xl text-xl text-muted-foreground">
-                Insights, tutorials, and thoughts on cybersecurity, certifications, and career development.
-            </p>
-            <div class="mt-6">
-                <a
-                    href="/rss.xml"
-                    class="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/>
-                    </svg>
-                    Subscribe via RSS
-                </a>
-            </div>
-        </header>
-
-        <!-- Tags Filter (Optional - can be enhanced with React component for interactivity) -->
+<Layout
+  JSON_LD={json_ld}
+  seo={{
+    title: "Blog - Cyberpath",
+    description:
+      "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+    canonical: new URL("/blog", Astro.site).toString(),
+    openGraph: {
+      title: "Blog - Cyberpath",
+      description:
+        "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+      type: "website" as const,
+      url: new URL("/blog", Astro.site).toString(),
+      images: [
         {
-            allTags.length > 0 && (
-                <div class="mb-8">
-                    <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                        Filter by Tag
-                    </h2>
-                    <div class="flex flex-wrap gap-2">
-                        {allTags.map((tag) => (
-                            <Badge variant="outline" className="cursor-pointer hover:bg-secondary">
-                                {tag}
-                            </Badge>
-                        ))}
-                    </div>
-                </div>
-            )
-        }
+          url: new URL("/CyberPath-og.webp", Astro.site).toString(),
+          width: 1920,
+          height: 933,
+          alt: "Blog - Cyberpath",
+        },
+      ],
+      site_name: "Cyberpath",
+    },
+    additionalMetaTags: [
+      {
+        name: "keywords",
+        content: allTags.join(", "),
+      },
+    ],
+    twitter: {
+      handle: "@cyberpath_hq",
+      site: "@cyberpath_hq",
+    },
+  }}
+>
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <header class="mb-12 text-center">
+      <h1
+        class="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+      >
+        Blog
+      </h1>
+      <p class="mx-auto max-w-2xl text-xl text-muted-foreground">
+        Insights, tutorials, and thoughts on cybersecurity, certifications, and
+        career development.
+      </p>
+      <div class="mt-6">
+        <a
+          href="/rss.xml"
+          class="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"
+            ></path>
+          </svg>
+          Subscribe via RSS
+        </a>
+      </div>
+    </header>
 
-        <!-- Blog Posts Grid -->
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {
-                sortedPosts.map((post) => {
-                    const { title, description, pubDate, heroImage, tags, author: authorId, readingTime } = post.data;
-                    const author = getAuthor(authorId);
-                    
-                    if (!author) return null;
-
-                    return (
-                        <a href={`/blog/${post.id}`} class="group block h-full">
-                            <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
-                                {heroImage && (
-                                    <div class="aspect-video w-full overflow-hidden rounded-t-lg">
-                                        <img
-                                            src={heroImage.src}
-                                            alt={title}
-                                            class="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                            width={heroImage.width}
-                                            height={heroImage.height}
-                                        />
-                                    </div>
-                                )}
-
-                                <CardHeader>
-                                    <div class="mb-2 flex items-center gap-2">
-                                        <AuthorAvatar 
-                                        client:only="react"
-                                            name={author.name}
-                                            avatarSrc={author.avatar?.src}
-                                            className="h-8 w-8"
-                                        />
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-medium">{author.name}</span>
-                                            <span class="text-xs text-muted-foreground">{formatDate(pubDate)}</span>
-                                        </div>
-                                    </div>
-
-                                    <CardTitle className="line-clamp-2 group-hover:text-primary">
-                                        {title}
-                                    </CardTitle>
-                                    <CardDescription className="line-clamp-3">{description}</CardDescription>
-                                </CardHeader>
-
-                                <CardContent>
-                                    {tags.length > 0 && (
-                                        <div class="flex flex-wrap gap-2">
-                                            {tags.slice(0, 3).map((tag) => (
-                                                <Badge variant="secondary" className="text-xs">
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                            {tags.length > 3 && (
-                                                <Badge variant="secondary" className="text-xs">
-                                                    +{tags.length - 3}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    )}
-                                </CardContent>
-
-                                {readingTime && (
-                                    <CardFooter>
-                                        <span class="text-sm text-muted-foreground">{readingTime}</span>
-                                    </CardFooter>
-                                )}
-                            </Card>
-                        </a>
-                    );
-                })
-            }
+    <!-- Tags Filter (Optional - can be enhanced with React component for interactivity) -->
+    {
+      allTags.length > 0 && (
+        <div class="mb-8">
+          <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Filter by Tag
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {allTags.map((tag) => (
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-secondary"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
+      )
+    }
 
-        <!-- Empty State -->
-        {
-            sortedPosts.length === 0 && (
-                <div class="py-16 text-center">
-                    <p class="text-xl text-muted-foreground">No blog posts yet. Check back soon!</p>
-                </div>
-            )
-        }
+    <!-- Blog Posts Grid -->
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {
+        sortedPosts.map((post) => {
+          const {
+            title,
+            description,
+            pubDate,
+            heroImage,
+            tags,
+            author: authorId,
+            readingTime,
+          } = post.data;
+          const author = getAuthor(authorId);
+
+          if (!author) return null;
+
+          return (
+            <a href={`/blog/${post.id}`} class="group block h-full">
+              <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
+                {heroImage && (
+                  <div class="aspect-video w-full overflow-hidden rounded-t-lg">
+                    <img
+                      src={heroImage.src}
+                      alt={title}
+                      class="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      width={heroImage.width}
+                      height={heroImage.height}
+                    />
+                  </div>
+                )}
+
+                <CardHeader>
+                  <div class="mb-2 flex items-center gap-2">
+                    <AuthorAvatar
+                      client:only="react"
+                      name={author.name}
+                      avatarSrc={author.avatar?.src}
+                      className="h-8 w-8"
+                    />
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium">{author.name}</span>
+                      <span class="text-xs text-muted-foreground">
+                        {formatDate(pubDate)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <CardTitle className="line-clamp-2 group-hover:text-primary">
+                    {title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">
+                    {description}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                  {tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {tags.slice(0, 3).map((tag) => (
+                        <Badge variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {tags.length > 3 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{tags.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+
+                {readingTime && (
+                  <CardFooter>
+                    <span class="text-sm text-muted-foreground">
+                      {readingTime}
+                    </span>
+                  </CardFooter>
+                )}
+              </Card>
+            </a>
+          );
+        })
+      }
     </div>
+
+    <!-- Empty State -->
+    {
+      sortedPosts.length === 0 && (
+        <div class="py-16 text-center">
+          <p class="text-xl text-muted-foreground">
+            No blog posts yet. Check back soon!
+          </p>
+        </div>
+      )
+    }
+  </div>
 </Layout>
