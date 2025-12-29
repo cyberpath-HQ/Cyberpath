@@ -17,6 +17,7 @@ import { makeJsonLd } from "@/lib/make-json-ld";
 import type { Article } from "schema-dts";
 import { Image } from "astro:assets";
 import { cn } from "@/lib/utils";
+import getReadingTime from 'reading-time';
 
 interface Props {
   entry: CollectionEntry<"blog">;
@@ -33,8 +34,8 @@ const {
   heroClass,
   tags,
   author: authorId,
-  readingTime,
 } = entry.data;
+const readingTime = getReadingTime(entry.body!).text;
 const author = getAuthor(authorId);
 
 if (!author) {

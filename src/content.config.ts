@@ -41,7 +41,6 @@ const blog = defineCollection({
 
         // Author ID from authors.ts
         author:          z.string(),
-        readingTime:     z.string().optional(),
     }),
 });
 

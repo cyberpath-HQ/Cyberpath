@@ -17,6 +17,7 @@ import type { WebSite } from "schema-dts";
 import { makeJsonLd } from "@/lib/make-json-ld";
 import { Image } from "astro:assets";
 import { cn } from "@/lib/utils";
+import getReadingTime from 'reading-time';
 
 // Get all blog posts and sort by date
 const allPosts = await getCollection("blog", ({ data }) => {
@@ -175,11 +176,12 @@ const json_ld = makeJsonLd<WebSite>({
             heroClass,
             tags,
             author: authorId,
-            readingTime,
           } = post.data;
           const author = getAuthor(authorId);
 
           if (!author) return null;
+
+          const readingTime = getReadingTime(post.body!).text;
 
           return (
             <a href={`/blog/${post.id}`} class="group block h-full">
