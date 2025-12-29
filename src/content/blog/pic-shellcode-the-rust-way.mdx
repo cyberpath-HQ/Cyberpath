@@ -12,7 +12,7 @@ A Hands-On Analysis of the Rustic64 Project
 
 In cybersecurity and malware development the use of Position Independent Code (PIC) has gained significant attention, particularly in contexts such as shellcode development. This article delves into the intricacies of the Rustic64 project, a project developed by [Safe](https://www.linkedin.com/in/davide-valitutti/) to showcase how to create PIC shellcodes for Windows, built with **Rust**. We will conduct a hands-on analysis and walkthrough of its codebase, offering insights into its architecture, implementation, and peculiarities.
 
-> I’d like to thank [Safe](https://www.linkedin.com/in/davide-valitutti/) for the possibility to write this thought walkthrough of his work. All rights about the code development belongs to him. Show your support to his work by [giving a star on GitHub](https://github.com/safedv/Rustic64) and connecting on LinkedIn.
+> I'd like to thank [Safe](https://www.linkedin.com/in/davide-valitutti/) for the possibility to write this thought walkthrough of his work. All rights about the code development belongs to him. Show your support to his work by [giving a star on GitHub](https://github.com/safedv/Rustic64) and connecting on LinkedIn.
 
 Overview of Rustic64
 --------------------
@@ -133,7 +133,7 @@ The `Linker.ld` ([raw content](https://github.com/safedv/Rustic64/blob/master/Li
     - `*(interp)`: This typically contains interpreter information for dynamic linking, which is irrelevant to our PIC scenario.
     - `*(.comment)`, `*(.debug_frame)`: These sections are used for debugging purposes and are not needed in the final binary. leaving them will also mean a larger binary size, possibly an un-executable implant, and easier to reverse executable.
     - `*(.bss)`: This section is for uninitialized global and static variables. By discarding it, you ensure that the binary doesn't include space for uninitialized data.
-    - `*(.pdata)`, `*(.xdata)`: These sections contain exception-handling data for certain architectures (e.g., Windows PE format). Since we’re not using them we simply drop them entirely.
+    - `*(.pdata)`, `*(.xdata)`: These sections contain exception-handling data for certain architectures (e.g., Windows PE format). Since we're not using them we simply drop them entirely.
 
 ### 3. `Makefile.toml`
 -------------------
@@ -157,9 +157,9 @@ The `RUSTFLAGS` variable is heavily customized to enforce specific optimizations
 *   `**-C link-arg=-fno-ident**`: This suppresses identifying information from being included in the binary. This is useful for reducing size and avoiding unnecessary metadata that may be useful when fingerprinting your PIC binary.
 *   `**-C link-arg=-fpack-struct=8**`: This forces struct alignment to 8 bytes (aka C style structure alignment).
 *   `**-C link-arg=-Wl,--gc-sections**`: This instructs the linker to discard unused sections, helping reduce the final binary size by eliminating dead code or unused data.
-*   `**-C relocation-model=pic**`: Enforce the compiler to use a PIC-compliant relocation model, needed as we’re trying to create a PIC binary.
+*   `**-C relocation-model=pic**`: Enforce the compiler to use a PIC-compliant relocation model, needed as we're trying to create a PIC binary.
 *   `**-C link-arg=-Wl,-T./Linker.ld,--build-id=none**`: This links the custom linker script (`Linker.ld`) giving full control over memory layout and section placement.
-*   `**-C link-arg=-nostartfiles**`: Disables the inclusion of standard startup files (e.g., those provided by the OS or runtime). This is required as we’ll define our entry point (`_start`) and avoid completely the existence of a `main` .
+*   `**-C link-arg=-nostartfiles**`: Disables the inclusion of standard startup files (e.g., those provided by the OS or runtime). This is required as we'll define our entry point (`_start`) and avoid completely the existence of a `main` .
 *   `**-C link-arg=-Wl,-e_start**`: This specifies the entry point for the binary, reinforcing that `_start` this is where execution begins.
 
 #### Custom Tasks
@@ -180,7 +180,7 @@ As you may have gotten from the previous files, the application is designed for 
 Main.rs
 -------
 
-The main file ([raw content](https://github.com/safedv/Rustic64/blob/master/src/main.rs)) contains a few functions, we’ll focus on the most interesting which are:
+The main file ([raw content](https://github.com/safedv/Rustic64/blob/master/src/main.rs)) contains a few functions, we'll focus on the most interesting which are:
 
 *   `_start`
 *   `initialize`
@@ -212,7 +212,7 @@ The `initialize` function is a `no_mangle` function that is called from the `_st
 
 > **What is a no_mangle function?**
 > 
-> A `no_mangle` function is a function that is marked with the `#[no_mangle]` attribute, which tells the Rust compiler not to apply its default name mangling to the function’s symbol name during the compilation process. Refer to the [official documentation](https://doc.rust-lang.org/reference/abi.html#the-no_mangle-attribute) for more information.
+> A `no_mangle` function is a function that is marked with the `#[no_mangle]` attribute, which tells the Rust compiler not to apply its default name mangling to the function's symbol name during the compilation process. Refer to the [official documentation](https://doc.rust-lang.org/reference/abi.html#the-no_mangle-attribute) for more information.
 
 It is responsible for setting up the application environment, including the allocation of resources. The key actions in this function are as follows:
 
@@ -261,9 +261,9 @@ This function is essential for retrieving the singleton `Instance` created durin
 Most meaningful features and flows
 ----------------------------------
 
-As explaining the whole project is not the end goal of this post we’ll evaluate only the most meaningful fragments starting from the main file.
+As explaining the whole project is not the end goal of this post we'll evaluate only the most meaningful fragments starting from the main file.
 
-We’ll see what the `Instance` structure is, how it is initialized via the `init_native_funcs` and how a sample function is loaded via `ldr_module/ldr_function`, the remaining of the code is (almost) easy to understand and dive into as most of the logic is based on the usage on `Instance` and the loaded functions to achieve higher-order functionalities such as the [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24) (check it out as it’s a pretty interesting allocator fully developed with native Windows API heap calls).
+We'll see what the `Instance` structure is, how it is initialized via the `init_native_funcs` and how a sample function is loaded via `ldr_module/ldr_function`, the remaining of the code is (almost) easy to understand and dive into as most of the logic is based on the usage on `Instance` and the loaded functions to achieve higher-order functionalities such as the [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24) (check it out as it's a pretty interesting allocator fully developed with native Windows API heap calls).
 
 ### The instance struct — Shared data for your shellcode
 
@@ -333,7 +333,7 @@ This method ensures that all the function pointers initially point to `null`, wi
 
 The `init_native_funcs()` method is responsible for dynamically loading the function pointers in the `Ntdll` and `Instance` structs using the `ldr_function` and `ldr_module` functions.
 
-Here’s how the process works for a sample function, `RtlCreateHeap`:
+Here's how the process works for a sample function, `RtlCreateHeap`:
 
 1.  **Load** `**ntdll.dll**`:
 
@@ -370,25 +370,25 @@ The `ldr_module` function is responsible for finding the base address of a modul
 
 **Key Points:**
 
-*   **PEB Traversal**: The function navigates through the list of loaded modules, checking each module’s name to see if its hash matches the given `module_hash`.
+*   **PEB Traversal**: The function navigates through the list of loaded modules, checking each module's name to see if its hash matches the given `module_hash`.
 *   **Hashing Mechanism**: The function names are hashed using `dbj2_hash` for faster comparison rather than directly comparing strings. This is a common technique to enhance performance in module/function lookups.
 *   **Return Value**: If a matching module is found, its base address is returned. Otherwise, `null_mut()` is returned to indicate failure.
 
 ### `ldr_function`: Finding a Function by Hash
 
-The `ldr_function` is responsible for locating a function within a module's export table by using a hash of the function’s name.
+The `ldr_function` is responsible for locating a function within a module's export table by using a hash of the function's name.
 
 **Key Components:**
 
 *   **NT Headers**: The NT Headers are part of the Portable Executable (PE) format used by Windows executables and DLLs. These headers contain important information about the file layout, including where the export table is located.
 *   **Export Directory**: The export directory contains pointers to exported functions (i.e., functions that other programs or modules can call). This includes arrays for function names, addresses, and ordinals (indices).
-*   **Hash Comparison**: Similar to `ldr_module`, `ldr_function` compares the hash of the function name with a provided `function_hash`. If the hashes match, the function’s address is retrieved and returned.
+*   **Hash Comparison**: Similar to `ldr_module`, `ldr_function` compares the hash of the function name with a provided `function_hash`. If the hashes match, the function's address is retrieved and returned.
 
 **Key Points:**
 
 *   **NT Headers**: The `get_nt_headers` function retrieves the NT headers from the given module base address. The NT headers contain information about where to find the export directory.
 *   **Export Directory**: The function then navigates to the export directory, where the function names, ordinals, and addresses are stored.
-*   **Hashing Mechanism**: For each function in the export table, its name is hashed using `dbj2_hash`. If the hash matches the `function_hash`, the function’s address is retrieved by using its ordinal.
+*   **Hashing Mechanism**: For each function in the export table, its name is hashed using `dbj2_hash`. If the hash matches the `function_hash`, the function's address is retrieved by using its ordinal.
 *   **Return Value**: The function returns the address of the function if found; otherwise, it returns `null_mut()`.
 
 Test your shellcode
@@ -416,4 +416,4 @@ Emplace this small loader in a new rust project, copy the `rustic64.bin` file ge
 Conclusion
 ----------
 
-Rustic64 project offers a sophisticated yet accessible approach to crafting Position Independent Code (PIC) shellcodes using Rust, emphasizing security and flexibility. For cybersecurity professionals and developers alike, this project serves as a rich learning tool, highlighting the power of Rust in advanced shellcode creation. Be sure to check out the code on GitHub and support Safe’s innovative work.
+Rustic64 project offers a sophisticated yet accessible approach to crafting Position Independent Code (PIC) shellcodes using Rust, emphasizing security and flexibility. For cybersecurity professionals and developers alike, this project serves as a rich learning tool, highlighting the power of Rust in advanced shellcode creation. Be sure to check out the code on GitHub and support Safe's innovative work.

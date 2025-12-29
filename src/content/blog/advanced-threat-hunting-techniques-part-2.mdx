@@ -10,9 +10,9 @@ author: ebalo
 Leveraging Threat Intelligence Platforms
 ----------------------------------------
 
-In **Part 1** of this series, we explored anomaly detection and behavioral analytics as crucial components of advanced threat hunting. These techniques allow security teams to identify malicious activity by recognizing deviations from normal behavior and correlating activity to known attack techniques, such as those in the MITRE ATT&CK framework. However, threat hunting doesn’t occur in a vacuum; the effectiveness of any threat hunt can be amplified by incorporating external intelligence to provide context and additional layers of insight.
+In **Part 1** of this series, we explored anomaly detection and behavioral analytics as crucial components of advanced threat hunting. These techniques allow security teams to identify malicious activity by recognizing deviations from normal behavior and correlating activity to known attack techniques, such as those in the MITRE ATT&CK framework. However, threat hunting doesn't occur in a vacuum; the effectiveness of any threat hunt can be amplified by incorporating external intelligence to provide context and additional layers of insight.
 
-In **Part 2**, we will delve into how to leverage Threat Intelligence Platforms (TIPs) in your threat hunting efforts. We’ll explore how TIPs can enrich internal data, provide a more complete picture of emerging threats, and help threat hunters identify and neutralize adversaries more effectively.
+In **Part 2**, we will delve into how to leverage Threat Intelligence Platforms (TIPs) in your threat hunting efforts. We'll explore how TIPs can enrich internal data, provide a more complete picture of emerging threats, and help threat hunters identify and neutralize adversaries more effectively.
 
 The Role of Threat Intelligence in Threat Hunting
 -------------------------------------------------
@@ -24,7 +24,7 @@ How TIPs Complement Threat Hunting
 
 *   **Contextual Awareness**: TIPs provide context about known adversaries, helping threat hunters understand the bigger picture — who the attackers are, what their objectives might be, and how they typically operate.
 *   **Real-Time Data**: Continuous updates from global threat feeds provide near-real-time intelligence about ongoing campaigns, newly discovered malware variants, and evolving attack methods.
-*   **Collaboration and Sharing**: TIPs allow organizations to share intelligence with partners, government agencies, or industry-specific ISACs (Information Sharing and Analysis Centers). This shared intelligence can significantly enrich a threat hunting team’s understanding of adversary behavior.
+*   **Collaboration and Sharing**: TIPs allow organizations to share intelligence with partners, government agencies, or industry-specific ISACs (Information Sharing and Analysis Centers). This shared intelligence can significantly enrich a threat hunting team's understanding of adversary behavior.
 
 > Do you like my content and you want to see more?
 > 
@@ -38,7 +38,7 @@ While behavioral analytics and anomaly detection are powerful tools, integrating
 
 *   **Indicator Matching**: Many TIPs aggregate IoCs from various sources, including malware repositories, public threat databases, and government advisories. Threat hunters can correlate these IoCs with internal network traffic, log data, and endpoint activity.
 *   **Threat Correlation**: Correlating an internal alert (e.g., an anomalous network connection) with a known malicious IP address from a TIP strengthens the hypothesis that the network might be compromised.
-*   **Enrichment of Findings**: TIPs often provide additional context around each IoC, such as the adversary group behind it or the malware family it’s associated with. This context allows for more informed decisions and targeted response actions.
+*   **Enrichment of Findings**: TIPs often provide additional context around each IoC, such as the adversary group behind it or the malware family it's associated with. This context allows for more informed decisions and targeted response actions.
 
 **Example: Hunting for Known Malicious Infrastructure**
 
@@ -46,7 +46,7 @@ A threat hunter identifies unusual outbound network traffic to an unfamiliar IP 
 
 **Best Practices for Using IoCs:**
 
-1.  **Relevancy Filtering**: Not all IoCs are created equal. Prioritize high-confidence IoCs that are relevant to your organization’s industry or threat landscape.
+1.  **Relevancy Filtering**: Not all IoCs are created equal. Prioritize high-confidence IoCs that are relevant to your organization's industry or threat landscape.
 2.  **Automated Matching**: Use your Security Information and Event Management (SIEM) system or network monitoring tools to automatically cross-reference incoming data with IoCs from your TIP to detect potential matches in real time.
 3.  **Expiring IoCs**: Adversaries often change their infrastructure. Always consider the freshness of IoCs, as older ones might no longer be relevant to ongoing threats.
 
@@ -63,7 +63,7 @@ While IoCs can help identify specific artifacts of an attack, TTPs provide deepe
 
 A TIP reports that an advanced persistent threat (APT) group is increasingly using fileless malware techniques, leveraging PowerShell scripts and in-memory execution to avoid detection. A threat hunter can focus their efforts on identifying abnormal use of PowerShell in their environment, looking for behavior such as process injection or unusual script execution patterns.
 
-Because fileless malware doesn’t leave behind traditional artifacts like malicious files or hashes, relying on IoCs alone wouldn’t suffice. However, understanding the TTPs associated with fileless attacks enables a more focused and effective hunt.
+Because fileless malware doesn't leave behind traditional artifacts like malicious files or hashes, relying on IoCs alone wouldn't suffice. However, understanding the TTPs associated with fileless attacks enables a more focused and effective hunt.
 
 **Using MITRE ATT&CK and Threat Intelligence Together**
 
@@ -83,7 +83,7 @@ Manually searching through logs and network data for IoCs or behavioral patterns
 
 **Example: Automating IoC Correlation**
 
-A threat hunter receives an alert from their TIP that a newly discovered domain associated with an active phishing campaign has been observed communicating with internal systems. Through automated integration with the organization’s SIEM, a rule is triggered that quarantines the infected endpoint and alerts the security team for further investigation.
+A threat hunter receives an alert from their TIP that a newly discovered domain associated with an active phishing campaign has been observed communicating with internal systems. Through automated integration with the organization's SIEM, a rule is triggered that quarantines the infected endpoint and alerts the security team for further investigation.
 
 This automated detection and response allow for rapid containment of threats, reducing the time to detection (TTD) and time to response (TTR).
 
@@ -103,7 +103,7 @@ An often underutilized aspect of TIPs is their ability to facilitate threat inte
 
 **Example: Collaborative Threat Detection via ISAC**
 
-A financial services company notices a rise in spear-phishing attacks targeting its executives. By sharing IoCs and TTPs with other financial institutions via an ISAC, the broader community is able to detect and block similar attacks more quickly. This collaborative effort improves collective resilience against the threat actor’s campaign.
+A financial services company notices a rise in spear-phishing attacks targeting its executives. By sharing IoCs and TTPs with other financial institutions via an ISAC, the broader community is able to detect and block similar attacks more quickly. This collaborative effort improves collective resilience against the threat actor's campaign.
 
 Conclusion: Maximizing the Power of Threat Intelligence in Hunting
 ------------------------------------------------------------------

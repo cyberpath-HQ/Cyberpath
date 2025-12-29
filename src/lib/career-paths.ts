@@ -36,7 +36,7 @@ export const CareerPathsData: {
         attribution: ``,
     },
     [CareerPathsList[1]]:         {
-        description: "Defends an organization’s networks and systems against cyberattacks. They specialize in incident response, digital forensics, and continuous monitoring of systems for vulnerabilities. Blue Team Specialists play a hands-on role in threat detection and mitigation, ensuring infrastructure resilience and security across the organization.",
+        description: "Defends an organization's networks and systems against cyberattacks. They specialize in incident response, digital forensics, and continuous monitoring of systems for vulnerabilities. Blue Team Specialists play a hands-on role in threat detection and mitigation, ensuring infrastructure resilience and security across the organization.",
         attribution: `<a href="https://leonardo.ai/" target="_blank" rel="noopener nofollow">Image generated with Leonardo AI</a>`,
     },
     [CareerPathsList[2]]:         {
@@ -60,19 +60,19 @@ export const CareerPathsData: {
         attribution: `<a href="https://www.freepik.com/free-photo/system-hacked-alert-message-computer-screen-hacker-breaking-into-database-server-criminal-cyberattack-malicious-software-password-cracking-program-information-stealing_58629324.htm" target="_blank" rel="noopener nofollow">Image by DC Studio on Freepik</a>`,
     },
     [CareerPathsList[7]]:         {
-        description: "Performs offensive security testing, simulating advanced cyberattacks to identify and exploit vulnerabilities. Works with organizations to improve their defensive capabilities by exposing weaknesses from an attacker’s perspective.",
+        description: "Performs offensive security testing, simulating advanced cyberattacks to identify and exploit vulnerabilities. Works with organizations to improve their defensive capabilities by exposing weaknesses from an attacker's perspective.",
         attribution: `<a href="https://www.freepik.com/free-photo/top-view-laptop-with-lock-chain_18492313.htm" target="_blank" rel="noopener nofollow">Image by freepik</a>`,
     },
     [CareerPathsList[8]]:         {
-        description: "Identifies, assesses, and prioritizes potential security risks to an organization’s assets. Develops strategies to mitigate these risks, ensuring that both the likelihood and impact of cyber threats are minimized while maintaining business continuity.",
+        description: "Identifies, assesses, and prioritizes potential security risks to an organization's assets. Develops strategies to mitigate these risks, ensuring that both the likelihood and impact of cyber threats are minimized while maintaining business continuity.",
         attribution: `<a href="https://www.freepik.com/free-photo/concept-solution-domino-effect-slightly-de-focused-close-up-shot-selective-focus_1203372.htm" target="_blank" rel="noopener nofollow">Image by mindandi on Freepik</a>`,
     },
     [CareerPathsList[9]]:         {
-        description: "Manages the daily operations of an organization’s security infrastructure. They oversee the implementation of security policies, secure system development, and compliance with regulations. Often working within a SOC, they ensure security controls are continuously effective and address both operational security issues and ongoing incident management.",
+        description: "Manages the daily operations of an organization's security infrastructure. They oversee the implementation of security policies, secure system development, and compliance with regulations. Often working within a SOC, they ensure security controls are continuously effective and address both operational security issues and ongoing incident management.",
         attribution: `<a href="https://www.freepik.com/free-photo/admin-does-server-hub-management_222616629.htm" target="_blank" rel="noopener nofollow">Image by DC Studio on Freepik</a>`,
     },
     [CareerPathsList[10]]:        {
-        description: "Actively searches for hidden and advanced threats within an organization’s environment. Using a combination of tools, techniques, and threat intelligence, threat hunters detect sophisticated attacks that may bypass traditional security measures, identifying risks early.",
+        description: "Actively searches for hidden and advanced threats within an organization's environment. Using a combination of tools, techniques, and threat intelligence, threat hunters detect sophisticated attacks that may bypass traditional security measures, identifying risks early.",
         attribution: `<a href="https://certify.cybervista.net/cyber-roles-threat-hunter/" target="_blank" rel="noopener nofollow">Image from CyberVista</a>`,
     },
 } as const;
