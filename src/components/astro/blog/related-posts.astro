@@ -2,6 +2,8 @@
 import type { CollectionEntry } from "astro:content";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Image } from "astro:assets";
+import { cn } from "@/lib/utils";
 
 interface Props {
     currentPost: CollectionEntry<"blog">;
@@ -59,19 +61,18 @@ const formatDate = (date: Date) => {
         
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {relatedPosts.map((post) => {
-                const { title, description, pubDate, heroImage, tags } = post.data;
+                const { title, description, pubDate, heroImage, tags, heroClass } = post.data;
                 
                 return (
                     <a href={`/blog/${post.id}`} class="group block h-full">
                         <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
                             {heroImage && (
-                                <div class="aspect-video w-full overflow-hidden rounded-t-lg">
-                                    <img
-                                        src={heroImage.src}
+                                <div class="aspect-[16/9] w-full overflow-hidden rounded-t-lg">
+                                    <Image
+                                        src={heroImage}
                                         alt={title}
-                                        class="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                        width={heroImage.width}
-                                        height={heroImage.height}
+                                        inferSize={true}
+                                        class={cn("h-full w-full object-cover transition-transform group-hover:scale-105", heroClass)}
                                     />
                                 </div>
                             )}
