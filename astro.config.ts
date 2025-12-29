@@ -58,4 +58,9 @@ export default defineConfig({
             wrap:         false,
         },
     },
+    compressHTML:   true,
+    output:        `static`,
+    image:        {
+        domains: [ `githubusercontent.com` ],
+    },
 });
