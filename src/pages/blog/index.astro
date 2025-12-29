@@ -15,7 +15,8 @@ import { getAuthor } from "@/data/authors";
 import "@/styles/globals.css";
 import type { WebSite } from "schema-dts";
 import { makeJsonLd } from "@/lib/make-json-ld";
-import type { title } from "radash";
+import { Image } from "astro:assets";
+import { cn } from "@/lib/utils";
 
 // Get all blog posts and sort by date
 const allPosts = await getCollection("blog", ({ data }) => {
@@ -46,13 +47,15 @@ const json_ld = makeJsonLd<WebSite>({
   "@id": "https://cyberpath-hq.com/",
   url: new URL("/blog", Astro.site).toString(),
   name: "Cyberpath Blog",
-  description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+  description:
+    "Read our latest articles about cybersecurity, certifications, career paths, and more.",
   inLanguage: "en-US",
   author: {
     "@type": "Person",
     name: "Cyberpath",
     email: "support@cyberpath-hq.com",
-    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description:
+      "Cyberpath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
   image: {
@@ -68,11 +71,11 @@ const json_ld = makeJsonLd<WebSite>({
     "@type": "Person",
     name: "Cyberpath",
     email: "support@cyberpath-hq.com",
-    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description:
+      "Cyberpath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
 });
-
 ---
 
 <Layout
@@ -169,6 +172,7 @@ const json_ld = makeJsonLd<WebSite>({
             description,
             pubDate,
             heroImage,
+            heroClass,
             tags,
             author: authorId,
             readingTime,
@@ -181,13 +185,12 @@ const json_ld = makeJsonLd<WebSite>({
             <a href={`/blog/${post.id}`} class="group block h-full">
               <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
                 {heroImage && (
-                  <div class="aspect-video w-full overflow-hidden rounded-t-lg">
-                    <img
-                      src={heroImage.src}
+                  <div class="aspect-[16/9] w-full overflow-hidden rounded-t-lg max-h-40">
+                    <Image
+                      src={heroImage}
                       alt={title}
-                      class="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      width={heroImage.width}
-                      height={heroImage.height}
+                      inferSize={true}
+                      class={cn("h-full w-full object-cover transition-transform group-hover:scale-105", heroClass)}
                     />
                   </div>
                 )}
@@ -199,7 +202,14 @@ const json_ld = makeJsonLd<WebSite>({
                       name={author.name}
                       avatarSrc={author.avatar?.src}
                       className="h-8 w-8"
-                    />
+                    >
+                      <Image
+                        src={author.avatar!}
+                        alt={author.name}
+                        width={32}
+                        height={32}
+                      />
+                    </AuthorAvatar>
                     <div class="flex flex-col">
                       <span class="text-sm font-medium">{author.name}</span>
                       <span class="text-xs text-muted-foreground">

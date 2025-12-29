@@ -14,8 +14,9 @@ import "@/styles/globals.css";
 import { render } from "astro:content";
 import { getAuthor } from "@/data/authors";
 import { makeJsonLd } from "@/lib/make-json-ld";
-import type { date } from "astro:schema";
 import type { Article } from "schema-dts";
+import { Image } from "astro:assets";
+import { cn } from "@/lib/utils";
 
 interface Props {
   entry: CollectionEntry<"blog">;
@@ -29,6 +30,7 @@ const {
   pubDate,
   updatedDate,
   heroImage,
+  heroClass,
   tags,
   author: authorId,
   readingTime,
@@ -146,13 +148,12 @@ const json_ld = makeJsonLd<Article>({
         <!-- Hero Image -->
         {
           heroImage && (
-            <div class="aspect-video w-full overflow-hidden rounded-lg">
-              <img
-                src={heroImage.src}
+            <div class="aspect-[16/9] w-full overflow-hidden rounded-lg">
+              <Image
+                src={heroImage}
                 alt={title}
-                class="h-full w-full object-cover"
-                width={heroImage.width}
-                height={heroImage.height}
+                inferSize={true}
+                class={cn("h-full w-full object-cover", heroClass)}
               />
             </div>
           )
@@ -218,7 +219,18 @@ const json_ld = makeJsonLd<Article>({
             name={author.name}
             avatarSrc={author.avatar?.src}
             className="h-16 w-16"
-          />
+          >
+            {
+              author.avatar && (
+                <Image
+                  src={author.avatar}
+                  alt={author.name}
+                  width={64}
+                  height={64}
+                />
+              )
+            }
+          </AuthorAvatar>
 
           <div class="flex-1 space-y-2">
             <div class="flex flex-wrap items-baseline gap-2">
