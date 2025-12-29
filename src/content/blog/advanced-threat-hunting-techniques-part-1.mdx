@@ -1,6 +1,6 @@
 ---
 title: "Advanced Threat Hunting Techniques: Part 1"
-description: "Threat hunting is no longer a luxury reserved for large enterprises with deep cybersecurity resources. In today’s landscape, proactive threat hunting is..."
+description: "Threat hunting is no longer a luxury reserved for large enterprises with deep cybersecurity resources. In today's landscape, proactive threat hunting is..."
 pubDate: 2024-09-23T00:00:00Z
 heroImage: ../../assets/blog/1_r67_fn3ELz-m3cJtMNuUPA.webp
 tags: ["threat hunting", "anomaly detection", "behavioral analytics", "threat intelligence"]
@@ -10,7 +10,7 @@ author: ebalo
 Anomaly Detection and Behavioral Analytics
 ------------------------------------------
 
-Threat hunting is no longer a luxury reserved for large enterprises with deep cybersecurity resources. In today’s landscape, proactive threat hunting is critical for organizations of all sizes to stay ahead of adversaries. While traditional security approaches rely heavily on reactive defenses, threat hunting is about actively seeking out potential threats before they can do damage. Advanced threat hunting techniques go beyond the basic indicators of compromise (IoCs) and dive deep into understanding the attacker’s behaviors, tactics, techniques, and procedures (TTPs).
+Threat hunting is no longer a luxury reserved for large enterprises with deep cybersecurity resources. In today's landscape, proactive threat hunting is critical for organizations of all sizes to stay ahead of adversaries. While traditional security approaches rely heavily on reactive defenses, threat hunting is about actively seeking out potential threats before they can do damage. Advanced threat hunting techniques go beyond the basic indicators of compromise (IoCs) and dive deep into understanding the attacker's behaviors, tactics, techniques, and procedures (TTPs).
 
 In this two-part series, we will explore cutting-edge methodologies in proactive threat hunting, focusing on anomaly detection, behavioral analytics, and leveraging threat intelligence platforms (TIPs). Part 1 will cover anomaly detection and behavioral analytics, while [Part 2](https://medium.com/purple-team/advanced-threat-hunting-techniques-part-2-05e7ffcc4edc) will focus on integrating threat intelligence platforms for effective hunting.
 
@@ -43,12 +43,12 @@ User and Entity Behavior Analytics (UEBA) is a powerful method for identifying a
 **Key UEBA Use Cases for Threat Hunting:**
 
 *   **Insider Threat Detection**: UEBA can detect when an internal user behaves unusually. For example, an employee accessing sensitive files at odd hours or logging in from an unexpected location could be a red flag for malicious activity or compromised credentials.
-*   **Compromised Account Detection**: By tracking a user’s normal patterns of system interaction, UEBA can identify when an account behaves out of character. For instance, if an account that normally interacts with a specific set of applications suddenly initiates unusual connections to other internal systems, it might be compromised.
-*   **Lateral Movement**: UEBA systems can detect lateral movement by identifying when a user or entity starts interacting with parts of the network or resources that they don’t typically access.
+*   **Compromised Account Detection**: By tracking a user's normal patterns of system interaction, UEBA can identify when an account behaves out of character. For instance, if an account that normally interacts with a specific set of applications suddenly initiates unusual connections to other internal systems, it might be compromised.
+*   **Lateral Movement**: UEBA systems can detect lateral movement by identifying when a user or entity starts interacting with parts of the network or resources that they don't typically access.
 
 **Example: Detecting Malicious Insider Activity**
 
-An employee who usually works regular hours suddenly logs into the company’s financial system late at night and attempts to access sensitive payroll data. A UEBA solution could flag this behavior as anomalous, triggering an alert for further investigation. This proactive detection could reveal an insider trying to steal sensitive information.
+An employee who usually works regular hours suddenly logs into the company's financial system late at night and attempts to access sensitive payroll data. A UEBA solution could flag this behavior as anomalous, triggering an alert for further investigation. This proactive detection could reveal an insider trying to steal sensitive information.
 
 ### 2. Network Anomaly Detection
 
@@ -71,7 +71,7 @@ Endpoint detection and response (EDR) tools play a crucial role in threat huntin
 **Examples of Endpoint Anomalies:**
 
 *   **Unusual Process Execution**: For example, if Microsoft Word spawns a PowerShell process, this could be indicative of a macro-based attack, where an attacker embeds malicious scripts within documents.
-*   **Abnormal File Access**: If a user or application starts accessing critical system files, registry keys, or sensitive data they’ve never touched before, this could be a sign of privilege escalation or lateral movement.
+*   **Abnormal File Access**: If a user or application starts accessing critical system files, registry keys, or sensitive data they've never touched before, this could be a sign of privilege escalation or lateral movement.
 *   **Persistence Mechanisms**: Anomalous additions to the Windows startup registry, cron jobs, or scheduled tasks can indicate that attackers are trying to maintain persistence in the system.
 
 **Example: Detecting Process Injection via Endpoint Anomaly**
@@ -81,7 +81,7 @@ An attacker uses a process injection technique to hijack a legitimate system pro
 Behavioral Analytics: A Deeper Dive into Attacker Tactics
 ---------------------------------------------------------
 
-Behavioral analytics takes anomaly detection a step further by analyzing patterns of behavior that are indicative of an attacker’s specific tactics. Instead of merely detecting deviations from the norm, behavioral analytics focuses on recognizing sequences of actions that resemble known attack methodologies.
+Behavioral analytics takes anomaly detection a step further by analyzing patterns of behavior that are indicative of an attacker's specific tactics. Instead of merely detecting deviations from the norm, behavioral analytics focuses on recognizing sequences of actions that resemble known attack methodologies.
 
 ### 1. MITRE ATT&CK-Based Hunting
 
