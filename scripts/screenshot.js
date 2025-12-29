@@ -15,7 +15,7 @@ import { promisify } from "util";
 
 const readdir = promisify(fs.readdir);
 
-const url = "http://localhost:4321/";
+const url = `http://localhost:4321/`;
 
 /**
  * Start the Astro development server and return the ChildProcess instance
@@ -26,18 +26,18 @@ async function startServer() {
     let devServer;
     try {
         devServer = spawn(
-            "timeout",
+            `timeout`,
             [
-                "30",
-                "pnpm",
-                "run",
-                "preview",
+                `30`,
+                `pnpm`,
+                `run`,
+                `preview`,
             ],
             {
-                stdio:  "inherit",
-                cwd: process.cwd(),
-                shell: true
-            },
+                stdio:  `inherit`,
+                cwd:   process.cwd(),
+                shell: true,
+            }
         );
     }
     catch (e) {
@@ -50,7 +50,7 @@ async function startServer() {
     // Give the server a moment to start
     await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for 10 second
 
-    console.log("Development server started");
+    console.log(`Development server started`);
     return devServer;
 }
 
@@ -63,14 +63,23 @@ async function initPuppeteer() {
     const browser = await puppeteer.launch({
         headless: true,
         devtools: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args:     [
+            `--no-sandbox`,
+            `--disable-setuid-sandbox`,
+        ],
     });
     const page    = await browser.newPage();
 
     // Set the viewport size to 1920x800 pixels
-    await page.setViewport({ width: 1920, height: 800 });
+    await page.setViewport({
+        width:  1920,
+        height: 800,
+    });
 
-    return { browser, page };
+    return {
+        browser,
+        page,
+    };
 }
 
 /**
@@ -80,11 +89,13 @@ async function initPuppeteer() {
  */
 async function focusOnTarget(page) {
     // Navigate to the page
-    await page.goto(url, { waitUntil: "networkidle2" });
+    await page.goto(url, {
+        waitUntil: `networkidle2`,
+    });
 
     await page.evaluate(() => {
         // Remove the termly banner (damned cookies)
-        const termly = document.getElementById("termly-code-snippet-support");
+        const termly = document.getElementById(`termly-code-snippet-support`);
         if (termly) {
             termly.remove();
         }
@@ -96,14 +107,13 @@ async function focusOnTarget(page) {
  * @returns {Promise<string>}
  */
 async function getTargetFilename() {
-    const files = await readdir(".");
+    const files = await readdir(`.`);
 
-    const target = files.filter(file =>
-        file.startsWith("CyberPath") && file.endsWith(".webp"),
+    const target = files.filter((file) => file.startsWith(`CyberPath`) && file.endsWith(`.webp`)
     );
 
     if (target.length === 0) {
-        return "./CyberPath-og.webp";
+        return `./CyberPath-og.webp`;
     }
 
     return target[0];
@@ -115,7 +125,9 @@ async function main() {
 
     // start the process
     const astro_dev_server  = await startServer();
-    const { page, browser } = await initPuppeteer();
+    const {
+        page, browser,
+    } = await initPuppeteer();
     await focusOnTarget(page);
 
     // Take the screenshot
@@ -125,32 +137,43 @@ async function main() {
     await browser.close();
 
     // Define output path and filename
-    const outputDir      = "./dist/assets";
+    const outputDir      = `./dist/assets`;
     const outputFilename = await target_filename_promise;
     const outputFilePath = path.join(outputDir, outputFilename);
 
     // Ensure the output directory exists
     if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+        fs.mkdirSync(outputDir, {
+            recursive: true,
+        });
     }
 
     const image             = sharp(screenshotBuffer);
-    const { width, height } = await image.metadata();
+    const {
+        width, height,
+    } = await image.metadata();
 
     // Optimize the screenshot using Sharp and save it as WebP
-    await image.extract({ left: 300, top: 0, width: width - 600, height })
-        .webp({ quality: 80 }) // Adjust quality as needed
+    await image.extract({
+        left:  300,
+        top:   0,
+        width: width - 600,
+        height,
+    })
+        .webp({
+            quality: 80,
+        }) // Adjust quality as needed
         .toFile(outputFilePath);
 
     console.log(`Screenshot saved to: ${ outputFilePath }`);
 
     // Kill the dev server
-    const is_killed = astro_dev_server.kill("SIGKILL");
+    const is_killed = astro_dev_server.kill(`SIGKILL`);
     if (is_killed) {
-        console.log("Development server killed successfully");
+        console.log(`Development server killed successfully`);
     }
     else {
-        console.error("Failed to kill development server");
+        console.error(`Failed to kill development server`);
         process.exit(1);
     }
 }
