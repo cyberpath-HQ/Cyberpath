@@ -1,0 +1,188 @@
+---
+title: "Mastering Burp Suite Bambdas: Unlocking Advanced Automation for the Web"
+description: "Web application security testing often involves performing repetitive tasks, which can lead to inefficiencies in testing workflows..."
+pubDate: 2024-09-19T00:00:00Z
+heroImage: ../../assets/blog/0_9Y_2egl51vDS2ofB.webp
+tags: ["burpsuite", "penetration testing", "scripting", "automation"]
+author: ebalo
+---
+
+Unlocking Advanced Automation for Web Security Testing
+------------------------------------------------------
+
+Web application security testing often involves performing repetitive tasks, which can lead to inefficiencies in testing workflows. Tools like Burp Suite are essential for streamlining these processes, but their full potential is unlocked through customization and automation. This is where **Burp Suite Bambdas** comes in. Bambdas provides a way for security professionals to automate custom actions in Burp Suite, offering flexibility and power through scripting.
+
+In this article, we will dive into **Bambdas**, how they work, and how you can leverage them for advanced automation in web security testing. We will focus on practical examples, including **capturing and saving POST requests for SQLMap analysis**. Whether you're a seasoned security tester or looking to deepen your knowledge, this guide will help you master Bambdas for efficient and effective penetration testing.
+
+What Are Burp Suite Bambdas?
+----------------------------
+
+**Bambdas** in Burp Suite are customizable automation functions allowing users to run Java-based scripts to manipulate and filter data directly from the interface. They enable penetration testers to streamline repetitive tasks such as filtering HTTP traffic, creating custom log columns, and modifying requests and responses.
+
+Bambdas provides two key benefits:
+
+*   **Automation**: Bambdas automates tasks that otherwise would need to be performed manually, saving time and reducing errors.
+*   **Customization**: You can script Bambdas to handle specific use cases, making Burp Suite adaptable to the unique needs of any engagement.
+
+> Do you like my content and you want to see more?
+> 
+> Consider [supporting my work via Patreon!](https://patreon.com/ebalo?utm_medium=medium&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink) Remember to [follow me on LinkedIn](https://www.linkedin.com/in/emanuele-b-4819311a3/) and [subscribe to the newsletter](https://ebalo.medium.com/subscribe) to stay updated with the latest posts!
+
+### Key Features of Burp Suite Bambdas
+
+*   **Filter Customization**: Bambdas can be used to apply filters to HTTP traffic, WebSocket messages, and logger data.
+*   **Custom Columns**: You can add custom columns to Burp Suite's HTTP history, WebSocket history, and logger tables using Bambdas.
+*   **Montoya API**: Bambdas leverage the **Montoya API**, which provides various objects to interact with Burp Suite's core functionality, such as `ProxyHttpRequestResponse` and `Utilities`.
+*   **Script in Java**: Bambdas are written in Java, making it a robust scripting platform that can be extended by developers familiar with the language.
+
+Practical Use Case: Capturing and Saving POST Requests for SQLMap
+-----------------------------------------------------------------
+
+One of the common tasks in web application testing is capturing HTTP POST requests for further analysis with other tools like **SQLMap**. Bambdas can simplify this process by automating the capture and storage of POST requests that contain parameters, saving them in a format that SQLMap can easily ingest.
+
+Here's a scenario:
+
+*   You're testing a web application that accepts POST requests with sensitive parameters.
+*   You want to pass those requests to SQLMap for further analysis to identify SQL injection vulnerabilities.
+
+A Bambda can be scripted to:
+
+1.  **Filter POST Requests** with parameters.
+2.  **Save the filtered requests** to a file.
+3.  Format the requests so they are easily readable and importable into SQLMap.
+
+Writing Your First Bambda
+-------------------------
+
+Before we delve into the more advanced use case of automating POST request captures, let's start by writing a simple Bambda to filter HTTP requests in Burp Suite.
+
+### Step 1: Creating a Simple HTTP Filter Bambda
+
+In this example, we will create a Bambda that filters HTTP traffic in Burp Suite to display only requests that receive a **3XX** redirection status code and set a specific `session`cookie.
+
+```
+//////////////////////////////
+// SECTION: Entrance checks //
+//////////////////////////////
+// No response received, not logging it
+if (!requestResponse.hasResponse()) {
+    return false;
+}
+/////////////////////////////////////
+// SECTION: Final filtering checks //
+/////////////////////////////////////
+// store the response object in a variable for easier usage
+var response = requestResponse.response();
+return response.isStatusCodeClass(StatusCodeClass.CLASS_3XX_REDIRECTION) && 
+       response.hasCookie("session");
+```
+
+This Bambda achieves the following:
+
+*   It checks whether a response exists (`requestResponse.hasResponse()`).
+*   It verifies if the response has a **3XX** status code (redirection).
+*   It checks if the session cookie is set.
+
+### Step 2: Applying the Bambda in Burp Suite
+
+1.  Go to the **Proxy > HTTP history** tab.
+2.  Click on the **filter** bar to open the HTTP history filter window.
+3.  Navigate to the **Bambda mode** tab.
+4.  Write the Java-based filter script, and then click **Apply & Close**.
+
+Burp Suite will automatically apply this Bambda to filter the existing and future HTTP traffic based on the conditions you set.
+
+Advanced Use Case: Capturing POST Requests for SQLMap
+-----------------------------------------------------
+
+Now, let's extend this concept by creating a more advanced Bambda to capture HTTP POST requests with parameters. These requests will be saved in a format suitable for SQLMap analysis.
+
+### Step 1: Writing the Bambda
+
+Here's a Bambda script that captures and logs POST requests with parameters, which can later be fed into SQLMap for automated SQL injection testing.
+
+```
+//////////////////////////////
+// SECTION: Entrance checks //
+//////////////////////////////
+// Check if the request is POST
+if (!requestResponse.request().method().equalsIgnoreCase("POST")) {
+    return false;
+}
+// Check if the request body is not empty
+if (requestResponse.request().body().length() == 0) {
+    return false;
+}
+// NOTE: Uncomment the following snippet only if scope is defined or 
+//       nothing will be shown
+// Ensure the request is in scope
+// if (!requestResponse.request().isInScope()) {
+//     return false;
+// }
+//////////////////////////////////
+// SECTION: Request persistance //
+//////////////////////////////////
+// Get the raw request data to allow running sqlmap like 
+// `sqlmap -r <request file>`
+var request_data = requestResponse.request().toString();
+//////////////////////////////
+// SECTION: Create filename //
+//////////////////////////////
+// Get the path and normalize it dropping any "/"
+var normalized_path = requestResponse.request().pathWithoutQuery()
+                      .replace("/", "_");
+// Get the eventually present query parameters and extract their names only
+var normalized_query_params = "";
+var separated_query_params = requestResponse.request().query().split("&");
+for(var param : separated_query_params) {
+ normalized_query_params += param.split("=")[0].toLowerCase() + "-";
+}
+// Drop the eventually present last "-" in the query parameters
+if(normalized_query_params.endsWith("-")) {
+    normalized_query_params = normalized_query_params.substring(
+      0, 
+      normalized_query_params.length() - 1
+    );
+}
+// This will result in a format like the following:
+//   Real URL:         example.com/api/test?parameter1=1&parameter2=0
+//   Normalized path:  example.com_api_test.parameter1-parameter2.req
+var filename = requestResponse.request().headerValue("Host") + "_" + 
+  normalized_path + 
+  (
+    normalized_query_params.length() != 0 
+    ? "." + normalized_query_params 
+    : ""
+  ) + ".req";
+// Save the request data to a file
+// NOTE: The file is by default stored into the Burp working directory
+OutputStream out = new FileOutputStream(new File(filename));
+out.write(request_data.getBytes());
+out.close();
+// Return true to log this request
+return true;
+```
+
+### Step 2: Applying and Testing the Bambda
+
+1.  Open the **Proxy > HTTP history** tab and navigate to the **Bambda mode**.
+2.  Paste the above script and click **Apply & Close**.
+3.  As you browse the target web application, Burp Suite will intercept POST requests, filter those that contain parameters, and save the relevant request data in a file named after the domain and path of the request.
+
+This output can then be passed directly to SQLMap for further analysis via commands such as `sqlmap -r <request file>`
+
+### Key Benefits of Using Bambdas for POST Request Automation
+
+*   **Efficiency**: Automating the capture and export of POST requests saves significant time, especially when dealing with complex applications that generate numerous requests.
+*   **Precision**: By filtering only requests that contain parameters, you can focus on the most critical parts of the application.
+*   **Seamless Integration**: Bambdas makes it easy to integrate Burp Suite with other tools like SQLMap, enhancing your overall penetration testing workflow.
+
+Strengths and Limitations of Burp Suite Bambdas
+-----------------------------------------------
+
+![Strengths and Limitation of BS Bambdas](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*9kNLq0A3KugDGDteh4v5EQ.png)
+
+Conclusion
+----------
+
+Burp Suite Bambdas offers a powerful way to automate and customize your web security testing workflow. By writing simple and advanced scripts, you can save time, reduce manual effort, and seamlessly integrate with tools like SQLMap. While Bambdas come with certain limitations, their flexibility and power make them an indispensable feature for any security professional looking to optimize their testing processes.
