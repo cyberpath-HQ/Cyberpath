@@ -1,13 +1,14 @@
 ---
 import "@fontsource-variable/nunito";
+import "@/styles/globals.css";
 import Header from "src/components/astro/common/header.astro";
 import Footer from "src/components/astro/common/footer.astro";
 import type { AstroSeoProps } from "@astrolib/seo";
 import { AstroSeo } from "@astrolib/seo";
 
 interface Props {
-    JSON_LD: string;
-    seo: AstroSeoProps;
+    JSON_LD?: string;
+    seo?: AstroSeoProps;
 }
 
 const {
@@ -25,10 +26,13 @@ const {
         <script src="/gtm.js"
                 is:inline/>
         <!-- End Google Tag Manager -->
+        {JSON_LD && (
         <script is:inline
                 type="application/ld+json"
                 set:html={ JSON_LD }
         />
+        )}
+        <slot name="head" />
         <meta charset="UTF-8"/>
         <meta name="viewport"
               content="width=device-width, initial-scale=1.0"
@@ -40,7 +44,7 @@ const {
         <link rel="sitemap"
               href="/sitemap-index.xml"
         />
-        <AstroSeo {...seo}/>
+        {seo && <AstroSeo {...seo}/>}
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="JBZV/VIldomcmgT9E8p5Ag" async is:inline/>
     </head>
     <body class="font-sans bg-white text-zinc-900">

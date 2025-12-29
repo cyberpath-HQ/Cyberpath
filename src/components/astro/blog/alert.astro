@@ -1,0 +1,25 @@
+---
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+interface Props {
+    title: string;
+    variant?: 'info' | 'warning' | 'success' | 'error';
+}
+const { title, variant = 'info' } = Astro.props;
+
+const variantClasses = {
+    info: 'border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20',
+    warning: 'border-l-4 border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20',
+    success: 'border-l-4 border-l-green-500 bg-green-50/50 dark:bg-green-950/20',
+    error: 'border-l-4 border-l-red-500 bg-red-50/50 dark:bg-red-950/20'
+};
+---
+
+<Card className={`my-6 rounded-l-none ${variantClasses[variant]}`}>
+  <CardHeader>
+    <CardTitle className="text-lg">{title}</CardTitle>
+  </CardHeader>
+  <CardContent className='my-0 [&>p]:my-0 [&>ol]:my-2 [&>ul]:my-2'>
+    <slot />
+  </CardContent>
+</Card>

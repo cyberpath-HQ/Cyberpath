@@ -1,0 +1,364 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Layout from "./Layout.astro";
+import { AuthorAvatar } from "@/components/react/author-avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
+import { TableOfContents } from "@/components/react/table-of-contents";
+import { ReadingProgress } from "@/components/react/reading-progress";
+import { ShareButtons } from "@/components/react/share-buttons";
+import RelatedPosts from "@/components/astro/blog/related-posts.astro";
+import "@/styles/globals.css";
+import { render } from "astro:content";
+import { getAuthor } from "@/data/authors";
+import { makeJsonLd } from "@/lib/make-json-ld";
+import type { date } from "astro:schema";
+import type { Article } from "schema-dts";
+
+interface Props {
+  entry: CollectionEntry<"blog">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  tags,
+  author: authorId,
+  readingTime,
+} = entry.data;
+const author = getAuthor(authorId);
+
+if (!author) {
+  throw new Error(`Author with ID "${authorId}" not found`);
+}
+
+// Get all posts for related posts
+const allPosts = await getCollection("blog");
+
+const formattedPubDate = new Date(pubDate).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const formattedUpdatedDate = updatedDate
+  ? new Date(updatedDate).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : null;
+
+// Construct full URL for SEO
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = heroImage
+  ? new URL(heroImage.src, Astro.site).toString()
+  : new URL("/CyberPath-og.webp", Astro.site).toString();
+
+const json_ld = makeJsonLd<Article>({
+    "@type":          "Article",
+    "@context":       "https://schema.org",
+    "@id":            "https://cyberpath-hq.com/",
+    url:              canonicalURL.toString(),
+    name:             title,
+    description:      description,
+    inLanguage:       "en-US",
+    author:           {
+        "@type": "Person",
+        name:    author.name,
+        email:   author.email,
+        description: author.bio,
+        url:     author.website,
+    },
+    image:            {
+        "@type":     "ImageObject",
+        url:         ogImageUrl,
+        width:       String(heroImage?.width) ?? "1920",
+        height:      String(heroImage?.height) ?? "933",
+        description: title,
+    },
+    datePublished:    pubDate.toISOString(),
+    dateModified:     updatedDate ? updatedDate.toISOString() : pubDate.toISOString(),
+    publisher:        {
+        "@type": "Person",
+        name:    author.name,
+        email:   author.email,
+        description: author.bio,
+        url:     author.website,
+    }
+});
+---
+
+<Layout JSON_LD={ json_ld }
+  seo={{
+    title: title,
+    description: description,
+    canonical: canonicalURL.toString(),
+    openGraph: {
+      title: title,
+      description: description,
+      type: "article" as const,
+      url: canonicalURL.toString(),
+      images: [
+        {
+          url: ogImageUrl,
+          width: heroImage?.width ?? 1920,
+          height: heroImage?.height ?? 933,
+          alt: title,
+        },
+      ],
+      site_name: "Cyberpath",
+      article: {
+        publishedTime: pubDate.toISOString(),
+        modifiedTime: updatedDate?.toISOString(),
+        authors: [author.name],
+        tags: tags,
+      },
+    },
+    additionalMetaTags: [
+      {
+        name: "keywords",
+        content: tags.join(", "),
+      },
+    ],
+    twitter: {
+      handle: author.twitter,
+      site: "@cyberpath_hq",
+    },
+  }}
+>
+  <!-- Reading Progress Bar -->
+  <ReadingProgress client:only="react" />
+
+  <div
+    class="relative mx-auto w-full max-w-7xl overflow-hidden grid grid-cols-1 xl:grid-cols-7 gap-8 px-4 py-8 sm:px-6 lg:px-8"
+  >
+    <article class="w-full col-span-5 px-4 py-8 sm:px-6 lg:px-8 xl:px-0">
+      <!-- Hero Section -->
+      <header class="mb-8 space-y-6">
+        <!-- Hero Image -->
+        {
+          heroImage && (
+            <div class="aspect-video w-full overflow-hidden rounded-lg">
+              <img
+                src={heroImage.src}
+                alt={title}
+                class="h-full w-full object-cover"
+                width={heroImage.width}
+                height={heroImage.height}
+              />
+            </div>
+          )
+        }
+
+        <!-- Title and Meta -->
+        <div class="space-y-4">
+          <h1
+            class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+          >
+            {title}
+          </h1>
+
+          <p class="text-xl text-muted-foreground">
+            {description}
+          </p>
+
+          <!-- Tags -->
+          {
+            tags.length > 0 && (
+              <div class="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Badge variant="secondary">{tag}</Badge>
+                ))}
+              </div>
+            )
+          }
+
+          <!-- Metadata -->
+          <div
+            class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground"
+          >
+            <time datetime={pubDate.toISOString()}>
+              {formattedPubDate}
+            </time>
+            {
+              formattedUpdatedDate && (
+                <span class="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Updated {formattedUpdatedDate}</span>
+                </span>
+              )
+            }
+            {
+              readingTime && (
+                <span class="flex items-center gap-2">
+                  <span>•</span>
+                  <span>{readingTime}</span>
+                </span>
+              )
+            }
+          </div>
+        </div>
+      </header>
+
+      <Separator className="my-8" />
+
+      <!-- Author Card -->
+      <Card className="mb-8 p-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <AuthorAvatar
+            client:only="react"
+            name={author.name}
+            avatarSrc={author.avatar?.src}
+            className="h-16 w-16"
+          />
+
+          <div class="flex-1 space-y-2">
+            <div class="flex flex-wrap items-baseline gap-2">
+              <h3 class="text-lg font-semibold">{author.name}</h3>
+              {
+                author.website && (
+                  <a
+                    href={author.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm text-primary hover:underline"
+                  >
+                    Website
+                  </a>
+                )
+              }
+            </div>
+
+            {
+              author.bio && (
+                <p class="text-sm text-muted-foreground">{author.bio}</p>
+              )
+            }
+
+            <!-- Social Links -->
+            <div class="flex flex-wrap gap-4 text-sm">
+              {
+                author.twitter && (
+                  <a
+                    href={`https://twitter.com/${author.twitter.replace("@", "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary"
+                  >
+                    Twitter
+                  </a>
+                )
+              }
+              {
+                author.github && (
+                  <a
+                    href={`https://github.com/${author.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary"
+                  >
+                    GitHub
+                  </a>
+                )
+              }
+              {
+                author.linkedin && (
+                  <a
+                    href={author.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary"
+                  >
+                    LinkedIn
+                  </a>
+                )
+              }
+              {
+                author.medium && (
+                  <a
+                    href={author.medium}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary"
+                  >
+                    Medium
+                  </a>
+                )
+              }
+              {
+                author.devto && (
+                  <a
+                    href={author.devto}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary"
+                  >
+                    Dev.to
+                  </a>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Separator className="my-8" />
+
+      <!-- Share Buttons -->
+      <div class="mb-8">
+        <ShareButtons
+          client:only="react"
+          title={title}
+          url={canonicalURL.toString()}
+          tags={tags}
+        />
+      </div>
+
+      <!-- Article Content -->
+      <article
+        class="prose prose-zinc max-w-none text-base
+                prose-headings:scroll-mt-20 prose-headings:font-bold
+                prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
+                prose-headings:mb-2
+                prose-p:text-base prose-p:leading-7
+                prose-p:mb-1
+                prose-a:text-primary prose-a:underline
+                prose-strong:font-semibold prose-strong:text-foreground
+                prose-img:rounded-lg prose-img:shadow-lg
+                prose-blockquote:border-l-primary prose-blockquote:italic
+                prose-ul:list-disc prose-ol:list-decimal
+                prose-ul:my-2 prose-ol:my-2
+                prose-li:marker:text-primary
+                prose-li:my-1
+                prose-li:text-base
+                prose-table:border-collapse prose-table:border prose-table:border-border
+                prose-th:border prose-th:border-border prose-th:bg-muted prose-th:p-2
+                prose-td:border prose-td:border-border prose-td:p-2
+                [&>pre]:max-w-full [&>pre]:mx-0
+                [&_.mermaid]:max-w-full [&_.mermaid]:mx-0
+                lg:prose-lg"
+      >
+        <Content />
+      </article>
+
+      <!-- Related Posts -->
+      <RelatedPosts currentPost={entry} allPosts={allPosts} />
+    </article>
+    <!-- Table of Contents Sidebar (Desktop) -->
+    <aside class="relative hidden w-full h-full xl:block col-span-2">
+      <div class="pt-8">
+        <div class="rounded-lg border-border bg-card p-0">
+          <TableOfContents client:only="react" />
+        </div>
+      </div>
+    </aside>
+  </div>
+</Layout>

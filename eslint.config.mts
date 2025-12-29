@@ -14,7 +14,6 @@ export default defineConfig([
         "**/.turbo/**",
         "./**/*.gen.ts",
         "./eslint.config.mts",
-        "./src/components/ui/**",
     ]),
 
     tseslint.configs.strict as never,
@@ -472,124 +471,6 @@ export default defineConfig([
             "@stylistic/js/spaced-comment":                "error",
             "@stylistic/js/template-curly-spacing":        [ "error", "always" ],
             "@stylistic/js/template-tag-spacing":          "error",
-        },
-    },
-    // React component overrides - allow PascalCase for components and more flexibility
-    {
-        files: [ "**/*.tsx" ],
-        rules: {
-            // Allow PascalCase for React component functions
-            "@typescript-eslint/naming-convention": [
-                "error",
-                {
-                    "selector":          "property",
-                    "modifiers":         [ "private" ],
-                    "format":            [ "snake_case" ],
-                    "leadingUnderscore": "require",
-                },
-                {
-                    "selector": "variable",
-                    "types":    [ "boolean" ],
-                    "format":   [ "snake_case", "UPPER_CASE", "camelCase", "PascalCase" ],
-                    "prefix":   [ "is_", "should_", "has_", "had_", "can_", "did_", "will_", "IS_", "SHOULD_", "HAS_", "HAD_", "CAN_", "DID_", "WILL_", "is", "should", "has", "had", "can", "did", "will" ],
-                },
-                {
-                    "selector": "variable",
-                    "format":   [ "snake_case", "camelCase", "PascalCase" ],
-                    "leadingUnderscore": "allow",
-                },
-                {
-                    "selector":  "variable",
-                    "modifiers": [ "global" ],
-                    "format":    [ "UPPER_CASE", "PascalCase" ],
-                },
-                {
-                    // Allow PascalCase for React component functions
-                    "selector": "function",
-                    "format":   [ "camelCase", "PascalCase" ],
-                    "leadingUnderscore": "allow",
-                },
-                {
-                    "selector": "typeLike",
-                    "format":   [ "PascalCase" ],
-                },
-                {
-                    "selector":  [
-                        "classProperty",
-                        "objectLiteralProperty",
-                        "typeProperty",
-                        "classMethod",
-                        "objectLiteralMethod",
-                        "typeMethod",
-                        "accessor",
-                        "enumMember",
-                    ],
-                    "format":    null,
-                    "modifiers": [ "requiresQuotes" ],
-                },
-            ],
-            // Allow higher complexity for component switch statements
-            "complexity": [ "warn", 50 ],
-            // Allow await in loops for sequential operations
-            "no-await-in-loop": "off",
-            // Relax magic numbers for common UI values
-            "@typescript-eslint/no-magic-numbers": "off",
-            // Allow void expressions for event handlers
-            "no-void": [ "error", { "allowAsStatement": true } ],
-            // Relax explicit return type for inline handlers
-            "@typescript-eslint/explicit-function-return-type": [
-                "error",
-                {
-                    "allowExpressions": true,
-                    "allowTypedFunctionExpressions": true,
-                    "allowHigherOrderFunctions": true,
-                    "allowDirectConstAssertionInArrowFunctions": true,
-                    "allowConciseArrowFunctionExpressionsStartingWithVoid": true,
-                },
-            ],
-            // Allow type assertions in JSX (common pattern)
-            "@typescript-eslint/no-unsafe-type-assertion": "off",
-        },
-    },
-
-    // Test files - relaxed rules for testing
-    {
-        files: [
-            "**/*.test.ts",
-            "**/*.test.tsx",
-            "**/*.spec.ts",
-            "**/*.spec.tsx",
-            "**/tests/**/*.ts",
-            "**/tests/**/*.tsx",
-        ],
-        rules: {
-            // Allow magic numbers in tests (test data, assertions)
-            "@typescript-eslint/no-magic-numbers": "off",
-
-            // Relax naming conventions for test variables
-            "@typescript-eslint/naming-convention": "off",
-
-            // Allow more flexible function parameters
-            "@typescript-eslint/max-params": "off",
-
-            // Allow explicit return types to be optional in tests
-            "@typescript-eslint/explicit-function-return-type": "off",
-
-            // Allow type assertions in tests
-            "@typescript-eslint/no-unsafe-type-assertion": "off",
-            "@typescript-eslint/consistent-type-assertions": "off",
-
-            // Allow non-null assertions in tests
-            "@typescript-eslint/no-non-null-assertion": "off",
-
-            // Allow empty functions in tests (mocks, stubs)
-            "@typescript-eslint/no-empty-function": "off",
-
-            // Allow inline comments (common in test descriptions)
-            "no-inline-comments": "off",
-
-            // Allow console for debugging
-            "no-console": "off",
         },
     },
 ]);

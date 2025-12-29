@@ -1,0 +1,294 @@
+---
+title: "Orbis: Building a Modern Plugin-Driven Desktop Platform"
+description: "An exploration of Orbis, a schema-driven desktop application platform built with Rust and React, featuring WASM-sandboxed plugins and a comprehensive component library."
+pubDate: 2025-12-13T00:00:00Z
+heroImage: ../../assets/blog/photo-1550751827-4bd374c3f58b.jpeg
+tags: ["rust", "react", "desktop", "architecture", "plugins"]
+author: ebalo
+readingTime: "11 min read"
+---
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Mermaid from "@/components/astro/blog/mermaid.astro";
+import Alert from "@/components/astro/blog/alert.astro";
+import InfoBox from "@/components/astro/blog/info-box.astro";
+import FeatureGrid from "@/components/astro/blog/feature-grid.astro";
+import FeatureCard from "@/components/astro/blog/feature-card.astro";
+
+## Introduction
+
+Desktop application development has traditionally required choosing between native performance and development velocity. Orbis represents a fresh approach to this challenge, combining Rust's performance and safety with React's developer experience while introducing a novel plugin architecture that prioritizes security and extensibility.
+
+The platform emerged from practical needs in the cybersecurity tooling space, where teams require extensible applications that maintain security boundaries while providing rich user interfaces. Traditional approaches either sacrifice security through loose plugin systems or impose significant development overhead through restrictive APIs. Orbis addresses these challenges through its schema-driven architecture and WebAssembly sandboxing.
+
+<InfoBox title="Project Context">
+Orbis is an open-source project developed by Cyberpath HQ, designed to simplify building extensible desktop applications. The project is available on GitHub under the Apache 2.0 license, with comprehensive documentation at orbis.cyberpath-hq.com. Built on Tauri, it leverages Rust for the backend and React for the frontend, providing a modern foundation for desktop application development.
+</InfoBox>
+
+## Architecture Overview
+
+The Orbis architecture separates concerns through a well-defined layer structure. At its foundation, the Rust backend provides high-performance data processing, plugin management, and system integration. The Tauri layer bridges native functionality with web technologies, enabling secure IPC and window management. The React frontend renders user interfaces based on JSON schemas rather than hardcoded components, allowing plugins to define UI without shipping React code.
+
+<Mermaid>
+graph TB
+    subgraph Frontend
+        React[React + shadcn/ui]
+        SchemaRenderer[Schema Renderer]
+        StateManager[Zustand State Management]
+    end
+    
+    subgraph Tauri
+        IPC[IPC Bridge]
+        WebView[WebView]
+    end
+    
+    subgraph Backend
+        API[Axum REST API]
+        PluginRegistry[Plugin Registry]
+        Auth[JWT Authentication]
+        DB[Database Layer]
+    end
+    
+    subgraph Plugins
+        WASM1[Plugin 1 WASM]
+        WASM2[Plugin 2 WASM]
+        WASM3[Plugin 3 WASM]
+    end
+    
+    React --> SchemaRenderer
+    SchemaRenderer --> StateManager
+    React --> IPC
+    IPC --> API
+    API --> PluginRegistry
+    API --> Auth
+    API --> DB
+    PluginRegistry --> WASM1
+    PluginRegistry --> WASM2
+    PluginRegistry --> WASM3
+    
+    style Frontend fill:#e3f2fd
+    style Tauri fill:#fff9c4
+    style Backend fill:#c8e6c9
+    style Plugins fill:#ffebee
+</Mermaid>
+
+This layered approach enables several key capabilities. Plugins run in isolated WebAssembly environments with configurable permissions, preventing malicious or buggy code from compromising the host application. The schema-driven UI system allows plugins to define interfaces declaratively, eliminating the need to bundle UI frameworks and reducing plugin size significantly. Page-level state management ensures that plugins cannot interfere with each other's state, maintaining clean boundaries between different functionality.
+
+## Schema-Driven UI System
+
+The most distinctive aspect of Orbis is its schema-driven UI approach. Rather than requiring plugins to include React code and components, they simply provide JSON schemas describing the desired interface. The core SchemaRenderer interprets these schemas and renders appropriate shadcn/ui components dynamically.
+
+```json
+{
+  "type": "Form",
+  "props": {
+    "title": "User Configuration",
+    "fields": [
+      {
+        "name": "username",
+        "type": "text",
+        "label": "Username",
+        "required": true,
+        "validation": {
+          "minLength": 3,
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        }
+      },
+      {
+        "name": "role",
+        "type": "select",
+        "label": "User Role",
+        "options": [
+          { "value": "admin", "label": "Administrator" },
+          { "value": "user", "label": "Standard User" },
+          { "value": "guest", "label": "Guest" }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "submit",
+        "label": "Save Configuration",
+        "onSubmit": {
+          "action": "callApi",
+          "endpoint": "/api/users",
+          "method": "POST",
+          "body": "{{state.formData}}"
+        }
+      }
+    ]
+  }
+}
+```
+
+This approach delivers significant benefits. Plugins remain small because they don't bundle UI frameworks or components. The core platform can update components and styling without requiring plugin updates. Schema validation ensures UI consistency across all plugins. Most importantly, the security boundary remains clear since plugins never execute code in the main UI context.
+
+The expression interpolation system enables reactive updates through simple template syntax. Values like `{{state.username}}` automatically reflect the current state, updating the UI whenever the underlying data changes. This declarative approach reduces complexity while maintaining full functionality for interactive applications.
+
+## Plugin System Architecture
+
+Orbis plugins execute in WebAssembly sandboxes managed by the wasmtime runtime. Each plugin declares required capabilities in its manifest, and the platform enforces these permissions at runtime. A plugin requesting network access receives a capability token that must accompany all network requests, preventing unauthorized network activity.
+
+<FeatureGrid columns={3}>
+  <FeatureCard title="Isolated Execution">
+    Plugins run in separate WASM instances with no direct access to the host system or other plugins.
+  </FeatureCard>
+  
+  <FeatureCard title="Declarative Permissions">
+    Plugins declare required capabilities in their manifest, reviewed before installation.
+  </FeatureCard>
+  
+  <FeatureCard title="Runtime Enforcement">
+    The platform validates and enforces permissions at runtime, blocking unauthorized operations.
+  </FeatureCard>
+  
+  <FeatureCard title="Hot Loading">
+    Plugins can be loaded and unloaded at runtime without restarting the application.
+  </FeatureCard>
+  
+  <FeatureCard title="API Routes">
+    Plugins define custom API endpoints for backend logic and data processing.
+  </FeatureCard>
+  
+  <FeatureCard title="State Isolation">
+    Each plugin page has its own state store, preventing interference between plugins.
+  </FeatureCard>
+</FeatureGrid>
+
+The action system provides plugins with controlled ways to interact with the platform. Rather than executing arbitrary code, plugins define actions that the core interprets and executes. Supported actions include updating state, calling APIs, navigating between pages, showing notifications, and opening external links. This design maintains security boundaries while providing rich functionality.
+
+```rust
+// Example plugin manifest
+[package]
+name = "security-scanner"
+version = "1.0.0"
+
+[plugin]
+name = "Security Scanner"
+description = "Automated security scanning tool"
+author = "Security Team"
+required_capabilities = ["network", "filesystem.read"]
+
+[[plugin.pages]]
+path = "/scanner"
+title = "Security Scanner"
+schema_file = "ui/scanner.json"
+
+[[plugin.routes]]
+method = "POST"
+path = "/api/scan"
+handler = "scan_endpoint"
+```
+
+## Component Library
+
+Orbis includes over 35 built-in components covering forms, data display, navigation, feedback, and data visualization. These components follow shadcn/ui design patterns, providing consistent styling and accessibility features. Plugins reference components by name in their schemas, and the SchemaRenderer handles instantiation and lifecycle management.
+
+The component library includes essential form inputs like text fields, selects, checkboxes, and date pickers with built-in validation. Data display components include tables with sorting and filtering, cards for content organization, and various chart types for visualization. Navigation components enable multi-step forms, tab interfaces, and breadcrumb trails. Feedback components provide toast notifications, alert dialogs, and loading states.
+
+| Component Category | Examples | Use Cases |
+|-------------------|----------|-----------|
+| Form Inputs | TextField, Select, Checkbox, DatePicker | User input, configuration, data entry forms |
+| Data Display | Table, Card, DataGrid, List | Showing structured data, content organization |
+| Navigation | Tabs, Breadcrumbs, Stepper, Menu | Multi-step processes, content organization |
+| Feedback | Toast, Alert, Modal, Progress | User notifications, confirmations, loading states |
+| Visualization | LineChart, BarChart, PieChart | Data analysis, metrics display, trend visualization |
+| Layout | Container, Grid, Stack, Divider | Page structure, responsive layouts, content spacing |
+
+## State Management
+
+State management in Orbis follows a page-level approach using Zustand with Immer for immutability. Each plugin page receives its own isolated state store, preventing one plugin from interfering with another's data. The expression system provides reactive updates throughout the UI, automatically refreshing when underlying state changes.
+
+The lifecycle system gives plugins hooks to initialize and clean up resources. The onMount hook executes when a page loads, perfect for fetching initial data or setting up subscriptions. The onUnmount hook runs before a page unloads, enabling cleanup of resources like timers or event listeners. These hooks use the same action system as other interactions, maintaining consistency and security boundaries.
+
+```typescript
+// State definition example
+interface PluginState {
+  users: User[];
+  selectedUser: User | null;
+  loading: boolean;
+  filter: {
+    role: string;
+    search: string;
+  };
+}
+
+// Actions update state immutably
+{
+  "action": "updateState",
+  "path": "users",
+  "value": "{{response.data}}"
+}
+
+// Expression interpolation for reactive UI
+{
+  "type": "Text",
+  "props": {
+    "content": "Found {{state.users.length}} users"
+  }
+}
+```
+
+## Deployment Modes
+
+Orbis supports two distinct deployment modes addressing different use cases. Standalone mode targets single-user scenarios with an embedded SQLite database and local server. This mode suits personal tools, development environments, and offline applications. The entire stack runs locally with no external dependencies beyond the installed application.
+
+Client-server mode enables multi-user deployments with a central PostgreSQL database and shared server. Clients connect to the server over the network, supporting team collaboration and centralized data management. This mode includes JWT-based authentication, session management, and optional TLS encryption. Organizations can deploy the server on their infrastructure while clients access it from multiple locations.
+
+The flexibility between modes allows applications to start simple in standalone mode and scale to client-server when collaboration becomes necessary. The same plugin code works in both modes, with the platform handling the differences in data storage and synchronization.
+
+## Security Considerations
+
+Security forms a core design principle throughout Orbis. WebAssembly sandboxing provides strong isolation between plugins and the host system. The capability system requires explicit permission grants before plugins can access sensitive operations. JWT-based authentication in client-server mode ensures only authorized users access the system.
+
+Password hashing uses Argon2, providing resistance against brute-force attacks. Session management includes refresh tokens and configurable expiration times. Optional TLS encryption protects data in transit between clients and servers. Plugin schemas undergo validation before execution, preventing malformed definitions from causing errors or security issues.
+
+<Alert title="Security Best Practices" variant="info">
+When deploying Orbis in production environments, enable TLS encryption for client-server communication. Use strong JWT secrets generated through cryptographically secure random number generators. Regularly update plugins and the core platform to receive security patches. Review plugin manifests before installation to understand requested capabilities. Consider network segmentation to limit the blast radius if a plugin is compromised.
+</Alert>
+
+## Development Experience
+
+The developer experience prioritizes rapid iteration and clear debugging. Hot reload works for both frontend and backend changes during development, providing immediate feedback. The Rust backend compiles with detailed error messages helping identify issues quickly. React DevTools integrate seamlessly for frontend debugging.
+
+Plugin development uses standard Rust tooling and Cargo for dependency management. The plugin API crate provides types and utilities simplifying common operations. Schema validation during development catches errors before runtime. Documentation covers common patterns and includes example plugins demonstrating best practices.
+
+```bash
+# Development workflow
+git clone https://github.com/cyberpath-HQ/orbis
+cd orbis
+
+# Install dependencies
+cd orbis && bun install
+
+# Run in development mode with hot reload
+bun run tauri dev
+
+# Build a plugin
+cd plugins/my-plugin
+cargo build --release --target wasm32-unknown-unknown
+
+# Test the plugin
+cargo test
+```
+
+## Real-World Applications
+
+Orbis particularly suits applications requiring extensibility with security boundaries. Security tooling platforms benefit from the plugin system allowing teams to add custom scanners or analysis tools without compromising the core system. Development tool integration platforms can host multiple tools with clean separation. Administrative dashboards can provide plugin-based modules for different departments while maintaining data isolation.
+
+The schema-driven UI proves valuable when building applications that non-developers need to extend. Technical teams can create new plugins through schemas and WASM modules without requiring deep React knowledge. Business teams can request features that technical teams implement quickly through the declarative schema system.
+
+## Future Directions
+
+The Orbis roadmap includes several ambitious features. A visual schema editor will enable building UIs through drag-and-drop interfaces rather than writing JSON. Plugin marketplace infrastructure will facilitate discovering and installing community plugins. Enhanced collaboration features will support real-time updates across multiple users. Mobile support through Tauri's mobile capabilities will extend Orbis to iOS and Android platforms.
+
+Performance optimization continues as a focus area, particularly for applications with numerous plugins. The team explores incremental compilation and caching strategies to improve load times. Enhanced monitoring and profiling tools will help developers identify and resolve performance bottlenecks in their plugins.
+
+## Conclusion
+
+Orbis demonstrates that desktop applications can combine native performance, developer productivity, and strong security boundaries. The schema-driven UI system reduces complexity while maintaining flexibility. WebAssembly sandboxing provides real isolation without sacrificing functionality. The result is a platform enabling rapid development of extensible desktop applications suitable for security-sensitive environments.
+
+For teams building desktop tools that require plugin ecosystems, Orbis offers a compelling alternative to traditional approaches. The combination of Rust's safety and performance with React's developer experience creates a productive development environment. The security-first design makes it suitable for professional and enterprise deployments where plugin boundaries matter.
+
+Explore the project on GitHub at github.com/cyberpath-HQ/orbis, read the comprehensive documentation at orbis.cyberpath-hq.com, or join the community on Discord to discuss use cases and share experiences building plugins.
