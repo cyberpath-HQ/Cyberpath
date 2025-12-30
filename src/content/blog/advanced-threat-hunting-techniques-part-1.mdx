@@ -10,8 +10,6 @@ author: ebalo
 ---
 import Newsletter from "@/components/astro/blog/newsletter.astro";
 
-## Anomaly Detection and Behavioral Analytics
-
 Threat hunting is no longer a luxury reserved for large enterprises with deep cybersecurity resources. In today's
 landscape, proactive threat hunting is critical for organizations of all sizes to stay ahead of adversaries. While
 traditional security approaches rely heavily on reactive defenses, threat hunting is about actively seeking out
@@ -59,7 +57,7 @@ behavior of users and entities (such as hosts or applications) over time. UEBA s
 to monitor normal behavior, such as login patterns, file access, or network usage, and then detect deviations that may
 indicate malicious activity.
 
-**Key UEBA Use Cases for Threat Hunting:**
+#### Key UEBA Use Cases for Threat Hunting:
 
 - **Insider Threat Detection**: UEBA can detect when an internal user behaves unusually. For example, an employee
   accessing sensitive files at odd hours or logging in from an unexpected location could be a red flag for malicious
@@ -70,7 +68,7 @@ indicate malicious activity.
 - **Lateral Movement**: UEBA systems can detect lateral movement by identifying when a user or entity starts interacting
   with parts of the network or resources that they don't typically access.
 
-**Example: Detecting Malicious Insider Activity**
+#### Example: Detecting Malicious Insider Activity
 
 An employee who usually works regular hours suddenly logs into the company's financial system late at night and attempts
 to access sensitive payroll data. A UEBA solution could flag this behavior as anomalous, triggering an alert for further
@@ -82,7 +80,7 @@ Network anomaly detection focuses on identifying unusual traffic patterns that m
 activity. While traditional IDS systems focus on signature-based detection, anomaly-based network monitoring uses
 machine learning to build profiles of what “normal” network traffic looks like, and flags deviations from this baseline.
 
-**Examples of Network Anomalies for Threat Hunting:**
+#### Examples of Network Anomalies for Threat Hunting:
 
 - **Unusual Data Transfers**: Anomalous outbound traffic volume from internal systems to external IP addresses could
   indicate data exfiltration.
@@ -92,7 +90,7 @@ machine learning to build profiles of what “normal” network traffic looks li
   using periodic beaconing. While this activity can be subtle, an anomaly detection system that monitors outbound
   traffic patterns could detect regular beacon intervals to the same external IP address.
 
-**Example: C2 Detection Through Beaconing Anomalies**
+#### Example: C2 Detection Through Beaconing Anomalies
 
 A compromised endpoint communicates with a remote C2 server every 60 minutes. A network anomaly detection system could
 pick up on the periodic nature of these connections and raise an alert, even though the traffic volume is small and the
@@ -105,7 +103,7 @@ Endpoint detection and response (EDR) tools play a crucial role in threat huntin
 traditional endpoint security solutions rely on signatures, anomaly-based EDR systems monitor patterns at the process,
 file system, and memory levels to detect unusual activities that may signify compromise.
 
-**Examples of Endpoint Anomalies:**
+#### Examples of Endpoint Anomalies:
 
 - **Unusual Process Execution**: For example, if Microsoft Word spawns a PowerShell process, this could be indicative of
   a macro-based attack, where an attacker embeds malicious scripts within documents.
@@ -114,7 +112,7 @@ file system, and memory levels to detect unusual activities that may signify com
 - **Persistence Mechanisms**: Anomalous additions to the Windows startup registry, cron jobs, or scheduled tasks can
   indicate that attackers are trying to maintain persistence in the system.
 
-**Example: Detecting Process Injection via Endpoint Anomaly**
+#### Example: Detecting Process Injection via Endpoint Anomaly
 
 An attacker uses a process injection technique to hijack a legitimate system process like `explorer.exe` and use it to
 execute malicious payloads. An EDR tool capable of detecting anomalies could flag the behavior when it sees a
@@ -133,7 +131,7 @@ The MITRE ATT&CK framework has become an essential tool for understanding attack
 that attackers commonly use in the different stages of an attack lifecycle. Many advanced behavioral analytics tools use
 MITRE ATT&CK as a foundation for detecting specific patterns of attacker behavior.
 
-**Examples of MITRE ATT&CK Techniques for Threat Hunting:**
+#### Examples of MITRE ATT&CK Techniques for Threat Hunting:
 
 - **Credential Dumping**: Attackers often attempt to dump credentials from systems using techniques like `lsass.exe`
   process access or `Mimikatz`. Behavioral analytics tools can detect sequences that match these techniques.
@@ -141,7 +139,7 @@ MITRE ATT&CK as a foundation for detecting specific patterns of attacker behavio
   recognizing the pattern of creating or modifying scheduled tasks, behavioral analytics tools can catch attempts to
   establish footholds.
 
-**Example: Detecting a Privilege Escalation Attempt**
+#### Example: Detecting a Privilege Escalation Attempt
 
 An attacker attempts to escalate privileges by exploiting a vulnerable driver and subsequently dumping credentials from
 `lsass.exe`. A behavioral analytics system could recognize this sequence of actions as matching known privilege
@@ -157,7 +155,7 @@ For example, an actor known for lateral movement followed by data exfiltration m
 same TTPs across different environments. Behavioral profiling helps identify threats even when traditional IoCs like
 hashes, IP addresses, or domain names are absent.
 
-**Example: APT Group Detection Through Behavioral Signatures**
+#### Example: APT Group Detection Through Behavioral Signatures
 
 A threat actor known for using spear-phishing to deliver malicious documents, followed by lateral movement using stolen
 credentials and fileless attacks, repeats this pattern in a new environment. Behavioral analytics tools that monitor
