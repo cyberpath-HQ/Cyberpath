@@ -41,6 +41,14 @@ export default defineConfig({
         mdx({
             extendMarkdownConfig: true,
             gfm:                  true,
+            smartypants:          false,
+            shikiConfig:          {
+                themes: {
+                    light: `github-dark`,
+                    dark:  `github-dark`,
+                },
+                wrap:         false,
+            },
         }),
     ],
     build:        {

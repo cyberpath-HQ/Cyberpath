@@ -355,6 +355,9 @@ const json_ld = makeJsonLd<Article>({
                 prose-table:border-collapse prose-table:border prose-table:border-border
                 prose-th:border prose-th:border-border prose-th:bg-muted prose-th:p-2
                 prose-td:border prose-td:border-border prose-td:p-2
+                prose-code:bg-primary prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm
+                prose-code:before:content-[''] prose-code:after:content-[''] prose-code:font-mono
+                prose-code:text-[hsl(var(--primary-foreground))] prose-code:font-normal
                 [&>pre]:max-w-full [&>pre]:mx-0
                 [&_.mermaid]:max-w-full [&_.mermaid]:mx-0
                 lg:prose-lg"
