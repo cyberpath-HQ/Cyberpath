@@ -26,6 +26,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
+
 const { Content } = await render(entry);
 const { title, description, pubDate, updatedDate, heroImage, heroClass, tags, author: authorId } = entry.data;
 const readingTime = getReadingTime(entry.body!).text;

@@ -41,10 +41,12 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "reading-time": "^1.5.0",
+    "remark": "^15.0.1",
     "shiki": "^3.20.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^4.4.1",
