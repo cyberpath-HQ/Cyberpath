@@ -22,6 +22,7 @@ Red teaming goes beyond traditional penetration testing by simulating real-world
 ## Red Team Engagement Phases
 
 <Mermaid>
+```mermaid showLineNumbers=false
 graph TB
     A[Planning] --> B[Reconnaissance]
     B --> C[Initial Access]
@@ -37,6 +38,7 @@ graph TB
     style E fill:#ffccbc
     style G fill:#f8bbd0
     style I fill:#c8e6c9
+```
 </Mermaid>
 
 <Alert title="Legal Notice" variant="warning">
@@ -159,6 +161,7 @@ Once we've gathered intelligence, we need to gain initial access. The choice of 
 After gaining initial access, we need to establish a **command and control** channel. Here's the typical C2 architecture:
 
 <Mermaid>
+```mermaid showLineNumbers=false
 sequenceDiagram
     participant Operator
     participant C2Server as C2 Server
@@ -176,6 +179,7 @@ sequenceDiagram
     C2Server->>Operator: Display Output
     
     Note over Redirector,Beacon: Traffic appears legitimate
+```
 </Mermaid>
 
 ### C2 Evasion Techniques
@@ -326,8 +330,9 @@ After establishing access, we typically need elevated privileges. Common Windows
 Once we have privileged access on one system, we move laterally across the network:
 
 <Mermaid>
+```mermaid showLineNumbers=false
 graph TB
-    A[Initial Compromise Workstation] --> B\{Credential Harvesting}
+    A[Initial Compromise Workstation] --> B{Credential Harvesting}
     B -->|Mimikatz| C[Domain Admin Hash]
     B -->|Password Spray| D[Multiple Users]
     
@@ -345,6 +350,7 @@ graph TB
     style C fill:#fff9c4
     style E fill:#e1f5fe
     style K fill:#c8e6c9
+```
 </Mermaid>
 
 ### Pass-the-Hash Attack
