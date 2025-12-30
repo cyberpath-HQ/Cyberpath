@@ -28,7 +28,7 @@ behavior.
 > **!! Update !!**
 >
 > RustiveDump now also has **shellcode** generation capabilities thanks to Rustic64!
-> [Check out the article here](https://medium.com/purple-team/pic-shellcode-the-rust-way-4f629fb56009)!
+> [Check out the article here](https://cyberpath-hq.com/blog/pic-shellcode-the-rust-way)!
 
 ## What is RustiveDump?
 
@@ -95,11 +95,11 @@ The raw dump generation process:
 
 Running it will result in no output and in far less than a second you'll have your minidump file on disk.
 
-![Running RustiveDump with no compile flags](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*2nOreWFcSgrTuMsElowOpA.png)
+![Running RustiveDump with no compile flags](../../assets/blog/1_2nOreWFcSgrTuMsElowOpA.webp)
 
 To read the output just use a tool like mimikatz or pypykatz.
 
-![Reading the raw rustive.dmp file using pypykatz](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*rvClJ2LhhHy6utHnwaVNSw.png)
+![Reading the raw rustive.dmp file using pypykatz](../../assets/blog/1_rvClJ2LhhHy6utHnwaVNSw.webp)
 
 ### Scenario 2: Debug Mode
 
@@ -117,7 +117,7 @@ focusing on memory regions associated with **lsasrv.dll**.
 This mode is useful in scenarios where only specific modules are of interest, minimizing unnecessary data in the dump
 file.
 
-![Reading lsasrv rustive.dmp file, only data related to lsasrv.dll are included](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*41D5gPSQM5faxGMJqnLLFQ.png)
+![Reading lsasrv rustive.dmp file, only data related to lsasrv.dll are included](../../assets/blog/1_41D5gPSQM5faxGMJqnLLFQ.webp)
 
 ### Scenario 4: XOR Encryption
 
@@ -130,12 +130,12 @@ Key steps in this mode:
 - Memory data is XOR-encrypted before being written to the file system.
 - The resulting dump file is significantly different from the raw dump due to the encryption layer.
 
-![Comparison between raw and xor-ed dump](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*yWJWI-lNWOedoaphqXhpiw.jpeg)
+![Comparison between raw and xor-ed dump](../../assets/blog/1_yWJWI-lNWOedoaphqXhpiw.webp)
 
 The decryption process is straightforward thanks to the `xor_decrypt.py` script included in the repository. All you'll
 have to do is decrypt the dump before reading it.
 
-![Decrypting and reading xor-ed rustive.dmp](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*_xtkPiIpBJa35TDj0hYxbg.png)
+![Decrypting and reading xor-ed rustive.dmp](../../assets/blog/1__xtkPiIpBJa35TDj0hYxbg.webp)
 
 ### Scenario 5: Remote Transmission
 
