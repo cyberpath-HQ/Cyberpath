@@ -41,9 +41,7 @@ Out-of-process plugins run in separate processes communicating with the host thr
 
 The isolation comes with performance costs. Communication requires serialization and deserialization of data crossing process boundaries. Context switching between processes adds latency to plugin operations. Complex data structures cannot be shared by reference requiring copying. Memory overhead increases as each plugin process maintains its own runtime. Despite these costs, the security benefits often justify the performance impact especially for applications executing untrusted code.
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph TB
     subgraph HostProcess[Host Application Process]
         Core[Application Core]
@@ -72,9 +70,7 @@ graph TB
     style HostProcess fill:#e3f2fd
     style Plugin1Process fill:#fff9c4
     style Plugin2Process fill:#ffebee
-```
-
-</Mermaid>
+`}/>
 
 ### Sandboxed Plugins
 

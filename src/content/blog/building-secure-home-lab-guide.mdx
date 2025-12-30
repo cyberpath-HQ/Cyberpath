@@ -43,9 +43,7 @@ Cloud providers including AWS with its free tier, Azure, Google Cloud Platform, 
 
 Here's a typical home lab network topology:
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph TD
     Internet[Internet] --> Router[Home Router]
     Router --> Switch[Managed Switch]
@@ -73,9 +71,7 @@ graph TD
     style LabNet fill:#fff9c4
     style VM4 fill:#ffccbc
     style VM5 fill:#ffebee
-```
-
-</Mermaid>
+`}/>
 
 ## Software Components
 
@@ -200,9 +196,7 @@ echo "Kali setup complete!"
 
 Proper network segmentation is crucial for a secure lab:
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph LR
     A[Management VLAN 10] --> B[Hypervisor]
     C[Lab Network VLAN 20] --> D[Vulnerable VMs]
@@ -220,9 +214,7 @@ graph LR
     style F fill:#e1f5fe
     style E fill:#ffccbc
     style D fill:#ffebee
-```
-
-</Mermaid>
+`}/>
 
 ### VLAN Configuration
 
@@ -299,9 +291,7 @@ volumes:
 
 ### Scenario 1: Active Directory Attack Path
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 sequenceDiagram
     participant Attacker
     participant Workstation
@@ -319,9 +309,7 @@ sequenceDiagram
     Attacker->>DC: 9. Golden Ticket
     
     Note over Attacker,DC: Full domain compromise
-```
-
-</Mermaid>
+`}/>
 
 ### Scenario 2: Web App to System Shell
 

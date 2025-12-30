@@ -30,9 +30,7 @@ Orbis is an open-source project developed by Cyberpath HQ, designed to simplify 
 
 The Orbis architecture separates concerns through a well-defined layer structure. At its foundation, the Rust backend provides high-performance data processing, plugin management, and system integration. The Tauri layer bridges native functionality with web technologies, enabling secure IPC and window management. The React frontend renders user interfaces based on JSON schemas rather than hardcoded components, allowing plugins to define UI without shipping React code.
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph TB
     subgraph Frontend
         React[React + shadcn/ui]
@@ -73,9 +71,7 @@ graph TB
     style Tauri fill:#fff9c4
     style Backend fill:#c8e6c9
     style Plugins fill:#ffebee
-```
-
-</Mermaid>
+`}/>
 
 This layered approach enables several key capabilities. Plugins run in isolated WebAssembly environments with configurable permissions, preventing malicious or buggy code from compromising the host application. The schema-driven UI system allows plugins to define interfaces declaratively, eliminating the need to bundle UI frameworks and reducing plugin size significantly. Page-level state management ensures that plugins cannot interfere with each other's state, maintaining clean boundaries between different functionality.
 

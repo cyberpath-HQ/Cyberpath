@@ -9,8 +9,6 @@ tags: ["red team", "penetration testing", "offensive security", "advanced"]
 author: ebalo
 ---
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Mermaid from "@/components/astro/blog/mermaid.astro";
 import Alert from "@/components/astro/blog/alert.astro";
 import InfoBox from "@/components/astro/blog/info-box.astro";
@@ -26,9 +24,7 @@ the organization's ability to detect and respond to sophisticated attacks over a
 
 ## Red Team Engagement Phases
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph TB
     A[Planning] --> B[Reconnaissance]
     B --> C[Initial Access]
@@ -44,9 +40,8 @@ graph TB
     style E fill:#ffccbc
     style G fill:#f8bbd0
     style I fill:#c8e6c9
-```
 
-</Mermaid>
+`} />
 
 <Alert title="Legal Notice" variant="warning">
   All techniques discussed in this article are for authorized security testing only. Unauthorized access to computer
@@ -160,21 +155,25 @@ compromises target third-party vendors or service providers to gain indirect acc
     manipulation.
   </FeatureCard>
 
-  <FeatureCard title="Web Exploitation">
-    Exploiting vulnerabilities in web applications like SQLi, XSS, or RCE to gain unauthorized access.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Web Exploitation">
+  Exploiting vulnerabilities in web applications like SQLi, XSS, or RCE to gain unauthorized access.
+</FeatureCard>
 
-  <FeatureCard title="Credential Stuffing">
-    Using leaked credentials from previous breaches to gain access to target systems and services.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Credential Stuffing">
+  Using leaked credentials from previous breaches to gain access to target systems and services.
+</FeatureCard>
 
-  <FeatureCard title="Social Engineering">
-    Manipulating individuals to divulge confidential information through psychological tactics.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Social Engineering">
+  Manipulating individuals to divulge confidential information through psychological tactics.
+</FeatureCard>
 
-  <FeatureCard title="Physical Access">
-    Gaining unauthorized physical access to facilities or devices through tailgating or bypass techniques.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Physical Access">
+  Gaining unauthorized physical access to facilities or devices through tailgating or bypass techniques.
+</FeatureCard>
 
   <FeatureCard title="Supply Chain">
     Compromising third-party vendors or service providers to gain indirect access to the target.
@@ -186,9 +185,7 @@ compromises target third-party vendors or service providers to gain indirect acc
 After gaining initial access, we need to establish a **command and control** channel. Here's the typical C2
 architecture:
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 sequenceDiagram
     participant Operator
     participant C2Server as C2 Server
@@ -206,9 +203,8 @@ sequenceDiagram
     C2Server->>Operator: Display Output
 
     Note over Redirector,Beacon: Traffic appears legitimate
-```
 
-</Mermaid>
+`} />
 
 ### C2 Evasion Techniques
 
@@ -364,9 +360,7 @@ After establishing access, we typically need elevated privileges. Common Windows
 
 Once we have privileged access on one system, we move laterally across the network:
 
-<Mermaid>
-
-```mermaid showLineNumbers=false
+<Mermaid code={`
 graph TB
     A[Initial Compromise Workstation] --> B{Credential Harvesting}
     B -->|Mimikatz| C[Domain Admin Hash]
@@ -386,9 +380,8 @@ graph TB
     style C fill:#fff9c4
     style E fill:#e1f5fe
     style K fill:#c8e6c9
-```
 
-</Mermaid>
+`} />
 
 ### Pass-the-Hash Attack
 
