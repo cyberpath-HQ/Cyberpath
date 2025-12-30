@@ -1,36 +1,48 @@
 ---
 title: "PIC shellcode: The Rust Way"
-description: "In cybersecurity and malware development the use of Position Independent Code (PIC) has gained significant attention, particularly in contexts..."
+description:
+  "In cybersecurity and malware development the use of Position Independent Code (PIC) has gained significant attention,
+  particularly in contexts..."
 pubDate: 2024-09-26T00:00:00Z
 heroImage: ../../assets/blog/1_1IdkJ6QGDSQIMHdg_R6rGA.webp
 tags: ["shellcode", "rust", "offensive security", "red team"]
 author: ebalo
 ---
+import Newsletter from "@/components/astro/blog/newsletter.astro";
 
-A Hands-On Analysis of the Rustic64 Project
--------------------------------------------
+## A Hands-On Analysis of the Rustic64 Project
 
-In cybersecurity and malware development the use of Position Independent Code (PIC) has gained significant attention, particularly in contexts such as shellcode development. This article delves into the intricacies of the Rustic64 project, a project developed by [Safe](https://www.linkedin.com/in/davide-valitutti/) to showcase how to create PIC shellcodes for Windows, built with **Rust**. We will conduct a hands-on analysis and walkthrough of its codebase, offering insights into its architecture, implementation, and peculiarities.
+In cybersecurity and malware development the use of Position Independent Code (PIC) has gained significant attention,
+particularly in contexts such as shellcode development. This article delves into the intricacies of the Rustic64
+project, a project developed by [Safe](https://www.linkedin.com/in/davide-valitutti/) to showcase how to create PIC
+shellcodes for Windows, built with **Rust**. We will conduct a hands-on analysis and walkthrough of its codebase,
+offering insights into its architecture, implementation, and peculiarities.
 
-> I'd like to thank [Safe](https://www.linkedin.com/in/davide-valitutti/) for the possibility to write this thought walkthrough of his work. All rights about the code development belongs to him. Show your support to his work by [giving a star on GitHub](https://github.com/safedv/Rustic64) and connecting on LinkedIn.
+> I'd like to thank [Safe](https://www.linkedin.com/in/davide-valitutti/) for the possibility to write this thought
+> walkthrough of his work. All rights about the code development belongs to him. Show your support to his work by
+> [giving a star on GitHub](https://github.com/safedv/Rustic64) and connecting on LinkedIn.
 
-Overview of Rustic64
---------------------
+## Overview of Rustic64
 
-**Rustic64** is a 64-bit, position-independent shellcode template inspired by the design principles of [Stardust](https://github.com/Cracked5pider/Stardust). This template diverges from traditional methods by adopting a fully position-independent architecture specifically tailored for the Windows environment. By doing so, it offers a modern and flexible solution for the development of position-independent implants.
+**Rustic64** is a 64-bit, position-independent shellcode template inspired by the design principles of
+[Stardust](https://github.com/Cracked5pider/Stardust). This template diverges from traditional methods by adopting a
+fully position-independent architecture specifically tailored for the Windows environment. By doing so, it offers a
+modern and flexible solution for the development of position-independent implants.
 
-Developers frequently face challenges in this domain, such as the management of global variables or raw strings within the shell code. Rustic64 addresses this concern by introducing a global instance to maintain the state across various parts of the shellcode. This design enables seamless access to APIs, modules, configuration data, and more.
+Developers frequently face challenges in this domain, such as the management of global variables or raw strings within
+the shell code. Rustic64 addresses this concern by introducing a global instance to maintain the state across various
+parts of the shellcode. This design enables seamless access to APIs, modules, configuration data, and more.
 
-Moreover, Rustic64 employs a custom allocator leveraging the native NT Heap API. This allocator is initialized with `RtlCreateHeap` and managed through functions such as `RtlAllocateHeap` and `RtlFreeHeap`, permitting the use of heap-allocated types like `Vec` and `String` in a position-independent context.
+Moreover, Rustic64 employs a custom allocator leveraging the native NT Heap API. This allocator is initialized with
+`RtlCreateHeap` and managed through functions such as `RtlAllocateHeap` and `RtlFreeHeap`, permitting the use of
+heap-allocated types like `Vec` and `String` in a position-independent context.
 
-This project serves as a personal learning journey in modern implant development, emphasizing collaboration and growth within the community.
+This project serves as a personal learning journey in modern implant development, emphasizing collaboration and growth
+within the community.
 
-> Do you like my content and you want to see more?
-> 
-> Consider [supporting my work via Patreon!](https://patreon.com/ebalo?utm_medium=medium&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink) Remember to [follow me on LinkedIn](https://www.linkedin.com/in/emanuele-b-4819311a3/) and [subscribe to the newsletter](https://ebalo.medium.com/subscribe) to stay updated with the latest posts!
+<Newsletter/>
 
-Getting Started with Rustic64
------------------------------
+## Getting Started with Rustic64
 
 ### Cloning the Repository
 
@@ -42,7 +54,8 @@ git clone https://github.com/safedv/Rustic64
 
 ### Setting Up the Development Environment
 
-Rustic64 is a Rust project, and you will need to install Rust. For detailed installation instructions, refer to the official Rust documentation at [rust-lang.org](https://www.rust-lang.org/tools/install).
+Rustic64 is a Rust project, and you will need to install Rust. For detailed installation instructions, refer to the
+official Rust documentation at [rust-lang.org](https://www.rust-lang.org/tools/install).
 
 **Requirements**
 
@@ -64,8 +77,7 @@ sudo apt install mingw-w64
 cargo install cargo-make
 ```
 
-Building the Project
---------------------
+## Building the Project
 
 Building the Rustic64 project is straightforward. Run the build script using the following command:
 
@@ -73,7 +85,9 @@ Building the Rustic64 project is straightforward. Run the build script using the
 cargo make build
 ```
 
-In case the build script fails with an error like the one shown in the picture below, that is due to a typo in the `Cargo.toml`file, you can fix it by modifying the `Cargo.toml` file. Change the `name` under `[package]` to `rustic64` instead of `Rustic64`.
+In case the build script fails with an error like the one shown in the picture below, that is due to a typo in the
+`Cargo.toml`file, you can fix it by modifying the `Cargo.toml` file. Change the `name` under `[package]` to `rustic64`
+instead of `Rustic64`.
 
 ![Common build error](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*jPi201KxUr5ugN91-km0Mw.png)
 
@@ -83,8 +97,7 @@ name = "rustic64"
 # Other fields and data...
 ```
 
-Analyzing Key Files
--------------------
+## Analyzing Key Files
 
 To fully understand the Rustic64 project, we need to examine three primary files located at the project root:
 
@@ -93,189 +106,262 @@ To fully understand the Rustic64 project, we need to examine three primary files
 3.  `Makefile.toml`
 
 ### 1. `Cargo.toml`
-----------------
 
-The `Cargo.toml` ([raw content](https://github.com/safedv/Rustic64/blob/master/Cargo.toml)) file is the manifest for the Rust project, outlining its dependencies and configuration. Notably, the file contains several key elements that differentiate Rustic64 from standard Rust projects:
+---
+
+The `Cargo.toml` ([raw content](https://github.com/safedv/Rustic64/blob/master/Cargo.toml)) file is the manifest for the
+Rust project, outlining its dependencies and configuration. Notably, the file contains several key elements that
+differentiate Rustic64 from standard Rust projects:
 
 #### Dependency on `panic-halt`
 
-*   `**panic-halt = "0.2"**`: This crate is utilized in low-level Rust projects where the standard library's panic behavior (such as unwinding or printing messages) is not desired. Instead, when a panic occurs, the execution halts entirely.
+- `**panic-halt = "0.2"**`: This crate is utilized in low-level Rust projects where the standard library's panic
+  behavior (such as unwinding or printing messages) is not desired. Instead, when a panic occurs, the execution halts
+  entirely.
 
 #### Profile-Specific Panic Settings
 
-*   `**[profile.dev]**` **and** `**[profile.release]**` both specify `panic = "abort"`. This optimization technique leads to immediate termination of the program upon panic, without unwinding the stack. It simplifies execution and reduces binary size but prevents any form of panic recovery.
+- `**[profile.dev]**` **and** `**[profile.release]**` both specify `panic = "abort"`. This optimization technique leads
+  to immediate termination of the program upon panic, without unwinding the stack. It simplifies execution and reduces
+  binary size but prevents any form of panic recovery.
 
 #### Release Profile Optimizations
 
-*   `**opt-level = "s"**`: This optimization level focuses on minimizing the final binary size while maintaining a balance between size and speed. It is particularly useful in size-constrained applications.
-*   `**lto = true**`: Link-time optimization enables optimizations across the entire crate and its dependencies, which can lead to significant improvements in performance and binary size.
-*   `**codegen-units = 1**`: This setting reduces parallel code generation units to one, enabling more aggressive optimizations but at the cost of longer compilation times.
+- `**opt-level = "s"**`: This optimization level focuses on minimizing the final binary size while maintaining a balance
+  between size and speed. It is particularly useful in size-constrained applications.
+- `**lto = true**`: Link-time optimization enables optimizations across the entire crate and its dependencies, which can
+  lead to significant improvements in performance and binary size.
+- `**codegen-units = 1**`: This setting reduces parallel code generation units to one, enabling more aggressive
+  optimizations but at the cost of longer compilation times.
 
 ### 2. `Linker.ld`
----------------
 
-The `Linker.ld` ([raw content](https://github.com/safedv/Rustic64/blob/master/Linker.ld)) file is a linker script that controls the memory layout of the final binary produced by the Rust project. Its structure is crucial for low-level programming, where precise control over memory layout is necessary.
+---
+
+The `Linker.ld` ([raw content](https://github.com/safedv/Rustic64/blob/master/Linker.ld)) file is a linker script that
+controls the memory layout of the final binary produced by the Rust project. Its structure is crucial for low-level
+programming, where precise control over memory layout is necessary.
 
 #### Defining the Entry Point
 
-*   `**ENTRY(_start)**`: This specifies the entry point of the program, pointing to the `_start` symbol. In bare-metal environments, where no operating system handles initialization, this entry point must be manually defined, while this use case is not the one of Rustic, removing the default entry point is required to reduce the overall size of the executable and get the complete control of its in-memory layout.
+- `**ENTRY(_start)**`: This specifies the entry point of the program, pointing to the `_start` symbol. In bare-metal
+  environments, where no operating system handles initialization, this entry point must be manually defined, while this
+  use case is not the one of Rustic, removing the default entry point is required to reduce the overall size of the
+  executable and get the complete control of its in-memory layout.
 
 #### Memory Layout and Section Assignments
 
-*   The starting address of the binary is explicitly set to `0x0000`. This is a direct indication that the code will be loaded at the very start of the address space.
-*   `.text ALIGN(16) {…}`: Instruct the linker to align the `.text` section, which contains executable code, to a 16-byte boundary. This alignment ensures that the code starts at an address that is a multiple of 16 bytes. This is required to ensure proper alignment of the memory addresses when loaded into other executables and so alike.
-    Within the `.text` section:
-    - `*(.text.prologue)`: This line places any `.text.prologue` sections from object files here. This likely allows initial code or setup routines to be placed before the main program execution.
-    - `*(.text*)`: This includes all code sections `.text*` which is where the program instructions reside.
-    - `*(.rodata*)`, `*(rdata*)`: These lines include sections for read-only data such as constant strings or other immutable data.
-    - `*(.global*)`: Any global data marked for inclusion in the `.text` section will be placed here.
-*   `/DISCARD/`: This section instructs the linker to discard certain sections that are not needed in the final binary, these are:
-    - `*(interp)`: This typically contains interpreter information for dynamic linking, which is irrelevant to our PIC scenario.
-    - `*(.comment)`, `*(.debug_frame)`: These sections are used for debugging purposes and are not needed in the final binary. leaving them will also mean a larger binary size, possibly an un-executable implant, and easier to reverse executable.
-    - `*(.bss)`: This section is for uninitialized global and static variables. By discarding it, you ensure that the binary doesn't include space for uninitialized data.
-    - `*(.pdata)`, `*(.xdata)`: These sections contain exception-handling data for certain architectures (e.g., Windows PE format). Since we're not using them we simply drop them entirely.
+- The starting address of the binary is explicitly set to `0x0000`. This is a direct indication that the code will be
+  loaded at the very start of the address space.
+- `.text ALIGN(16) {…}`: Instruct the linker to align the `.text` section, which contains executable code, to a 16-byte
+  boundary. This alignment ensures that the code starts at an address that is a multiple of 16 bytes. This is required
+  to ensure proper alignment of the memory addresses when loaded into other executables and so alike. Within the `.text`
+  section:
+  - `*(.text.prologue)`: This line places any `.text.prologue` sections from object files here. This likely allows
+    initial code or setup routines to be placed before the main program execution.
+  - `*(.text*)`: This includes all code sections `.text*` which is where the program instructions reside.
+  - `*(.rodata*)`, `*(rdata*)`: These lines include sections for read-only data such as constant strings or other
+    immutable data.
+  - `*(.global*)`: Any global data marked for inclusion in the `.text` section will be placed here.
+- `/DISCARD/`: This section instructs the linker to discard certain sections that are not needed in the final binary,
+  these are:
+  - `*(interp)`: This typically contains interpreter information for dynamic linking, which is irrelevant to our PIC
+    scenario.
+  - `*(.comment)`, `*(.debug_frame)`: These sections are used for debugging purposes and are not needed in the final
+    binary. leaving them will also mean a larger binary size, possibly an un-executable implant, and easier to reverse
+    executable.
+  - `*(.bss)`: This section is for uninitialized global and static variables. By discarding it, you ensure that the
+    binary doesn't include space for uninitialized data.
+  - `*(.pdata)`, `*(.xdata)`: These sections contain exception-handling data for certain architectures (e.g., Windows PE
+    format). Since we're not using them we simply drop them entirely.
 
 ### 3. `Makefile.toml`
--------------------
 
-The `Makefile.toml` ([raw content](https://github.com/safedv/Rustic64/blob/master/Makefile.toml)) file configures tasks for managing the build, cleaning, and binary handling processes in Rustic64. For a full guide on how to use the `cargo-make` command refer to the [official docs](https://sagiegurari.github.io/cargo-make/).
+---
+
+The `Makefile.toml` ([raw content](https://github.com/safedv/Rustic64/blob/master/Makefile.toml)) file configures tasks
+for managing the build, cleaning, and binary handling processes in Rustic64. For a full guide on how to use the
+`cargo-make` command refer to the [official docs](https://sagiegurari.github.io/cargo-make/).
 
 #### Custom Build Process
 
-*   `**[config]**`: The setting `skip_core_tasks = true` allows for fully customized task definitions, which avoids naming conflicts and default behavior entirely.
+- `**[config]**`: The setting `skip_core_tasks = true` allows for fully customized task definitions, which avoids naming
+  conflicts and default behavior entirely.
 
 #### Environment Variables
 
-*   `**TARGET = "x86_64-pc-windows-gnu"**`: Specifies the target platform for the project, indicating cross-compilation for Windows.
+- `**TARGET = "x86_64-pc-windows-gnu"**`: Specifies the target platform for the project, indicating cross-compilation
+  for Windows.
 
 #### RUSTFLAGS
 
-The `RUSTFLAGS` variable is heavily customized to enforce specific optimizations and features in the binary output. Noteworthy flags include:
+The `RUSTFLAGS` variable is heavily customized to enforce specific optimizations and features in the binary output.
+Noteworthy flags include:
 
-*   `**-C link-arg=-nostdlib**`: Disables linking the Rust standard library. This is a typical flag in bare-metal or highly constrained environments, here we simply want full control over the runtime.
-*   `**-C codegen-units=1**`: As seen in your `Cargo.toml`, this ensures single-unit code generation, allowing for more aggressive optimizations at the cost of slower compilation.
-*   `**-C link-arg=-fno-ident**`: This suppresses identifying information from being included in the binary. This is useful for reducing size and avoiding unnecessary metadata that may be useful when fingerprinting your PIC binary.
-*   `**-C link-arg=-fpack-struct=8**`: This forces struct alignment to 8 bytes (aka C style structure alignment).
-*   `**-C link-arg=-Wl,--gc-sections**`: This instructs the linker to discard unused sections, helping reduce the final binary size by eliminating dead code or unused data.
-*   `**-C relocation-model=pic**`: Enforce the compiler to use a PIC-compliant relocation model, needed as we're trying to create a PIC binary.
-*   `**-C link-arg=-Wl,-T./Linker.ld,--build-id=none**`: This links the custom linker script (`Linker.ld`) giving full control over memory layout and section placement.
-*   `**-C link-arg=-nostartfiles**`: Disables the inclusion of standard startup files (e.g., those provided by the OS or runtime). This is required as we'll define our entry point (`_start`) and avoid completely the existence of a `main` .
-*   `**-C link-arg=-Wl,-e_start**`: This specifies the entry point for the binary, reinforcing that `_start` this is where execution begins.
+- `**-C link-arg=-nostdlib**`: Disables linking the Rust standard library. This is a typical flag in bare-metal or
+  highly constrained environments, here we simply want full control over the runtime.
+- `**-C codegen-units=1**`: As seen in your `Cargo.toml`, this ensures single-unit code generation, allowing for more
+  aggressive optimizations at the cost of slower compilation.
+- `**-C link-arg=-fno-ident**`: This suppresses identifying information from being included in the binary. This is
+  useful for reducing size and avoiding unnecessary metadata that may be useful when fingerprinting your PIC binary.
+- `**-C link-arg=-fpack-struct=8**`: This forces struct alignment to 8 bytes (aka C style structure alignment).
+- `**-C link-arg=-Wl,--gc-sections**`: This instructs the linker to discard unused sections, helping reduce the final
+  binary size by eliminating dead code or unused data.
+- `**-C relocation-model=pic**`: Enforce the compiler to use a PIC-compliant relocation model, needed as we're trying to
+  create a PIC binary.
+- `**-C link-arg=-Wl,-T./Linker.ld,--build-id=none**`: This links the custom linker script (`Linker.ld`) giving full
+  control over memory layout and section placement.
+- `**-C link-arg=-nostartfiles**`: Disables the inclusion of standard startup files (e.g., those provided by the OS or
+  runtime). This is required as we'll define our entry point (`_start`) and avoid completely the existence of a `main` .
+- `**-C link-arg=-Wl,-e_start**`: This specifies the entry point for the binary, reinforcing that `_start` this is where
+  execution begins.
 
 #### Custom Tasks
 
-The custom tasks defined provide a controlled build process that includes additional steps beyond what is typical in Rust projects.
+The custom tasks defined provide a controlled build process that includes additional steps beyond what is typical in
+Rust projects.
 
-*   `**[tasks.build]**`: This task consolidates several steps into a streamlined build process
-*   `**[tasks.clean]**`: Calls `cargo clean` to remove old build artifacts and ensure a fresh build environment.
-*   `**[tasks.cargo-build]**`: Builds the project using Cargo with the specified `RUSTFLAGS` to enforce the custom build configurations.
-*   `**[tasks.strip]**`: Removes unnecessary sections from the binary further reducing the binary size.
-*   `**[tasks.objcopy]**`: Converts the executable binary into a `.bin` file using `objcopy`. This is where our embeddable shellcode will be copied, it will be fully PIC compliant and ready to be injected.
+- `**[tasks.build]**`: This task consolidates several steps into a streamlined build process
+- `**[tasks.clean]**`: Calls `cargo clean` to remove old build artifacts and ensure a fresh build environment.
+- `**[tasks.cargo-build]**`: Builds the project using Cargo with the specified `RUSTFLAGS` to enforce the custom build
+  configurations.
+- `**[tasks.strip]**`: Removes unnecessary sections from the binary further reducing the binary size.
+- `**[tasks.objcopy]**`: Converts the executable binary into a `.bin` file using `objcopy`. This is where our embeddable
+  shellcode will be copied, it will be fully PIC compliant and ready to be injected.
 
-Diving into the code
---------------------
+## Diving into the code
 
-As you may have gotten from the previous files, the application is designed for a _no_std_ and _no_main_ environment, this means that the `main.rs` file will be quite different from a standard Rust entry point.
+As you may have gotten from the previous files, the application is designed for a _no_std_ and _no_main_ environment,
+this means that the `main.rs` file will be quite different from a standard Rust entry point.
 
-Main.rs
--------
+## Main.rs
 
-The main file ([raw content](https://github.com/safedv/Rustic64/blob/master/src/main.rs)) contains a few functions, we'll focus on the most interesting which are:
+The main file ([raw content](https://github.com/safedv/Rustic64/blob/master/src/main.rs)) contains a few functions,
+we'll focus on the most interesting which are:
 
-*   `_start`
-*   `initialize`
-*   `get_instance`
+- `_start`
+- `initialize`
+- `get_instance`
 
 ### `Method _start`
 
-The `_start` function serves as the entry point for the application. It is defined in assembly using the `global_asm!` macro and is marked as globally visible with `.globl _start`. The function's assembly code performs the following actions:
+The `_start` function serves as the entry point for the application. It is defined in assembly using the `global_asm!`
+macro and is marked as globally visible with `.globl _start`. The function's assembly code performs the following
+actions:
 
 **Stack Setup**:
 
-*   It first pushes the `rsi` register onto the stack, which preserves its value.
-*   Then, it sets up the stack pointer (`rsp`) to be 16-byte aligned by performing a bitwise AND operation with `0xFFFFFFFFFFFFFFF0`.
-*   It subtracts 32 bytes from `rsp`, effectively allocating space on the stack for local variables.
+- It first pushes the `rsi` register onto the stack, which preserves its value.
+- Then, it sets up the stack pointer (`rsp`) to be 16-byte aligned by performing a bitwise AND operation with
+  `0xFFFFFFFFFFFFFFF0`.
+- It subtracts 32 bytes from `rsp`, effectively allocating space on the stack for local variables.
 
 **Function Call**:
 
-*   The function then calls the `initialize` function to set up the necessary environment and resources for the application.
+- The function then calls the `initialize` function to set up the necessary environment and resources for the
+  application.
 
 **Stack Restoration**:
 
-*   After the `initialize` function returns, it restores the original `rsp` and pops the `rsi` register back to its previous state, restoring the original stack
+- After the `initialize` function returns, it restores the original `rsp` and pops the `rsi` register back to its
+  previous state, restoring the original stack
 
-This function essentially prepares the runtime environment for the application and transitions control to the `initialize` function.
+This function essentially prepares the runtime environment for the application and transitions control to the
+`initialize` function.
 
 ### Method initialize
 
 The `initialize` function is a `no_mangle` function that is called from the `_start` method.
 
 > **What is a no_mangle function?**
-> 
-> A `no_mangle` function is a function that is marked with the `#[no_mangle]` attribute, which tells the Rust compiler not to apply its default name mangling to the function's symbol name during the compilation process. Refer to the [official documentation](https://doc.rust-lang.org/reference/abi.html#the-no_mangle-attribute) for more information.
+>
+> A `no_mangle` function is a function that is marked with the `#[no_mangle]` attribute, which tells the Rust compiler
+> not to apply its default name mangling to the function's symbol name during the compilation process. Refer to the
+> [official documentation](https://doc.rust-lang.org/reference/abi.html#the-no_mangle-attribute) for more information.
 
-It is responsible for setting up the application environment, including the allocation of resources. The key actions in this function are as follows:
+It is responsible for setting up the application environment, including the allocation of resources. The key actions in
+this function are as follows:
 
 **Instance Creation**:
 
-*   It creates a new instance of the `Instance` struct by calling `Instance::new()`.
+- It creates a new instance of the `Instance` struct by calling `Instance::new()`.
 
 **Process Environment Block (PEB) Manipulation**:
 
-*   The function retrieves the address of the PEB using the `find_peb()` function. The PEB contains information about the process, including its heaps.
-*   It retrieves the pointer to the process heaps and the current number of heaps.
-*   The number of heaps in the PEB is incremented by one to make space for the new instance.
+- The function retrieves the address of the PEB using the `find_peb()` function. The PEB contains information about the
+  process, including its heaps.
+- It retrieves the pointer to the process heaps and the current number of heaps.
+- The number of heaps in the PEB is incremented by one to make space for the new instance.
 
 **Appending Instance Pointer**:
 
-*   The address of the newly created instance is appended to the process heaps array at the new index (i.e., `number_of_heaps`).
+- The address of the newly created instance is appended to the process heaps array at the new index (i.e.,
+  `number_of_heaps`).
 
 **Transition to Main Logic**:
 
-*   Finally, the function calls `niam()`, which contains the main logic for the application.
+- Finally, the function calls `niam()`, which contains the main logic for the application.
 
 ### Method get_instance
 
-The `get_instance` function is designed to locate and retrieve a reference to the global `Instance` struct from the process heaps. The method operates as follows:
+The `get_instance` function is designed to locate and retrieve a reference to the global `Instance` struct from the
+process heaps. The method operates as follows:
 
 **Locate PEB**:
 
-*   It calls `find_peb()` to access the Process Environment Block (PEB).
+- It calls `find_peb()` to access the Process Environment Block (PEB).
 
 **Iterate Through Heaps**:
 
-*   It retrieves the pointer to the process heaps and the number of heaps available.
-*   It then iterates through each heap in the process heaps.
+- It retrieves the pointer to the process heaps and the number of heaps available.
+- It then iterates through each heap in the process heaps.
 
 **Check for Instance**:
 
-*   For each heap, it checks if the pointer is not null. If valid, it attempts to cast the pointer to an `Instance` reference.
-*   It checks whether the `magic` field of the `Instance` matches a predefined constant (`INSTANCE_MAGIC`). This serves as a validity check to ensure that the found object is indeed an `Instance`.
+- For each heap, it checks if the pointer is not null. If valid, it attempts to cast the pointer to an `Instance`
+  reference.
+- It checks whether the `magic` field of the `Instance` matches a predefined constant (`INSTANCE_MAGIC`). This serves as
+  a validity check to ensure that the found object is indeed an `Instance`.
 
 **Return Result**:
 
-*   If a valid instance is found, it returns a mutable reference to it; otherwise, it returns `None`.
+- If a valid instance is found, it returns a mutable reference to it; otherwise, it returns `None`.
 
-This function is essential for retrieving the singleton `Instance` created during initialization. The use of the magic value provides a level of assurance that the pointer being dereferenced is indeed pointing to a valid `Instance`.
+This function is essential for retrieving the singleton `Instance` created during initialization. The use of the magic
+value provides a level of assurance that the pointer being dereferenced is indeed pointing to a valid `Instance`.
 
-Most meaningful features and flows
-----------------------------------
+## Most meaningful features and flows
 
-As explaining the whole project is not the end goal of this post we'll evaluate only the most meaningful fragments starting from the main file.
+As explaining the whole project is not the end goal of this post we'll evaluate only the most meaningful fragments
+starting from the main file.
 
-We'll see what the `Instance` structure is, how it is initialized via the `init_native_funcs` and how a sample function is loaded via `ldr_module/ldr_function`, the remaining of the code is (almost) easy to understand and dive into as most of the logic is based on the usage on `Instance` and the loaded functions to achieve higher-order functionalities such as the [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24) (check it out as it's a pretty interesting allocator fully developed with native Windows API heap calls).
+We'll see what the `Instance` structure is, how it is initialized via the `init_native_funcs` and how a sample function
+is loaded via `ldr_module/ldr_function`, the remaining of the code is (almost) easy to understand and dive into as most
+of the logic is based on the usage on `Instance` and the loaded functions to achieve higher-order functionalities such
+as the [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24) (check it out as it's a
+pretty interesting allocator fully developed with native Windows API heap calls).
 
 ### The instance struct — Shared data for your shellcode
 
-The `Instance` struct ([raw content](https://github.com/safedv/Rustic64/blob/master/src/instance.rs#L69)) is a critical structure that holds key information and function pointers necessary for interacting with low-level Windows API functions. It serves as a global structure, making it possible for the program to access specific system functionality like heap management and process termination.
+The `Instance` struct ([raw content](https://github.com/safedv/Rustic64/blob/master/src/instance.rs#L69)) is a critical
+structure that holds key information and function pointers necessary for interacting with low-level Windows API
+functions. It serves as a global structure, making it possible for the program to access specific system functionality
+like heap management and process termination.
 
 **Fields of** `**Instance**`**:**
 
-1.  `**magic: u32**`: This is a unique identifier to validate the instance. The constant `INSTANCE_MAGIC` is set to the sample value of `0x17171717` and is used to ensure that the structure is a valid `Instance` when accessed from memory.
-2.  `**heap_handle: *mut c_void**`: This field stores a handle to a heap created by the program, this is used to allocate and free memory dynamically within the program (using the custom [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24)), and it is initialized and managed during the runtime.
-3.  `**ntdll: Ntdll**`: The `ntdll` field holds an instance of the `Ntdll` struct, which stores the function pointers for several key functions from the `ntdll.dll` Windows system library.
+1.  `**magic: u32**`: This is a unique identifier to validate the instance. The constant `INSTANCE_MAGIC` is set to the
+    sample value of `0x17171717` and is used to ensure that the structure is a valid `Instance` when accessed from
+    memory.
+2.  `**heap_handle: *mut c_void**`: This field stores a handle to a heap created by the program, this is used to
+    allocate and free memory dynamically within the program (using the custom
+    [Rust allocator](https://github.com/safedv/Rustic64/blob/master/src/allocator.rs#L24)), and it is initialized and
+    managed during the runtime.
+3.  `**ntdll: Ntdll**`: The `ntdll` field holds an instance of the `Ntdll` struct, which stores the function pointers
+    for several key functions from the `ntdll.dll` Windows system library.
 4.  `**kernel32_base: *mut u8**`: Stores the base address of the `kernel32.dll` library in memory.
-5.  `**write_file: WriteFile**`: This function pointer points to the `WriteFile` function from `kernel32.dll`. `WriteFile` in this scenario, this method is used only as an example for a method execution.
+5.  `**write_file: WriteFile**`: This function pointer points to the `WriteFile` function from `kernel32.dll`.
+    `WriteFile` in this scenario, this method is used only as an example for a method execution.
 
 **Allocation of** `**Instance**`
 
@@ -297,13 +383,16 @@ impl Instance {
 
 In this function:
 
-*   The `magic` field is initialized with the constant `INSTANCE_MAGIC` to ensure future identification.
-*   The `heap_handle`, `kernel32_base`, and `write_file` fields are initialized as `null_mut()` since their actual values will be set later.
-*   The `ntdll` field is initialized using `Ntdll::new()`, which creates a new `Ntdll` structure with null pointers for all its function fields.
+- The `magic` field is initialized with the constant `INSTANCE_MAGIC` to ensure future identification.
+- The `heap_handle`, `kernel32_base`, and `write_file` fields are initialized as `null_mut()` since their actual values
+  will be set later.
+- The `ntdll` field is initialized using `Ntdll::new()`, which creates a new `Ntdll` structure with null pointers for
+  all its function fields.
 
 ### `Ntdll` Struct: Purpose and Initialization
 
-The `Ntdll` struct is designed to hold function pointers to key low-level Windows API functions that deal with memory management (heaps) and process control. These functions are dynamically loaded from `ntdll.dll`.
+The `Ntdll` struct is designed to hold function pointers to key low-level Windows API functions that deal with memory
+management (heaps) and process control. These functions are dynamically loaded from `ntdll.dll`.
 
 ```
 pub struct Ntdll {
@@ -327,11 +416,13 @@ impl Ntdll {
 }
 ```
 
-This method ensures that all the function pointers initially point to `null`, with the actual function addresses being set in `init_native_funcs`.
+This method ensures that all the function pointers initially point to `null`, with the actual function addresses being
+set in `init_native_funcs`.
 
 ### Method `init_native_funcs — L`oading Functions
 
-The `init_native_funcs()` method is responsible for dynamically loading the function pointers in the `Ntdll` and `Instance` structs using the `ldr_function` and `ldr_module` functions.
+The `init_native_funcs()` method is responsible for dynamically loading the function pointers in the `Ntdll` and
+`Instance` structs using the `ldr_function` and `ldr_module` functions.
 
 Here's how the process works for a sample function, `RtlCreateHeap`:
 
@@ -341,60 +432,81 @@ Here's how the process works for a sample function, `RtlCreateHeap`:
 instance.ntdll.module_base = ldr_module(NTDLL_DBJ2);
 ```
 
-`ldr_module` is used to load the base address of `ntdll.dll` using a hashed value (`NTDLL_DBJ2`). This base address is stored in `instance.ntdll.module_base`.
+`ldr_module` is used to load the base address of `ntdll.dll` using a hashed value (`NTDLL_DBJ2`). This base address is
+stored in `instance.ntdll.module_base`.
 
 **2. Load** `**RtlCreateHeap**` **Function**:
 
 ```
-let rtl_create_heap_addr = ldr_function(instance.ntdll.module_base, RTL_CREATE_HEAP_H); 
+let rtl_create_heap_addr = ldr_function(instance.ntdll.module_base, RTL_CREATE_HEAP_H);
 instance.ntdll.rtl_create_heap = core::mem::transmute(rtl_create_heap_addr);
 ```
 
-The `ldr_function` function is called to retrieve the address of the `RtlCreateHeap` function from `ntdll.dll`. The address is located using the hash value `RTL_CREATE_HEAP_H`. The retrieved address is then cast to the appropriate function signature (`RtlCreateHeap`) using `core::mem::transmute`.
+The `ldr_function` function is called to retrieve the address of the `RtlCreateHeap` function from `ntdll.dll`. The
+address is located using the hash value `RTL_CREATE_HEAP_H`. The retrieved address is then cast to the appropriate
+function signature (`RtlCreateHeap`) using `core::mem::transmute`.
 
-This process is repeated for other functions, including `RtlAllocateHeap`, `RtlFreeHeap`, `RtlDestroyHeap`, `NtTerminateProcess`, and more. All these functions are loaded dynamically using `ldr_function` based on their respective hashes.
+This process is repeated for other functions, including `RtlAllocateHeap`, `RtlFreeHeap`, `RtlDestroyHeap`,
+`NtTerminateProcess`, and more. All these functions are loaded dynamically using `ldr_function` based on their
+respective hashes.
 
 ### ldr_module & ldr_function
 
-The `ldr_module` and `ldr_function` functions are critical components for dynamically loading modules (DLLs) and their corresponding functions. Both are designed to work within a Windows environment, interfacing with low-level memory structures mostly taken from the Process Environment Block (PEB) to locate modules and functions.
+The `ldr_module` and `ldr_function` functions are critical components for dynamically loading modules (DLLs) and their
+corresponding functions. Both are designed to work within a Windows environment, interfacing with low-level memory
+structures mostly taken from the Process Environment Block (PEB) to locate modules and functions.
 
 ### `ldr_module`: Locating a Module by Hash
 
-The `ldr_module` function is responsible for finding the base address of a module (DLL) in memory using a hash of its name.
+The `ldr_module` function is responsible for finding the base address of a module (DLL) in memory using a hash of its
+name.
 
 **Key Components:**
 
-*   **PEB (Process Environment Block)**: The PEB is a structure used by Windows processes to store information about loaded modules, among other things. The function `find_peb()` retrieves a pointer to the PEB of the current process.
-*   **Loader Data**: The PEB contains a `loader_data` field, which holds information about the loaded modules. Specifically, `in_load_order_module_list` is a doubly linked list of loaded modules in the order they were loaded.
-*   **Hash Comparison**: The names of the loaded modules (DLLs) are compared using a hash (computed with `dbj2_hash`). If the computed hash matches the provided `module_hash`, the base address of the DLL is returned.
+- **PEB (Process Environment Block)**: The PEB is a structure used by Windows processes to store information about
+  loaded modules, among other things. The function `find_peb()` retrieves a pointer to the PEB of the current process.
+- **Loader Data**: The PEB contains a `loader_data` field, which holds information about the loaded modules.
+  Specifically, `in_load_order_module_list` is a doubly linked list of loaded modules in the order they were loaded.
+- **Hash Comparison**: The names of the loaded modules (DLLs) are compared using a hash (computed with `dbj2_hash`). If
+  the computed hash matches the provided `module_hash`, the base address of the DLL is returned.
 
 **Key Points:**
 
-*   **PEB Traversal**: The function navigates through the list of loaded modules, checking each module's name to see if its hash matches the given `module_hash`.
-*   **Hashing Mechanism**: The function names are hashed using `dbj2_hash` for faster comparison rather than directly comparing strings. This is a common technique to enhance performance in module/function lookups.
-*   **Return Value**: If a matching module is found, its base address is returned. Otherwise, `null_mut()` is returned to indicate failure.
+- **PEB Traversal**: The function navigates through the list of loaded modules, checking each module's name to see if
+  its hash matches the given `module_hash`.
+- **Hashing Mechanism**: The function names are hashed using `dbj2_hash` for faster comparison rather than directly
+  comparing strings. This is a common technique to enhance performance in module/function lookups.
+- **Return Value**: If a matching module is found, its base address is returned. Otherwise, `null_mut()` is returned to
+  indicate failure.
 
 ### `ldr_function`: Finding a Function by Hash
 
-The `ldr_function` is responsible for locating a function within a module's export table by using a hash of the function's name.
+The `ldr_function` is responsible for locating a function within a module's export table by using a hash of the
+function's name.
 
 **Key Components:**
 
-*   **NT Headers**: The NT Headers are part of the Portable Executable (PE) format used by Windows executables and DLLs. These headers contain important information about the file layout, including where the export table is located.
-*   **Export Directory**: The export directory contains pointers to exported functions (i.e., functions that other programs or modules can call). This includes arrays for function names, addresses, and ordinals (indices).
-*   **Hash Comparison**: Similar to `ldr_module`, `ldr_function` compares the hash of the function name with a provided `function_hash`. If the hashes match, the function's address is retrieved and returned.
+- **NT Headers**: The NT Headers are part of the Portable Executable (PE) format used by Windows executables and DLLs.
+  These headers contain important information about the file layout, including where the export table is located.
+- **Export Directory**: The export directory contains pointers to exported functions (i.e., functions that other
+  programs or modules can call). This includes arrays for function names, addresses, and ordinals (indices).
+- **Hash Comparison**: Similar to `ldr_module`, `ldr_function` compares the hash of the function name with a provided
+  `function_hash`. If the hashes match, the function's address is retrieved and returned.
 
 **Key Points:**
 
-*   **NT Headers**: The `get_nt_headers` function retrieves the NT headers from the given module base address. The NT headers contain information about where to find the export directory.
-*   **Export Directory**: The function then navigates to the export directory, where the function names, ordinals, and addresses are stored.
-*   **Hashing Mechanism**: For each function in the export table, its name is hashed using `dbj2_hash`. If the hash matches the `function_hash`, the function's address is retrieved by using its ordinal.
-*   **Return Value**: The function returns the address of the function if found; otherwise, it returns `null_mut()`.
+- **NT Headers**: The `get_nt_headers` function retrieves the NT headers from the given module base address. The NT
+  headers contain information about where to find the export directory.
+- **Export Directory**: The function then navigates to the export directory, where the function names, ordinals, and
+  addresses are stored.
+- **Hashing Mechanism**: For each function in the export table, its name is hashed using `dbj2_hash`. If the hash
+  matches the `function_hash`, the function's address is retrieved by using its ordinal.
+- **Return Value**: The function returns the address of the function if found; otherwise, it returns `null_mut()`.
 
-Test your shellcode
--------------------
+## Test your shellcode
 
-Finally, the last thing to do is check if the shellcode works, the following is a simple rust implementation of the common C self-injecting shellcode, nothing fancy here, just an example loader.
+Finally, the last thing to do is check if the shellcode works, the following is a simple rust implementation of the
+common C self-injecting shellcode, nothing fancy here, just an example loader.
 
 ```
 
@@ -411,9 +523,12 @@ fn main() {
 }
 ```
 
-Emplace this small loader in a new rust project, copy the `rustic64.bin` file generated compiling the project, and then compile and run the loader. You will see the rustic code getting executed in the context of the loader.
+Emplace this small loader in a new rust project, copy the `rustic64.bin` file generated compiling the project, and then
+compile and run the loader. You will see the rustic code getting executed in the context of the loader.
 
-Conclusion
-----------
+## Conclusion
 
-Rustic64 project offers a sophisticated yet accessible approach to crafting Position Independent Code (PIC) shellcodes using Rust, emphasizing security and flexibility. For cybersecurity professionals and developers alike, this project serves as a rich learning tool, highlighting the power of Rust in advanced shellcode creation. Be sure to check out the code on GitHub and support Safe's innovative work.
+Rustic64 project offers a sophisticated yet accessible approach to crafting Position Independent Code (PIC) shellcodes
+using Rust, emphasizing security and flexibility. For cybersecurity professionals and developers alike, this project
+serves as a rich learning tool, highlighting the power of Rust in advanced shellcode creation. Be sure to check out the
+code on GitHub and support Safe's innovative work.
