@@ -9,6 +9,8 @@ const slotContent = await Astro.slots.render("default");
 // Remove HTML tags but keep newlines and whitespace
 const tempDiv = slotContent
   .replace(/<p>/gi, "")
+  .replace(/<div class="ec-line">/gi, "\n")
+  .replace(/<div class="copy">.*/gi, "")
   .replace(/<\/p>/gi, "\n")
   .replace(/<br\s*\/?>/gi, "\n")
   .replace(/<[^>]+>/g, "")
@@ -62,7 +64,7 @@ let code = tempDiv
   function initMermaid(): void {
     mermaid.initialize({
       startOnLoad: true,
-      theme: document.documentElement.classList.contains("dark") ? "dark" : "default",
+      theme: "default",
       securityLevel: "loose",
       fontFamily: "Inter, system-ui, sans-serif",
       flowchart: {
@@ -74,9 +76,8 @@ let code = tempDiv
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === "class") {
-          const isDark = document.documentElement.classList.contains("dark");
           mermaid.initialize({
-            theme: isDark ? "dark" : "default",
+            theme: "default",
           });
           mermaid.run({
             querySelector: `.mermaid`,
@@ -121,6 +122,7 @@ let code = tempDiv
     display: flex;
     justify-content: center;
     align-items: center;
+    position:relative
   }
 
   .mermaid svg {

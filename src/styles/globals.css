@@ -79,3 +79,7 @@
     text-decoration: var(--shiki-dark-text-decoration) !important;
   }
 }
+
+foreignObject {
+  width: 25%;
+}
