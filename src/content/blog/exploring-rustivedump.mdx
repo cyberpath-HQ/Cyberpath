@@ -1,0 +1,127 @@
+---
+title: "Exploring RustiveDump. LSASS Dumping Using NTAPIs in Rust"
+description: "In the ever-evolving field of cybersecurity, memory dumping tools are a key component in incident response and adversary simulations, allowing analysts..."
+pubDate: 2024-10-17T00:00:00Z
+heroImage: ../../assets/blog/0_MaGJHWKEMb9xdKFZ.webp
+tags: ["rust", "offensive security", "dumps", "lsass", "ntapi"]
+author: ebalo
+---
+
+LSASS Memory Dumping Using NTAPIs in Rust
+-----------------------------------------
+
+In the ever-evolving field of cybersecurity, memory dumping tools are a key component in incident response and adversary simulations, allowing analysts to capture and investigate the memory state of critical processes like **lsass.exe** (Local Security Authority Subsystem Service). The extraction of sensitive credentials stored in LSASS is a well-known attack vector, making memory-dumping tools both powerful and controversial.
+
+In this article, we’ll explore [**RustiveDump**](https://github.com/safedv/RustiveDump), a minimalist, highly efficient LSASS memory-dumping tool written in **Rust**. RustiveDump leverages **NT system calls** exclusively, bypassing the need for standard APIs and libraries. Its unique combination of being built with **no_std**, using **indirect NT syscalls**, and supporting features like **XOR encryption** and **remote file transmission** makes it a standout tool. We’ll break down its core features, show how to use it in different scenarios, and provide an in-depth technical walkthrough of its behavior.
+
+> **!! Update !!**
+> 
+> RustiveDump now also has **shellcode** generation capabilities thanks to Rustic64! [Check out the article here](https://medium.com/purple-team/pic-shellcode-the-rust-way-4f629fb56009)!
+
+What is RustiveDump?
+--------------------
+
+RustiveDump is a **Rust-based LSASS memory dumper** that directly interacts with the Windows kernel using NT system calls. The goal behind RustiveDump is to create an efficient and lightweight memory dump tool without relying on the Rust standard library (no_std) or the C runtime (CRT). This results in a binary as small as **18KB**, making it suitable for restricted environments.
+
+**Key features of RustiveDump:**
+
+*   **NT System Calls**: It exclusively uses NT system calls for all operations, eliminating the need for higher-level Windows APIs.
+*   **Minimal Minidump File**: It generates a streamlined minidump file, containing only essential components like **SystemInfo**, **ModuleList**, and **Memory64List**.
+*   **XOR Encryption**: For added security, RustiveDump can XOR-encrypt the memory dump before saving it.
+*   **Remote Transmission**: The dump can be sent to a remote server using **Winsock** APIs.
+*   **Indirect NT Syscalls**: Implements techniques such as **Hell’s Gate**, **Halo’s Gate**, and **Tartarus’ Gate** to retrieve system service numbers (SSN) indirectly.
+*   **Debug Logging**: Provides detailed logging for debugging and transparency during memory dumping.
+*   **Shellcode**: Generate a Position Independent Code (PIC) artifact that can be injected into other executables.
+
+Building RustiveDump
+--------------------
+
+RustiveDump offers several build options via **cargo make**, enabling different features like **XOR encryption**, **remote transmission**, and **debug logging**. The tool can be built with various combinations of flags to adjust its behavior to different operational needs.
+
+### Basic Build Command
+
+To compile RustiveDump without any special features simply run:
+
+```
+cargo make
+```
+
+For specific features, the build command can be extended with feature flags:
+
+```
+cargo make --env FEATURES=xor,remote,lsasrv,debug pic
+```
+
+This allows you to tailor the tool for different use cases, such as encrypting the dump file, transmitting it remotely, or logging more verbose output for detailed monitoring.
+
+Scenarios and Walkthrough
+-------------------------
+
+In this section, we’ll walk through five different scenarios where RustiveDump is compiled and executed with various feature combinations.
+
+### Scenario 1: Raw Memory Dump
+
+In the first scenario, RustiveDump is compiled without any additional flags, producing a basic memory dump. The resulting output is a simple, unencrypted minidump file containing **SystemInfo**, **ModuleList**, and **Memory64List**.
+
+The raw dump generation process:
+
+1.  **Enable SeDebugPrivilege**: RustiveDump calls `NtOpenProcessToken` and `NtAdjustPrivilegesToken` to enable **SeDebugPrivilege**, granting access to **lsass.exe**.
+2.  **LSASS Process Handle**: It uses `NtOpenProcess` to acquire a handle to **lsass.exe**.
+3.  **Memory Dumping**: RustiveDump reads memory from the process using `NtReadVirtualMemory`, focusing on committed and accessible regions.
+
+Running it will result in no output and in far less than a second you’ll have your minidump file on disk.
+
+![Running RustiveDump with no compile flags](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*2nOreWFcSgrTuMsElowOpA.png)
+
+To read the output just use a tool like mimikatz or pypykatz.
+
+![Reading the raw rustive.dmp file using pypykatz](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*rvClJ2LhhHy6utHnwaVNSw.png)
+
+### Scenario 2: Debug Mode
+
+In verbose mode, RustiveDump provides detailed logs of each step during the memory dumping process. This mode is useful for debugging or when a clearer understanding of internal operations is required.
+
+Except for the more verbose logging and about 10kb more this feature does not differ that much from the raw dump itself.
+
+### Scenario 3: LSASRV Module
+
+In this scenario, RustiveDump is configured to filter the memory dump to include only the **lsasrv.dll** module, which is often the target for credential harvesting tools. The verbose output is still enabled, providing detailed logs while focusing on memory regions associated with **lsasrv.dll**.
+
+This mode is useful in scenarios where only specific modules are of interest, minimizing unnecessary data in the dump file.
+
+![Reading lsasrv rustive.dmp file, only data related to lsasrv.dll are included](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*41D5gPSQM5faxGMJqnLLFQ.png)
+
+### Scenario 4: XOR Encryption
+
+For added security, RustiveDump can encrypt the memory dump using **XOR encryption**. This can be particularly useful when sensitive data is dumped in an environment where the file might be intercepted. In this scenario, the memory dump is encrypted before being saved locally, ensuring that the data remains protected until decrypted.
+
+Key steps in this mode:
+
+*   Memory data is XOR-encrypted before being written to the file system.
+*   The resulting dump file is significantly different from the raw dump due to the encryption layer.
+
+![Comparison between raw and xor-ed dump](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*yWJWI-lNWOedoaphqXhpiw.jpeg)
+
+The decryption process is straightforward thanks to the `xor_decrypt.py` script included in the repository. All you’ll have to do is decrypt the dump before reading it.
+
+![Decrypting and reading xor-ed rustive.dmp](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*_xtkPiIpBJa35TDj0hYxbg.png)
+
+### Scenario 5: Remote Transmission
+
+In this last scenario, RustiveDump is configured to transmit the memory dump to a remote server. It uses **Winsock** APIs to establish a network connection and send the dump file. This can be useful when dumps need to be offloaded to a central analysis server without writing to the local disk.
+
+The process flow includes:
+
+*   Establishing a socket connection using Winsock.
+*   Sending the encrypted memory dump over the network.
+
+In this scenario for simplicity we’re chosen to use a local server running with **ncat**, in a real-world scenario a remote fully featured server should be used. Check the video below for a full overview of the scenario
+
+Conclusion
+----------
+
+**RustiveDump** offers a lean and efficient solution for LSASS memory dumping, using low-level NT system calls and Rust’s powerful language features. Its minimalist approach, combined with options like **XOR encryption**, **remote transmission**, and **module filtering**, makes it highly versatile for both attackers and defenders in the cybersecurity domain.
+
+It’s crucial to emphasize that RustiveDump was built as a **learning tool** for understanding memory dumping and the Windows kernel interface. Ethical considerations and legal guidelines must always be followed when using such tools, as improper use can have significant consequences.
+
+Whether you’re a security researcher, incident responder, or Rust developer, RustiveDump provides an excellent opportunity to delve into the complexities of NT system calls and efficient memory management.
