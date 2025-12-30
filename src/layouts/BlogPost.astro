@@ -17,7 +17,9 @@ import { makeJsonLd } from "@/lib/make-json-ld";
 import type { Article } from "schema-dts";
 import { Image } from "astro:assets";
 import { cn } from "@/lib/utils";
-import getReadingTime from 'reading-time';
+import getReadingTime from "reading-time";
+import { Button } from "@/components/ui/button";
+import path from "path";
 
 interface Props {
   entry: CollectionEntry<"blog">;
@@ -25,16 +27,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const {
-  title,
-  description,
-  pubDate,
-  updatedDate,
-  heroImage,
-  heroClass,
-  tags,
-  author: authorId,
-} = entry.data;
+const { title, description, pubDate, updatedDate, heroImage, heroClass, tags, author: authorId } = entry.data;
 const readingTime = getReadingTime(entry.body!).text;
 const author = getAuthor(authorId);
 
@@ -66,40 +59,46 @@ const ogImageUrl = heroImage
   : new URL("/CyberPath-og.webp", Astro.site).toString();
 
 const json_ld = makeJsonLd<Article>({
-    "@type":          "Article",
-    "@context":       "https://schema.org",
-    "@id":            "https://cyberpath-hq.com/",
-    url:              canonicalURL.toString(),
-    name:             title,
-    description:      description,
-    inLanguage:       "en-US",
-    author:           {
-        "@type": "Person",
-        name:    author.name,
-        email:   author.email,
-        description: author.bio,
-        url:     author.website,
-    },
-    image:            {
-        "@type":     "ImageObject",
-        url:         ogImageUrl,
-        width:       String(heroImage?.width) ?? "1920",
-        height:      String(heroImage?.height) ?? "933",
-        description: title,
-    },
-    datePublished:    pubDate.toISOString(),
-    dateModified:     updatedDate ? updatedDate.toISOString() : pubDate.toISOString(),
-    publisher:        {
-        "@type": "Person",
-        name:    author.name,
-        email:   author.email,
-        description: author.bio,
-        url:     author.website,
-    }
+  "@type": "Article",
+  "@context": "https://schema.org",
+  "@id": "https://cyberpath-hq.com/",
+  url: canonicalURL.toString(),
+  name: title,
+  description: description,
+  inLanguage: "en-US",
+  author: {
+    "@type": "Person",
+    name: author.name,
+    email: author.email,
+    description: author.bio,
+    url: author.website,
+  },
+  image: {
+    "@type": "ImageObject",
+    url: ogImageUrl,
+    width: String(heroImage?.width) ?? "1920",
+    height: String(heroImage?.height) ?? "933",
+    description: title,
+  },
+  datePublished: pubDate.toISOString(),
+  dateModified: updatedDate ? updatedDate.toISOString() : pubDate.toISOString(),
+  publisher: {
+    "@type": "Person",
+    name: author.name,
+    email: author.email,
+    description: author.bio,
+    url: author.website,
+  },
 });
+
+// VS Code link button
+const isDev = import.meta.env.DEV; // true only in `astro dev`
+const __dirname = import.meta.dirname;
+const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!));
 ---
 
-<Layout JSON_LD={ json_ld }
+<Layout
+  JSON_LD={json_ld}
   seo={{
     title: title,
     description: description,
@@ -150,21 +149,14 @@ const json_ld = makeJsonLd<Article>({
         {
           heroImage && (
             <div class="aspect-[16/9] w-full overflow-hidden rounded-lg">
-              <Image
-                src={heroImage}
-                alt={title}
-                inferSize={true}
-                class={cn("h-full w-full object-cover", heroClass)}
-              />
+              <Image src={heroImage} alt={title} inferSize={true} class={cn("h-full w-full object-cover", heroClass)} />
             </div>
           )
         }
 
         <!-- Title and Meta -->
         <div class="space-y-4">
-          <h1
-            class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-          >
+          <h1 class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             {title}
           </h1>
 
@@ -184,9 +176,7 @@ const json_ld = makeJsonLd<Article>({
           }
 
           <!-- Metadata -->
-          <div
-            class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground"
-          >
+          <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <time datetime={pubDate.toISOString()}>
               {formattedPubDate}
             </time>
@@ -215,22 +205,8 @@ const json_ld = makeJsonLd<Article>({
       <!-- Author Card -->
       <Card className="mb-8 p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <AuthorAvatar
-            client:only="react"
-            name={author.name}
-            avatarSrc={author.avatar?.src}
-            className="h-16 w-16"
-          >
-            {
-              author.avatar && (
-                <Image
-                  src={author.avatar}
-                  alt={author.name}
-                  width={64}
-                  height={64}
-                />
-              )
-            }
+          <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.src} className="h-16 w-16">
+            {author.avatar && <Image src={author.avatar} alt={author.name} width={64} height={64} />}
           </AuthorAvatar>
 
           <div class="flex-1 space-y-2">
@@ -250,11 +226,7 @@ const json_ld = makeJsonLd<Article>({
               }
             </div>
 
-            {
-              author.bio && (
-                <p class="text-sm text-muted-foreground">{author.bio}</p>
-              )
-            }
+            {author.bio && <p class="text-sm text-muted-foreground">{author.bio}</p>}
 
             <!-- Social Links -->
             <div class="flex flex-wrap gap-4 text-sm">
@@ -327,12 +299,7 @@ const json_ld = makeJsonLd<Article>({
 
       <!-- Share Buttons -->
       <div class="mb-8">
-        <ShareButtons
-          client:only="react"
-          title={title}
-          url={canonicalURL.toString()}
-          tags={tags}
-        />
+        <ShareButtons client:only="react" title={title} url={canonicalURL.toString()} tags={tags} />
       </div>
 
       <!-- Article Content -->
@@ -377,4 +344,17 @@ const json_ld = makeJsonLd<Article>({
       </div>
     </aside>
   </div>
+  {
+    isDev && sourcePath && (
+      <Button
+        as="a"
+        href={`vscode://file/${sourcePath}`}
+        className="fixed bottom-16 right-16"
+        title="Open in VS Code"
+        rel="noopener noreferrer"
+      >
+        Open in Editor
+      </Button>
+    )
+  }
 </Layout>

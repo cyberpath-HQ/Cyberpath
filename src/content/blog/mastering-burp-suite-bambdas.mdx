@@ -10,8 +10,6 @@ author: ebalo
 ---
 import Newsletter from "@/components/astro/blog/newsletter.astro";
 
-## Unlocking Advanced Automation for Web Security Testing
-
 Web application security testing often involves performing repetitive tasks, which can lead to inefficiencies in testing
 workflows. Tools like Burp Suite are essential for streamlining these processes, but their full potential is unlocked
 through customization and automation. This is where **Burp Suite Bambdas** comes in. Bambdas provides a way for security
@@ -74,7 +72,7 @@ Bambda to filter HTTP requests in Burp Suite.
 In this example, we will create a Bambda that filters HTTP traffic in Burp Suite to display only requests that receive a
 **3XX** redirection status code and set a specific `session`cookie.
 
-```
+```java
 //////////////////////////////
 // SECTION: Entrance checks //
 //////////////////////////////
@@ -117,7 +115,7 @@ requests will be saved in a format suitable for SQLMap analysis.
 Here's a Bambda script that captures and logs POST requests with parameters, which can later be fed into SQLMap for
 automated SQL injection testing.
 
-```
+```java
 //////////////////////////////
 // SECTION: Entrance checks //
 //////////////////////////////
