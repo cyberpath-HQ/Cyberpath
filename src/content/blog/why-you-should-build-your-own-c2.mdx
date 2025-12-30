@@ -1,105 +1,173 @@
 ---
 title: "Why You Should Build Your Own C2"
-description: "Command and control (C2) servers are central to offensive security operations, particularly in red team engagements where the goal is..."
+description:
+  "Command and control (C2) servers are central to offensive security operations, particularly in red team engagements
+  where the goal is..."
 pubDate: 2024-09-17T00:00:00Z
 heroImage: ../../assets/blog/1_TSmN9aClyUIK4vsi62vJ_Q.webp
 tags: ["red team", "c2", "software development", "cobalt strike"]
 author: ebalo
 ---
+import Newsletter from "@/components/astro/blog/newsletter.astro";
 
-A Technical Analysis for Red Team Professionals
------------------------------------------------
+## A Technical Analysis for Red Team Professionals
 
-Command and control (C2) servers are central to offensive security operations, particularly in red team engagements where the goal is to emulate advanced persistent threat (APT) techniques to assess an organization's security posture. Off-the-shelf C2 frameworks like Cobalt Strike, Metasploit, and Sliver are widely used by penetration testers and red teamers alike due to their ease of use, flexibility, and proven track record. However, as red team engagements evolve, there are compelling reasons to consider building your own custom C2 infrastructure.
+Command and control (C2) servers are central to offensive security operations, particularly in red team engagements
+where the goal is to emulate advanced persistent threat (APT) techniques to assess an organization's security posture.
+Off-the-shelf C2 frameworks like Cobalt Strike, Metasploit, and Sliver are widely used by penetration testers and red
+teamers alike due to their ease of use, flexibility, and proven track record. However, as red team engagements evolve,
+there are compelling reasons to consider building your own custom C2 infrastructure.
 
-In this article, we will dive into the technical and strategic benefits of building an in-house C2 system for red team operations. We will explore key factors such as stealth, customization, operational security (OPSEC), and scalability. While off-the-shelf C2 frameworks offer convenience, building your own C2 can provide a competitive edge in more sophisticated engagements.
+In this article, we will dive into the technical and strategic benefits of building an in-house C2 system for red team
+operations. We will explore key factors such as stealth, customization, operational security (OPSEC), and scalability.
+While off-the-shelf C2 frameworks offer convenience, building your own C2 can provide a competitive edge in more
+sophisticated engagements.
 
-Why Use a Custom C2 in Red Team Engagements?
---------------------------------------------
+## Why Use a Custom C2 in Red Team Engagements?
 
 ### 1. Avoiding Detection by Endpoint Detection and Response (EDR) Solutions
 
-One of the biggest challenges when using popular C2 frameworks is the increased likelihood of detection. Modern security solutions, particularly endpoint detection and response (EDR) systems, have matured to the point where they can identify well-known C2 tools through signature-based and heuristic detection. Vendors such as CrowdStrike, SentinelOne, and Microsoft Defender for Endpoint regularly update their threat intelligence databases to identify and flag the behavior of popular C2 frameworks.
+One of the biggest challenges when using popular C2 frameworks is the increased likelihood of detection. Modern security
+solutions, particularly endpoint detection and response (EDR) systems, have matured to the point where they can identify
+well-known C2 tools through signature-based and heuristic detection. Vendors such as CrowdStrike, SentinelOne, and
+Microsoft Defender for Endpoint regularly update their threat intelligence databases to identify and flag the behavior
+of popular C2 frameworks.
 
 **Example: Cobalt Strike's Detection Problem**
 
-Cobalt Strike, despite its robustness and wide adoption in offensive security, is frequently flagged by EDRs and antivirus systems because of its well-known infrastructure and behavior. Many defensive solutions have specific detections for Cobalt Strike beacons, payloads, and communication patterns. In some cases, even modifying the beacon payload is insufficient to avoid detection, as EDRs may apply machine learning models to identify anomalous traffic patterns associated with this framework.
+Cobalt Strike, despite its robustness and wide adoption in offensive security, is frequently flagged by EDRs and
+antivirus systems because of its well-known infrastructure and behavior. Many defensive solutions have specific
+detections for Cobalt Strike beacons, payloads, and communication patterns. In some cases, even modifying the beacon
+payload is insufficient to avoid detection, as EDRs may apply machine learning models to identify anomalous traffic
+patterns associated with this framework.
 
-By building your own C2, you can design communication protocols and payloads that are unique to your infrastructure, reducing the chances of triggering heuristic detection or behavioral-based rules in EDR solutions. This increases the success rate of engagements where stealth and evasion are paramount.
+By building your own C2, you can design communication protocols and payloads that are unique to your infrastructure,
+reducing the chances of triggering heuristic detection or behavioral-based rules in EDR solutions. This increases the
+success rate of engagements where stealth and evasion are paramount.
 
-> Do you like my content and you want to see more?
-> 
-> Consider [supporting my work via Patreon!](https://patreon.com/ebalo?utm_medium=medium&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink) Remember to [follow me on LinkedIn](https://www.linkedin.com/in/emanuele-b-4819311a3/) and [subscribe to the newsletter](https://ebalo.medium.com/subscribe) to stay updated with the latest posts!
+<Newsletter/>
 
 ### 2. Customizable Network Protocols and Traffic Patterns
 
-Off-the-shelf C2 frameworks typically rely on well-documented network communication methods, such as HTTP(S), DNS, or SMB. While these protocols offer flexibility and ease of use, they also make your traffic predictable and easy to spot for defenders who know what to look for. Most mature organizations implement network-based anomaly detection systems (NDRs) that can flag unusual traffic or protocol misuse.
+Off-the-shelf C2 frameworks typically rely on well-documented network communication methods, such as HTTP(S), DNS, or
+SMB. While these protocols offer flexibility and ease of use, they also make your traffic predictable and easy to spot
+for defenders who know what to look for. Most mature organizations implement network-based anomaly detection systems
+(NDRs) that can flag unusual traffic or protocol misuse.
 
 **Custom C2 Example: Unusual Protocols**
 
-By creating a custom C2, you can design your own communication protocols and traffic patterns. For example, instead of using traditional HTTP over port 80 or HTTPS over port 443, a custom C2 might employ lesser-known or custom protocols over non-standard ports. Alternatively, you can obfuscate your traffic within legitimate applications such as VoIP, peer-to-peer communication, or even common SaaS applications. This allows you to blend in with normal network activity, making your operations harder to detect.
+By creating a custom C2, you can design your own communication protocols and traffic patterns. For example, instead of
+using traditional HTTP over port 80 or HTTPS over port 443, a custom C2 might employ lesser-known or custom protocols
+over non-standard ports. Alternatively, you can obfuscate your traffic within legitimate applications such as VoIP,
+peer-to-peer communication, or even common SaaS applications. This allows you to blend in with normal network activity,
+making your operations harder to detect.
 
-Additionally, a custom C2 can be designed to dynamically switch between protocols and ports based on environmental conditions or detection triggers. This adaptability allows the red team to stay one step ahead of defenders who might otherwise block or throttle suspicious traffic.
+Additionally, a custom C2 can be designed to dynamically switch between protocols and ports based on environmental
+conditions or detection triggers. This adaptability allows the red team to stay one step ahead of defenders who might
+otherwise block or throttle suspicious traffic.
 
 ### 3. Enhancing OPSEC and Reducing Attribution Risk
 
-Using off-the-shelf C2 frameworks can pose a significant operational security (OPSEC) risk. Because these tools are widely used by both red teamers and malicious actors, forensic analysts are highly familiar with the artifacts they leave behind. For example, when security teams investigate compromised systems, they may find residual files, memory dumps, or logs that point directly to well-known C2 frameworks. This can lead to the red team's activities being prematurely identified and stopped.
+Using off-the-shelf C2 frameworks can pose a significant operational security (OPSEC) risk. Because these tools are
+widely used by both red teamers and malicious actors, forensic analysts are highly familiar with the artifacts they
+leave behind. For example, when security teams investigate compromised systems, they may find residual files, memory
+dumps, or logs that point directly to well-known C2 frameworks. This can lead to the red team's activities being
+prematurely identified and stopped.
 
 **Example: Attribution via C2 Framework Artifacts**
 
-In 2019, an advanced red team engagement was compromised when a defender found evidence of a Sliver implant on an endpoint. The discovery led to a premature shutdown of the engagement, as defenders had associated the Sliver implant with red team activity based on previous incidents and threat intelligence. A similar situation can occur with Cobalt Strike or Metasploit, where defenders recognize the tools by forensic indicators and stop the simulation before it reaches critical objectives.
+In 2019, an advanced red team engagement was compromised when a defender found evidence of a Sliver implant on an
+endpoint. The discovery led to a premature shutdown of the engagement, as defenders had associated the Sliver implant
+with red team activity based on previous incidents and threat intelligence. A similar situation can occur with Cobalt
+Strike or Metasploit, where defenders recognize the tools by forensic indicators and stop the simulation before it
+reaches critical objectives.
 
-By building a custom C2 infrastructure, you can obfuscate your activities and avoid detection through typical forensics methods. Custom C2s allow you to control every aspect of the engagement's footprint, from payload delivery to persistence mechanisms, making attribution to a specific toolset or red team difficult for defenders.
+By building a custom C2 infrastructure, you can obfuscate your activities and avoid detection through typical forensics
+methods. Custom C2s allow you to control every aspect of the engagement's footprint, from payload delivery to
+persistence mechanisms, making attribution to a specific toolset or red team difficult for defenders.
 
 ### 4. Custom Implant Development for Tailored Operations
 
-When using off-the-shelf C2 frameworks, the implants (or agents) that are deployed on compromised machines are often standardized. While this ensures compatibility and ease of use, it can limit your ability to tailor payloads for specific environments. Some environments may require implants that can evade specialized defenses, handle complex network topologies, or even interact with non-standard operating systems or embedded devices.
+When using off-the-shelf C2 frameworks, the implants (or agents) that are deployed on compromised machines are often
+standardized. While this ensures compatibility and ease of use, it can limit your ability to tailor payloads for
+specific environments. Some environments may require implants that can evade specialized defenses, handle complex
+network topologies, or even interact with non-standard operating systems or embedded devices.
 
 **Benefits of Custom Implants**
 
 A custom-built C2 allows you to develop implants that are specifically tailored to the target environment. For example:
 
-*   **Low-footprint implants**: These implants consume minimal system resources and operate stealthily to evade performance-based detection.
-*   **Cross-platform implants**: These implants are built for environments that run unusual or niche operating systems such as Solaris, BSD, or IoT devices.
-*   **Modular implants**: Custom implants can be built with modular functionality that allows for dynamic tasking, self-replication, or lateral movement across heterogeneous environments.
+- **Low-footprint implants**: These implants consume minimal system resources and operate stealthily to evade
+  performance-based detection.
+- **Cross-platform implants**: These implants are built for environments that run unusual or niche operating systems
+  such as Solaris, BSD, or IoT devices.
+- **Modular implants**: Custom implants can be built with modular functionality that allows for dynamic tasking,
+  self-replication, or lateral movement across heterogeneous environments.
 
-With custom implants, you have greater control over how the payload behaves and interacts with the target environment. This can give your red team greater flexibility in achieving its objectives, especially when dealing with complex or highly segmented networks.
+With custom implants, you have greater control over how the payload behaves and interacts with the target environment.
+This can give your red team greater flexibility in achieving its objectives, especially when dealing with complex or
+highly segmented networks.
 
 ### 5. Increased Flexibility and Integration with Other Tools
 
-Off-the-shelf C2 frameworks come with built-in functionality for various tasks, such as lateral movement, privilege escalation, and data exfiltration. However, the available modules may not always align with the specific needs of a red team engagement, especially if the target environment has unique security controls or non-standard software configurations.
+Off-the-shelf C2 frameworks come with built-in functionality for various tasks, such as lateral movement, privilege
+escalation, and data exfiltration. However, the available modules may not always align with the specific needs of a red
+team engagement, especially if the target environment has unique security controls or non-standard software
+configurations.
 
-A custom C2 infrastructure allows you to integrate and automate additional tools and scripts that may be needed to achieve your objectives. For instance, you can integrate your C2 with custom exploit payloads, in-house lateral movement tools, or specialized post-exploitation scripts. Furthermore, a custom C2 allows for seamless integration with threat intelligence platforms, SIEM solutions, or other offensive security tools that may be necessary for the engagement.
+A custom C2 infrastructure allows you to integrate and automate additional tools and scripts that may be needed to
+achieve your objectives. For instance, you can integrate your C2 with custom exploit payloads, in-house lateral movement
+tools, or specialized post-exploitation scripts. Furthermore, a custom C2 allows for seamless integration with threat
+intelligence platforms, SIEM solutions, or other offensive security tools that may be necessary for the engagement.
 
-By building your own C2, you have full control over the available features and can extend the platform as needed to fit the specific requirements of your red team operation.
+By building your own C2, you have full control over the available features and can extend the platform as needed to fit
+the specific requirements of your red team operation.
 
 ### 6. Enhanced Scalability and Resource Management
 
-Off-the-shelf C2 frameworks are designed to be versatile and user-friendly, but they may only sometimes scale well for larger or more complex engagements. Some frameworks may suffer performance issues when simultaneously managing hundreds or thousands of compromised endpoints. Others may need more infrastructure to handle operations across multiple geographic locations or network segments.
+Off-the-shelf C2 frameworks are designed to be versatile and user-friendly, but they may only sometimes scale well for
+larger or more complex engagements. Some frameworks may suffer performance issues when simultaneously managing hundreds
+or thousands of compromised endpoints. Others may need more infrastructure to handle operations across multiple
+geographic locations or network segments.
 
 **Example: Scaling C2 Operations**
 
-For large-scale red team engagements targeting multinational organizations, a custom C2 can be built to handle the specific scaling needs of the operation. This might include:
+For large-scale red team engagements targeting multinational organizations, a custom C2 can be built to handle the
+specific scaling needs of the operation. This might include:
 
-*   **Distributed C2 infrastructure**: Deploying multiple C2 nodes across different geographic regions to minimize latency and improve resilience against takedown attempts.
-*   **Load balancing**: Automatically distributing communication and command tasks across multiple C2 servers to prevent bottlenecks and improve operational efficiency.
-*   **Resource management**: Implementing intelligent resource management to prioritize critical tasks, such as data exfiltration or lateral movement, without overloading system resources on compromised hosts.
+- **Distributed C2 infrastructure**: Deploying multiple C2 nodes across different geographic regions to minimize latency
+  and improve resilience against takedown attempts.
+- **Load balancing**: Automatically distributing communication and command tasks across multiple C2 servers to prevent
+  bottlenecks and improve operational efficiency.
+- **Resource management**: Implementing intelligent resource management to prioritize critical tasks, such as data
+  exfiltration or lateral movement, without overloading system resources on compromised hosts.
 
-A custom C2 infrastructure can be designed with scalability in mind, ensuring that the red team can operate effectively even in large, highly segmented, or globally distributed environments.
+A custom C2 infrastructure can be designed with scalability in mind, ensuring that the red team can operate effectively
+even in large, highly segmented, or globally distributed environments.
 
-Conclusion: Custom C2 as a Strategic Advantage
-----------------------------------------------
+## Conclusion: Custom C2 as a Strategic Advantage
 
-While off-the-shelf C2 frameworks have their place in offensive security, the limitations imposed by detection mechanisms, attribution risks, and lack of flexibility can hinder more advanced red team operations. Building your own C2 infrastructure allows for a higher degree of stealth, adaptability, and customization, making it an invaluable tool for emulating sophisticated adversaries.
+While off-the-shelf C2 frameworks have their place in offensive security, the limitations imposed by detection
+mechanisms, attribution risks, and lack of flexibility can hinder more advanced red team operations. Building your own
+C2 infrastructure allows for a higher degree of stealth, adaptability, and customization, making it an invaluable tool
+for emulating sophisticated adversaries.
 
-For red teams seeking to push the boundaries of offensive security, a custom C2 provides strategic advantages that go beyond the capabilities of commercial tools. Whether it's avoiding detection by advanced security solutions, tailoring implants to specific environments, or scaling operations to meet the needs of a global enterprise, a well-designed custom C2 can give your red team the edge needed to succeed in complex engagements.
+For red teams seeking to push the boundaries of offensive security, a custom C2 provides strategic advantages that go
+beyond the capabilities of commercial tools. Whether it's avoiding detection by advanced security solutions, tailoring
+implants to specific environments, or scaling operations to meet the needs of a global enterprise, a well-designed
+custom C2 can give your red team the edge needed to succeed in complex engagements.
 
 ### Next Steps: Planning Your Custom C2 Development
 
-Developing a custom C2 requires a deep understanding of networking, security, and software development. It's essential to start by defining the specific goals and requirements of your engagements. Consider the following when building your C2:
+Developing a custom C2 requires a deep understanding of networking, security, and software development. It's essential
+to start by defining the specific goals and requirements of your engagements. Consider the following when building your
+C2:
 
-*   **Communication protocols**: Choose protocols that blend into the target environment.
-*   **Payload and implant design**: Develop lightweight, cross-platform implants for maximum flexibility.
-*   **Integration with other tools**: Build in the ability to integrate with custom scripts, threat intelligence platforms, and other offensive tools.
+- **Communication protocols**: Choose protocols that blend into the target environment.
+- **Payload and implant design**: Develop lightweight, cross-platform implants for maximum flexibility.
+- **Integration with other tools**: Build in the ability to integrate with custom scripts, threat intelligence
+  platforms, and other offensive tools.
 
-By investing in the development of a custom C2, you position your red team to execute more stealthy and effective engagements that mimic real-world APTs. The time and effort required to build a custom solution will pay off in the increased success rate of your operations and the valuable insights gained from emulating sophisticated adversaries.
+By investing in the development of a custom C2, you position your red team to execute more stealthy and effective
+engagements that mimic real-world APTs. The time and effort required to build a custom solution will pay off in the
+increased success rate of your operations and the valuable insights gained from emulating sophisticated adversaries.
