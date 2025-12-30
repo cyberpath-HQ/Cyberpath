@@ -50,35 +50,6 @@ vulnerabilities, and application security. The certification uses a vendor-neutr
 applicable across different technologies and platforms. Most professionals can prepare for this exam within three to six
 months of dedicated study while working full-time.
 
-```python
-# Example: Simple password strength checker
-import re
-
-def check_password_strength(password):
-    """
-    Check if a password meets basic security requirements.
-    """
-    if len(password) < 8:
-        return "Too short"
-
-    if not re.search(r"[A-Z]", password):
-        return "Missing uppercase letter"
-
-    if not re.search(r"[a-z]", password):
-        return "Missing lowercase letter"
-
-    if not re.search(r"\d", password):
-        return "Missing number"
-
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        return "Missing special character"
-
-    return "Strong password"
-
-# Test the function
-print(check_password_strength("MyP@ssw0rd"))  # Output: Strong password
-```
-
 ### CEH (Certified Ethical Hacker)
 
 The CEH certification focuses on the offensive side of cybersecurity, teaching you to think like an attacker to better
