@@ -1,0 +1,34 @@
+---
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+---
+
+<Card
+  className={`my-6 
+    rounded-none 
+    border-t-0 border-b-0 border-l-4 border-l-primary border-r-4 border-r-primary 
+    shadow-none 
+    transition-[width,margin-left,margin-right] duration-500 
+    w-[75%] mx-auto
+    hover:shadow-none`}
+>
+  <CardHeader className="pb-0">
+    <CardTitle className="text-lg"> Newsletter Signup </CardTitle>
+  </CardHeader>
+  <CardContent className="my-0 [&>p]:my-0 [&>ol]:my-2 [&>ul]:my-2">
+    <p>
+      Do you like this content and want to stay updated with the latest articles, tutorials, and insights on
+      cybersecurity? Sign up for our newsletter to receive regular updates directly in your inbox!
+    </p>
+    <p>We respect your privacy and will never share your information with third parties.</p>
+      <Button
+        as={"a"}
+        href="https://253d31b3.sibforms.com/serve/MUIFAEr1IugZm6QDOwKafKCol16R4LDGsJHQeopFrM6cUbZvtV9bi5qne1DnpF9kfyMIBI_Wl2m6QrB7gQEUhresdMFaQOTrRV3guqFOMUqvlz_v7tRP9WzonccObM1kesRswVrbz5I3xLv2o2FYW5F61Yv_-TaIGOU-Y-td68BJWvep2QV7TQ_pJs4ncVo8pyGApdxS4t4_uxnNGA=="
+        rel="noopener noreferrer"
+        className="not-prose mt-4 text-base"
+        target="_blank"
+      >
+        Subscribe to Newsletter
+      </Button>
+  </CardContent>
+</Card>
