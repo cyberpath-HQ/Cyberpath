@@ -1,46 +1,85 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AuthorAvatar } from "@/components/react/author-avatar";
-import { getAuthor } from "@/data/authors";
+import { BlogList } from "@/components/react/blog-list";
+import { getAuthor, type Author } from "@/data/authors";
 import "@/styles/globals.css";
 import type { WebSite } from "schema-dts";
 import { makeJsonLd } from "@/lib/make-json-ld";
-import { Image } from "astro:assets";
-import { cn } from "@/lib/utils";
-import getReadingTime from 'reading-time';
+import getReadingTime from "reading-time";
+import { createSearchablePost, precomputeIndex } from "@/lib/search-utils";
+import { getImage } from "astro:assets";
+import type { GetImageResult } from "astro";
 
 // Get all blog posts and sort by date
 const allPosts = await getCollection("blog", ({ data }) => {
   return data.draft !== true;
 });
 
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Create searchable posts data
+const searchablePosts = sortedPosts.map((post) => {
+  const readingTime = getReadingTime(post.body!).text;
+  return createSearchablePost(post, readingTime);
+});
+
+// Create authors map for client
+const authorsMap = sortedPosts.reduce(
+  (acc, post) => {
+    const author = getAuthor(post.data.author);
+    if (author) {
+      acc[post.data.author] = author;
+    }
+    return acc;
+  },
+  {} as Record<string, Author>
 );
 
-// Get unique tags
-const allTags = [
-  ...new Set(sortedPosts.flatMap((post) => post.data.tags)),
-].sort();
+const images_map = Object.fromEntries(
+  await Promise.all(
+    searchablePosts.map(async (post): Promise<[string, GetImageResult | undefined]> => {
+      return [
+        post.id,
+        !post.data.heroImage
+          ? undefined
+          : await getImage({
+              src: post.data.heroImage,
+              alt: post.data.title,
+              inferSize: true,
+              format: "webp",
+              quality: 80,
+            }),
+      ];
+    })
+  )
+);
 
-// Format date helper
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+const author_images_map = Object.fromEntries(
+  await Promise.all(
+    Object.entries(authorsMap).map(async ([key, author]): Promise<[string, GetImageResult | undefined]> => {
+      return [
+        key,
+        !author.avatar
+          ? undefined
+          : await getImage({
+              src: author.avatar,
+              alt: author.name,
+              inferSize: true,
+              format: "webp",
+              quality: 80,
+              width: 32,
+              height: 32,
+            }),
+      ];
+    })
+  )
+);
+
+// Get unique tags for metadata
+const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags))].sort();
+
+const fuse_index = precomputeIndex(searchablePosts);
 
 const json_ld = makeJsonLd<WebSite>({
   "@type": "WebSite",
@@ -48,15 +87,13 @@ const json_ld = makeJsonLd<WebSite>({
   "@id": "https://cyberpath-hq.com/",
   url: new URL("/blog", Astro.site).toString(),
   name: "Cyberpath Blog",
-  description:
-    "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+  description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
   inLanguage: "en-US",
   author: {
     "@type": "Person",
     name: "Cyberpath",
     email: "support@cyberpath-hq.com",
-    description:
-      "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
   image: {
@@ -72,8 +109,7 @@ const json_ld = makeJsonLd<WebSite>({
     "@type": "Person",
     name: "Cyberpath",
     email: "support@cyberpath-hq.com",
-    description:
-      "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
 });
@@ -83,13 +119,11 @@ const json_ld = makeJsonLd<WebSite>({
   JSON_LD={json_ld}
   seo={{
     title: "Blog - Cyberpath",
-    description:
-      "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+    description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
     canonical: new URL("/blog", Astro.site).toString(),
     openGraph: {
       title: "Blog - Cyberpath",
-      description:
-        "Read our latest articles about cybersecurity, certifications, career paths, and more.",
+      description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
       type: "website" as const,
       url: new URL("/blog", Astro.site).toString(),
       images: [
@@ -117,14 +151,9 @@ const json_ld = makeJsonLd<WebSite>({
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <!-- Header -->
     <header class="mb-12 text-center">
-      <h1
-        class="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-      >
-        Blog
-      </h1>
+      <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">Blog</h1>
       <p class="mx-auto max-w-2xl text-xl text-muted-foreground">
-        Insights, tutorials, and thoughts on cybersecurity, certifications, and
-        career development.
+        Insights, tutorials, and thoughts on cybersecurity, certifications, and career development.
       </p>
       <div class="mt-6">
         <a
@@ -143,131 +172,15 @@ const json_ld = makeJsonLd<WebSite>({
       </div>
     </header>
 
-    <!-- Tags Filter (Optional - can be enhanced with React component for interactivity) -->
-    {
-      allTags.length > 0 && (
-        <div class="mb-8">
-          <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Filter by Tag
-          </h2>
-          <div class="flex flex-wrap gap-2">
-            {allTags.map((tag) => (
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-secondary"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )
-    }
-
-    <!-- Blog Posts Grid -->
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {
-        sortedPosts.map((post) => {
-          const {
-            title,
-            description,
-            pubDate,
-            heroImage,
-            heroClass,
-            tags,
-            author: authorId,
-          } = post.data;
-          const author = getAuthor(authorId);
-
-          if (!author) return null;
-
-          const readingTime = getReadingTime(post.body!).text;
-
-          return (
-            <a href={`/blog/${post.id}`} class="group block h-full">
-              <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
-                {heroImage && (
-                  <div class="aspect-[16/9] w-full overflow-hidden rounded-t-lg max-h-40">
-                    <Image
-                      src={heroImage}
-                      alt={title}
-                      inferSize={true}
-                      class={cn("h-full w-full object-cover transition-transform group-hover:scale-105", heroClass)}
-                    />
-                  </div>
-                )}
-
-                <CardHeader>
-                  <div class="mb-2 flex items-center gap-2">
-                    <AuthorAvatar
-                      client:only="react"
-                      name={author.name}
-                      avatarSrc={author.avatar?.src}
-                      className="h-8 w-8"
-                    >
-                      <Image
-                        src={author.avatar!}
-                        alt={author.name}
-                        width={32}
-                        height={32}
-                      />
-                    </AuthorAvatar>
-                    <div class="flex flex-col">
-                      <span class="text-sm font-medium">{author.name}</span>
-                      <span class="text-xs text-muted-foreground">
-                        {formatDate(pubDate)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <CardTitle className="line-clamp-2 group-hover:text-primary">
-                    {title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                  {tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2">
-                      {tags.slice(0, 3).map((tag) => (
-                        <Badge variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {tags.length > 3 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-
-                {readingTime && (
-                  <CardFooter>
-                    <span class="text-sm text-muted-foreground">
-                      {readingTime}
-                    </span>
-                  </CardFooter>
-                )}
-              </Card>
-            </a>
-          );
-        })
-      }
-    </div>
-
-    <!-- Empty State -->
-    {
-      sortedPosts.length === 0 && (
-        <div class="py-16 text-center">
-          <p class="text-xl text-muted-foreground">
-            No blog posts yet. Check back soon!
-          </p>
-        </div>
-      )
-    }
+    <!-- Client-side Blog List with Search, Filters, and Pagination -->
+    <BlogList
+      client:load
+      posts={searchablePosts}
+      authors={authorsMap}
+      itemsPerPage={9}
+      images={images_map}
+      author_images={author_images_map}
+      index={fuse_index}
+    />
   </div>
 </Layout>

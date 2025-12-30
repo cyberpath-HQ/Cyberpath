@@ -38,6 +38,7 @@ const blog = defineCollection({
         heroClass:      z.string().optional(),
         draft:           z.boolean().default(false),
         tags:            z.array(z.string()).default([]),
+        category:        z.string().optional(), // Optional category override
 
         // Author ID from authors.ts
         author:          z.string(),
