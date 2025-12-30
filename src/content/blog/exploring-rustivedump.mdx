@@ -10,6 +10,7 @@ author: ebalo
 ---
 
 import Newsletter from "@/components/astro/blog/newsletter.astro";
+import Alert from "@/components/astro/blog/alert.astro";
 
 ## LSASS Memory Dumping Using NTAPIs in Rust
 
@@ -25,10 +26,10 @@ and supporting features like **XOR encryption** and **remote file transmission**
 down its core features, show how to use it in different scenarios, and provide an in-depth technical walkthrough of its
 behavior.
 
-> **!! Update !!**
->
-> RustiveDump now also has **shellcode** generation capabilities thanks to Rustic64!
-> [Check out the article here](https://cyberpath-hq.com/blog/pic-shellcode-the-rust-way)!
+<Alert type="info" title="!! Update !!">
+RustiveDump now also has **shellcode** generation capabilities thanks to Rustic64!
+[Check out the article here](https://cyberpath-hq.com/blog/pic-shellcode-the-rust-way)!
+</Alert>
 
 ## What is RustiveDump?
 
@@ -62,13 +63,13 @@ behavior to different operational needs.
 
 To compile RustiveDump without any special features simply run:
 
-```
+```bash
 cargo make
 ```
 
 For specific features, the build command can be extended with feature flags:
 
-```
+```bash
 cargo make --env FEATURES=xor,remote,lsasrv,debug pic
 ```
 
