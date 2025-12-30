@@ -271,13 +271,15 @@ export function BlogList({
 
             {/* Results Count */}
             <div className="text-sm text-muted-foreground">
-                {filteredPosts.length === posts.length
-? (
-                    <span>Showing all {posts.length} articles</span>
-                )
-: (
-                    <span>Found {filteredPosts.length} of {posts.length} articles</span>
-                )}
+                {
+                    filteredPosts.length === posts.length
+                    ? (
+                        <span>Showing all {posts.length} articles</span>
+                    )
+                    : (
+                        <span>Found {filteredPosts.length} of {posts.length} articles</span>
+                    )
+                }
             </div>
 
             {/* Blog Posts Grid */}
@@ -296,7 +298,7 @@ export function BlogList({
                                     <a key={post.id} href={post.data.url} className="group block h-full">
                                         <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
                                             {images[post.id] && (
-                                                <div className="aspect-[16/9] transition-all hover:shadow-lg hover:border-primary/50 overflow-hidden rounded-t-xl">
+                                                <div className="aspect-[16/9] transition-all hover:border-primary/50 overflow-hidden rounded-t-xl">
                                                     <img
                                                         src={images[post.id]!.src}
                                                         alt={post.data.title}
