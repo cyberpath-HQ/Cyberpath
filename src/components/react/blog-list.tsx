@@ -39,7 +39,6 @@ export function BlogList({
     author_blur_images,
     index,
 }: BlogListProps): React.JSX.Element {
-    console.log({images, blur_images, author_images, author_blur_images});
 
     const [
         searchQuery,

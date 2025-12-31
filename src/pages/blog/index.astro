@@ -190,14 +190,12 @@ const json_ld = makeJsonLd<WebSite>({
       images={images_map}
       author_images={Object.fromEntries(
         Object.entries(authorsMap).map(([id, author]) => {
-          console.log("creating author image for", id, author.avatar?.default);
           return [id, author.avatar?.default];
         })
       )}
       blur_images={blur_images_map}
       author_blur_images={Object.fromEntries(
         Object.entries(authorsMap).map(([id, author]) => {
-          console.log("creating author blur image for", id, author.avatar?.blur);
           return [id, author.avatar?.blur];
         })
       )}
