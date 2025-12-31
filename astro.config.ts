@@ -10,6 +10,7 @@ import { defineConfig } from "astro/config";
 import expressiveCode from 'astro-expressive-code';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
+import remarkAutoLink from "./src/lib/auto-link-remark-plugin";
 import remarkUtmParams from "./src/lib/utm-remark-plugin";
 
 // https://astro.build/config
@@ -56,6 +57,10 @@ export default defineConfig({
             wrap:         false,
         },
         remarkPlugins: [
+            [
+                remarkAutoLink,
+                {},
+            ],
             [
                 remarkUtmParams,
                 {},
