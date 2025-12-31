@@ -2,6 +2,9 @@
 import Layout from "@layouts/Layout.astro";
 import { makeJsonLd } from "src/lib/make-json-ld";
 import type { WebPage } from "schema-dts";
+import certdbLogo from "@/assets/blog/logo-certdb.svg";
+import orbisLogo from "@/assets/blog/logo-orbis.svg";
+import OptimizedImage from "@/components/astro/common/OptimizedImage.astro";
 
 const date = new Date();
 const json_ld = makeJsonLd<WebPage>({
@@ -39,7 +42,7 @@ const projects = [
         description: "A public database of cybersecurity certifications featuring descriptions, career paths, and more. Search by acronym, provider, title, or career path to find the information you need to advance your career.",
         github: "https://github.com/cyberpath-HQ/CertDb",
         website: "https://certdb.cyberpath-hq.com/",
-        logo: "https://raw.githubusercontent.com/cyberpath-HQ/CertDb/master/src/assets/logo.svg",
+        logo: certdbLogo,
         tags: ["Database", "Certifications", "Career", "Open Source"],
         color: "from-blue-500/20 to-cyan-500/20",
         borderColor: "border-blue-500/30",
@@ -51,7 +54,7 @@ const projects = [
         description: "A plugin-driven desktop application platform built with Rust and React. Define UIs with JSON schemas, sandbox plugins with WASM, and deploy anywhere. Features 35+ components and secure plugin isolation.",
         github: "https://github.com/cyberpath-HQ/orbis",
         website: "https://orbis.cyberpath-hq.com/",
-        logo: "https://raw.githubusercontent.com/cyberpath-HQ/orbis/main/docs/public/logo.svg",
+        logo: orbisLogo,
         tags: ["Desktop App", "Plugins", "WASM", "Open Source"],
         color: "from-purple-500/20 to-pink-500/20",
         borderColor: "border-purple-500/30",
@@ -285,7 +288,7 @@ const projects = [
                                     {
                                         project.logo && (
                                             <div class="h-12 flex items-center justify-center">
-                                                <img src={project.logo} alt={`${project.name} logo`} class="w-full h-full object-contain" />
+                                                <OptimizedImage src={project.logo} alt={`${project.name} logo`} class="w-full h-full object-contain" />
                                             </div>
                                         )
                                     }
