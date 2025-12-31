@@ -10,12 +10,13 @@ import { TableOfContents } from "@/components/react/table-of-contents";
 import { ReadingProgress } from "@/components/react/reading-progress";
 import { ShareButtons } from "@/components/react/share-buttons";
 import RelatedPosts from "@/components/astro/blog/related-posts.astro";
+import OptimizedImage from "@/components/astro/common/OptimizedImage.astro";
+import {OptimizedImage as ReactOptimizedImage} from "@/components/react/optimized-image";
 import "@/styles/globals.css";
 import { render } from "astro:content";
 import { getAuthor } from "@/data/authors";
 import { makeJsonLd } from "@/lib/make-json-ld";
 import type { Article } from "schema-dts";
-import { Image } from "astro:assets";
 import { cn } from "@/lib/utils";
 import getReadingTime from "reading-time";
 import { Button } from "@/components/ui/button";
@@ -150,7 +151,7 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
         {
           heroImage && (
             <div class="aspect-[16/9] w-full overflow-hidden rounded-lg">
-              <Image src={heroImage} alt={title} inferSize={true} class={cn("h-full w-full object-cover", heroClass)} />
+              <OptimizedImage src={heroImage} alt={title} class={cn("h-full w-full object-cover", heroClass)} />
             </div>
           )
         }
@@ -207,7 +208,7 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
       <Card className="mb-8 p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
           <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.src} className="h-16 w-16">
-            {author.avatar && <Image src={author.avatar} alt={author.name} width={64} height={64} />}
+            {author.avatar && <ReactOptimizedImage src={author.avatar.src} alt={author.name} width={64} height={64} />}
           </AuthorAvatar>
 
           <div class="flex-1 space-y-2">
@@ -326,7 +327,7 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
                 [&_.mermaid]:max-w-full [&_.mermaid]:mx-0
                 lg:prose-lg"
       >
-        <Content />
+        <Content components={{ img: OptimizedImage, picture: OptimizedImage }} />
       </article>
 
       <!-- Related Posts -->

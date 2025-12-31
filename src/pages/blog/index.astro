@@ -55,6 +55,26 @@ const images_map = Object.fromEntries(
   )
 );
 
+const blur_images_map = Object.fromEntries(
+  await Promise.all(
+    searchablePosts.map(async (post): Promise<[string, GetImageResult | undefined]> => {
+      return [
+        post.id,
+        !post.data.heroImage
+          ? undefined
+          : await getImage({
+              src: post.data.heroImage,
+              alt: post.data.title,
+              width: 20,
+              height: 11,
+              format: "webp",
+              quality: 10,
+            }),
+      ];
+    })
+  )
+);
+
 const author_images_map = Object.fromEntries(
   await Promise.all(
     Object.entries(authorsMap).map(async ([key, author]): Promise<[string, GetImageResult | undefined]> => {
@@ -70,6 +90,26 @@ const author_images_map = Object.fromEntries(
               quality: 80,
               width: 32,
               height: 32,
+            }),
+      ];
+    })
+  )
+);
+
+const author_blur_images_map = Object.fromEntries(
+  await Promise.all(
+    Object.entries(authorsMap).map(async ([key, author]): Promise<[string, GetImageResult | undefined]> => {
+      return [
+        key,
+        !author.avatar
+          ? undefined
+          : await getImage({
+              src: author.avatar,
+              alt: author.name,
+              width: 20,
+              height: 20,
+              format: "webp",
+              quality: 10,
             }),
       ];
     })
@@ -180,6 +220,8 @@ const json_ld = makeJsonLd<WebSite>({
       itemsPerPage={9}
       images={images_map}
       author_images={author_images_map}
+      blur_images={blur_images_map}
+      author_blur_images={author_blur_images_map}
       index={fuse_index}
     />
   </div>
