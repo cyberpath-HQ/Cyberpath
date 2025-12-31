@@ -2,113 +2,102 @@
 import type { CollectionEntry } from "astro:content";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Image } from "astro:assets";
+import OptimizedImage from "@/components/astro/common/OptimizedImage.astro";
 import { cn } from "@/lib/utils";
 
 interface Props {
-    currentPost: CollectionEntry<"blog">;
-    allPosts: CollectionEntry<"blog">[];
-    maxPosts?: number;
+  currentPost: CollectionEntry<"blog">;
+  allPosts: CollectionEntry<"blog">[];
+  maxPosts?: number;
 }
 
 const { currentPost, allPosts, maxPosts = 3 } = Astro.props;
 
 // Calculate similarity score based on shared tags
 function getSimilarityScore(post: CollectionEntry<"blog">): number {
-    const currentTags = new Set(currentPost.data.tags.map(tag => tag.toLowerCase()));
-    const postTags = post.data.tags.map(tag => tag.toLowerCase());
-    
-    let score = 0;
-    postTags.forEach(tag => {
-        if (currentTags.has(tag)) {
-            score++;
-        }
-    });
-    
-    return score;
+  const currentTags = new Set(currentPost.data.tags.map((tag) => tag.toLowerCase()));
+  const postTags = post.data.tags.map((tag) => tag.toLowerCase());
+
+  let score = 0;
+  postTags.forEach((tag) => {
+    if (currentTags.has(tag)) {
+      score++;
+    }
+  });
+
+  return score;
 }
 
 // Find related posts
 const relatedPosts = allPosts
-    .filter(post => post.id !== currentPost.id) // Exclude current post
-    .map(post => ({
-        post,
-        score: getSimilarityScore(post)
-    }))
-    .filter(item => item.score > 0) // Only posts with at least one shared tag
-    .sort((a, b) => {
-        // Sort by score descending, then by date descending
-        if (b.score !== a.score) {
-            return b.score - a.score;
-        }
-        return new Date(b.post.data.pubDate).getTime() - new Date(a.post.data.pubDate).getTime();
-    })
-    .slice(0, maxPosts)
-    .map(item => item.post);
+  .filter((post) => post.id !== currentPost.id) // Exclude current post
+  .map((post) => ({
+    post,
+    score: getSimilarityScore(post),
+  }))
+  .filter((item) => item.score > 0) // Only posts with at least one shared tag
+  .sort((a, b) => {
+    // Sort by score descending, then by date descending
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    return new Date(b.post.data.pubDate).getTime() - new Date(a.post.data.pubDate).getTime();
+  })
+  .slice(0, maxPosts)
+  .map((item) => item.post);
 
 const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 };
 ---
 
-{relatedPosts.length > 0 && (
+{
+  relatedPosts.length > 0 && (
     <section class="mt-16">
-        <h2 class="mb-6 text-2xl font-bold">Related Posts</h2>
-        
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {relatedPosts.map((post) => {
-                const { title, description, pubDate, heroImage, tags, heroClass } = post.data;
-                
-                return (
-                    <a href={`/blog/${post.id}`} class="group block h-full">
-                        <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
-                            {heroImage && (
-                                <div class="aspect-[16/9] w-full overflow-hidden rounded-t-lg">
-                                    <Image
-                                        src={heroImage}
-                                        alt={title}
-                                        inferSize={true}
-                                        class={cn("h-full w-full object-cover transition-transform group-hover:scale-105", heroClass)}
-                                    />
-                                </div>
-                            )}
-                            
-                            <CardHeader>
-                                <div class="mb-2 text-xs text-muted-foreground">
-                                    {formatDate(pubDate)}
-                                </div>
-                                <CardTitle className="line-clamp-2 text-lg group-hover:text-primary">
-                                    {title}
-                                </CardTitle>
-                                <CardDescription className="line-clamp-2">
-                                    {description}
-                                </CardDescription>
-                            </CardHeader>
-                            
-                            <CardContent>
-                                {tags.length > 0 && (
-                                    <div class="flex flex-wrap gap-2">
-                                        {tags.slice(0, 2).map((tag) => (
-                                            <Badge className="text-xs">
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                        {tags.length > 2 && (
-                                            <Badge className="text-xs">
-                                                +{tags.length - 2}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </a>
-                );
-            })}
-        </div>
+      <h2 class="mb-6 text-2xl font-bold">Related Posts</h2>
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {relatedPosts.map((post) => {
+          const { title, description, pubDate, heroImage, tags, heroClass } = post.data;
+
+          return (
+            <a href={`/blog/${post.id}`} class="group block h-full">
+              <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
+                {heroImage && (
+                  <div class="aspect-[16/9] w-full overflow-hidden rounded-t-lg">
+                    <OptimizedImage
+                      src={heroImage}
+                      alt={title}
+                      class={cn("h-full w-full object-cover transition-transform group-hover:scale-105", heroClass)}
+                    />
+                  </div>
+                )}
+
+                <CardHeader>
+                  <div class="mb-2 text-xs text-muted-foreground">{formatDate(pubDate)}</div>
+                  <CardTitle className="line-clamp-2 text-lg group-hover:text-primary">{title}</CardTitle>
+                  <CardDescription className="line-clamp-2">{description}</CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                  {tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {tags.slice(0, 2).map((tag) => (
+                        <Badge className="text-xs">{tag}</Badge>
+                      ))}
+                      {tags.length > 2 && <Badge className="text-xs">+{tags.length - 2}</Badge>}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </a>
+          );
+        })}
+      </div>
     </section>
-)}
+  )
+}
