@@ -45,6 +45,12 @@ export async function renderMermaidToSVG(code: string): Promise<string> {
                         fontFamily: `Inter, system-ui, sans-serif`,
                     },
                 },
+                puppeteerConfig: {
+                    args: [
+                        `--no-sandbox`,
+                        `--disable-setuid-sandbox`,
+                    ],
+                },
             }
         );
 
