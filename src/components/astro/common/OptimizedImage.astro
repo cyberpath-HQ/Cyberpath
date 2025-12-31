@@ -2,12 +2,12 @@
 import { Picture, getImage, type LocalImageProps, type RemoteImageProps } from "astro:assets";
 import type { ImageOutputFormat } from "astro";
 import { cn } from "@/lib/utils";
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes } from "astro/types";
 
 export type Props = (LocalImageProps | RemoteImageProps) & {
-	formats?: ImageOutputFormat[];
-	fallbackFormat?: ImageOutputFormat;
-	pictureAttributes?: HTMLAttributes<'picture'>;
+  formats?: ImageOutputFormat[];
+  fallbackFormat?: ImageOutputFormat;
+  pictureAttributes?: HTMLAttributes<"picture">;
 };
 
 const {
@@ -22,6 +22,7 @@ const {
   formats = ["webp", "avif"],
   fallbackFormat = "webp",
   quality = 80,
+  pictureAttributes,
   ...rest
 } = Astro.props;
 
@@ -29,7 +30,7 @@ const {
 const blurImage = await getImage({
   src,
   width: 100,
-  height: Math.round((height && width ? (+height / +width) * 100 : 56) ), // Maintain aspect ratio or default to 16:9
+  height: Math.round(height && width ? (+height / +width) * 100 : 56), // Maintain aspect ratio or default to 16:9
   quality: 10,
   format: "webp",
 });
@@ -43,10 +44,10 @@ const pictureProps: any = {
   loading,
   decoding,
   sizes,
-  class: cn(`optimized-image`, className),
   pictureAttributes: {
-    className: "optimized-picture",
-  },
+    className: cn(`optimized-image`, className),
+    ...pictureAttributes,
+  } as HTMLAttributes<"picture">,
   ...rest,
 };
 
@@ -56,26 +57,36 @@ if (height !== undefined) pictureProps.height = height;
 ---
 
 {
-    loading === "eager" 
-    ? (
-        <Picture {...pictureProps} alt={alt} class={className} inferSize={true} />
-    )
-    : (
-        <div class={cn("optimized-image-wrapper", className)}>
-            <img src={blurImage.src} alt={alt} aria-hidden="true" class={cn("blur-placeholder", className)} />
-            <Picture {...pictureProps} alt={alt} inferSize={true} />
-        </div>
-    )
+  loading === "eager" ? (
+    <Picture {...pictureProps} alt={alt} class={className} inferSize={true} />
+  ) : (
+    <div class={cn("optimized-image-wrapper", className)}>
+      <img src={blurImage.src} alt={alt} aria-hidden="true" class={cn("blur-placeholder", className)} />
+      <Picture {...pictureProps} alt={alt} inferSize={true} class={className} />
+    </div>
+  )
 }
 
 <script is:inline>
   function initOptimizedImages() {
     const wrappers = document.querySelectorAll(".optimized-image-wrapper");
+    console.log("Initializing optimized images:", wrappers.length);
+    console.log({ wrappers });
 
     wrappers.forEach((wrapper) => {
-      const img = wrapper.querySelector(".optimized-image");
+      /**
+       * @type {HTMLPictureElement | null}
+       */
+      const img = [...wrapper.querySelectorAll(".optimized-image img, .optimized-image")].filter(
+        (el) => el.tagName === "IMG"
+      )[0];
+      console.log({ img, wrapper });
 
-      if (!img) return;
+      if (!img || img.tagName !== 'IMG') {
+        console.log(img.tagName)
+        console.warn("No valid <img> found in wrapper:", wrapper);
+        return;
+      }
 
       const markAsLoaded = () => {
         wrapper.classList.add("loaded");
