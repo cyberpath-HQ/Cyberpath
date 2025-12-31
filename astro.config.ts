@@ -73,4 +73,9 @@ export default defineConfig({
     image:        {
         domains: [ `githubusercontent.com` ],
     },
+    prefetch: {
+        defaultStrategy: `viewport`,
+        prefetchAll:     true,
+    },
+    scopedStyleStrategy: `class`,
 });
