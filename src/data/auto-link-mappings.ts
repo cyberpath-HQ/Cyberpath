@@ -575,7 +575,7 @@ export const LINK_MAPPINGS: LinkMappings = {
         title:    `Command and Control (C2)`,
     },
     DDoS: {
-        url:      `https://en.wikipedia.org/wiki/Denial-of-service_attack`,
+        url:      `https://attack.mitre.org/techniques/T0814/`,
         internal: false,
         title:    `Distributed Denial of Service`,
     },
@@ -662,7 +662,7 @@ export const LINK_MAPPINGS: LinkMappings = {
     sqlmap: {
         url:      `https://sqlmap.org/`,
         internal: false,
-        title:    `sqlmap - SQL Injection Tool`,
+        title:    `SQLMap - SQL Injection Tool`,
     },
     Hashcat: {
         url:      `https://hashcat.net/hashcat/`,
