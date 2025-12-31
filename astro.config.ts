@@ -43,6 +43,7 @@ export default defineConfig({
         mdx({
             extendMarkdownConfig: true,
             gfm:                  true,
+            optimize:             true,
         }),
     ],
     build:        {
