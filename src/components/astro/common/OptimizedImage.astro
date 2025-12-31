@@ -70,8 +70,6 @@ if (height !== undefined) pictureProps.height = height;
 <script is:inline>
   function initOptimizedImages() {
     const wrappers = document.querySelectorAll(".optimized-image-wrapper");
-    console.log("Initializing optimized images:", wrappers.length);
-    console.log({ wrappers });
 
     wrappers.forEach((wrapper) => {
       /**
@@ -80,11 +78,8 @@ if (height !== undefined) pictureProps.height = height;
       const img = [...wrapper.querySelectorAll(".optimized-image img, .optimized-image")].filter(
         (el) => el.tagName === "IMG"
       )[0];
-      console.log({ img, wrapper });
 
       if (!img || img.tagName !== 'IMG') {
-        console.log(img.tagName)
-        console.warn("No valid <img> found in wrapper:", wrapper);
         return;
       }
 
