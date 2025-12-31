@@ -1,24 +1,29 @@
 ---
-// Mermaid diagram component
+// Server-side Mermaid diagram component - renders at build time
+import { renderMermaidToSVG } from "@/lib/mermaid-renderer";
+
 interface Props {
   code: string;
 }
 
 const { code } = Astro.props;
-const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
 // Trim and normalize the code
 const normalizedCode = code.trim();
+
+const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+
+// Render Mermaid to SVG at build time
+const svg = await renderMermaidToSVG(normalizedCode);
 ---
 
 <div class="mermaid-wrapper not-prose my-8">
   <div class="mermaid-container rounded-lg border bg-card p-2">
-    <pre id={id} class="mermaid">{normalizedCode}</pre>
+    <div id={id} class="mermaid-svg-wrapper" set:html={svg} />
   </div>
 </div>
 
 <script>
-  import mermaid from "mermaid";
   import Panzoom from "@panzoom/panzoom";
 
   // Enable pan and zoom for Mermaid diagrams
@@ -38,72 +43,31 @@ const normalizedCode = code.trim();
     // Add mouse wheel zoom
     container.addEventListener("wheel", panzoomInstance.zoomWithWheel);
   }
-
-  function initMermaid(): void {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: "default",
-      securityLevel: "loose",
-      fontFamily: "Inter, system-ui, sans-serif",
-      flowchart: {
-        htmlLabels: false,
-      },
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".mermaid-svg-wrapper").forEach((element) => {
+      panzoomMermaid(element.id);
     });
-
-    // Re-render on theme change
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "class") {
-          mermaid.initialize({
-            theme: "default",
-          });
-          mermaid.run({
-            querySelector: `.mermaid`,
-            postRenderCallback: panzoomMermaid,
-          });
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    mermaid.run({
-      querySelector: `.mermaid`,
-      postRenderCallback: panzoomMermaid,
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initMermaid);
-  } else {
-    initMermaid();
-  }
-
-  document.addEventListener("astro:after-swap", initMermaid);
+  });
 </script>
 
 <style>
   .mermaid-wrapper,
-  .mermaid-wrapper *,
-  .mermaid,
-  .mermaid * {
+  .mermaid-wrapper * {
     font-variant-ligatures: none !important;
     font-feature-settings:
       "liga" off,
       "calt" off !important;
   }
 
-  .mermaid {
+  .mermaid-svg-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
   }
 
-  .mermaid svg {
+  .mermaid-svg-wrapper :global(svg) {
     max-width: 100%;
     height: auto;
   }
