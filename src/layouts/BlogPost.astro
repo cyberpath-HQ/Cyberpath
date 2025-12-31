@@ -207,13 +207,13 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
       <!-- Author Card -->
       <Card className="mb-8 p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.default.src} className="h-16 w-16">
+          <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.default} className="h-16 w-16">
             {
               author.avatar && (
                 <ReactOptimizedImage
                   client:only="react"
-                  src={author.avatar.default.src}
-                  blurSrc={author.avatar.blur.src}
+                  src={author.avatar.default}
+                  blurSrc={author.avatar.blur}
                   alt={author.name}
                   width={64}
                   height={64}
