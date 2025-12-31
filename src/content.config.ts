@@ -3,6 +3,7 @@ import {
 } from "astro:content";
 import { CareerPathsList } from "./lib/career-paths.ts";
 import { glob } from 'astro/loaders';
+import { BLOG_COLLECTION_LOADER } from "./lib/blog-collection-loader.ts";
 
 const certifications = defineCollection({
     loader: glob({
@@ -23,10 +24,7 @@ const certifications = defineCollection({
 });
 
 const blog = defineCollection({
-    loader: glob({
-        pattern: `**/*.{md,mdx}`,
-        base:    `./src/content/blog`,
-    }),
+    loader: BLOG_COLLECTION_LOADER,
     schema: ({
         image,
     }) => z.object({
@@ -35,7 +33,7 @@ const blog = defineCollection({
         pubDate:         z.date(),
         updatedDate:     z.date().optional(),
         heroImage:       image().optional(),
-        heroClass:      z.string().optional(),
+        heroClass:       z.string().optional(),
         draft:           z.boolean().default(false),
         tags:            z.array(z.string()).default([]),
 
@@ -44,6 +42,9 @@ const blog = defineCollection({
 
         // Author ID from authors.ts
         author:          z.string(),
+
+        // Optional link hooks for auto-linking with custom wordings
+        linkHooks:       z.array(z.string()).optional(),
     }),
 });
 

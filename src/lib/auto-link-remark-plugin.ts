@@ -6,6 +6,7 @@ import { visit } from 'unist-util-visit';
 import {
     getLinkMappings, type LinkDefinition, type LinkMappings
 } from '../data/auto-link-mappings';
+import path from 'path';
 
 const LINK_MAPPINGS = await getLinkMappings();
 
@@ -30,6 +31,9 @@ export interface AutoLinkPluginOptions {
 
     /** Terms to exclude from auto-linking */
     excludeTerms?: Array<string>
+
+    /** URLs to exclude from auto-linking (e.g., current page URL to prevent self-references) */
+    excludeUrls?: Array<string>
 
     /** Enable debug logging (default: false) */
     is_debug?: boolean
@@ -347,6 +351,7 @@ export default function remarkAutoLink(options: AutoLinkPluginOptions = {}) {
         maxLinksPerTerm = ONE,
         customMappings = {},
         excludeTerms = [],
+        excludeUrls = [],
         is_debug = false,
     } = options;
 
@@ -357,25 +362,52 @@ export default function remarkAutoLink(options: AutoLinkPluginOptions = {}) {
 
     const exclude_set = new Set(excludeTerms.map((t) => t.toLowerCase()));
 
-    const sorted_terms = Object.keys(mappings)
-        .filter((term) => !exclude_set.has(term.toLowerCase()))
-        .sort((a, b) => b.length - a.length);
-
     /**
      * @param {Root} tree
      * @returns {void}
      */
-    /* eslint-disable @typescript-eslint/explicit-function-return-type */
-    /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-    return function transformer(tree: unknown, _file: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    return function transformer(tree: unknown, file: any): void {
+        const filename = path.basename(
+            file.history?.[file.history.length - 1] ?? `unknown`
+        ).replace(/\.(md|mdx)$/, ``);
         const linked_counts = new Map<string, number>();
 
+        const current_page_url = `/blog/${ filename }`;
+        console.log(`[auto-link] Processing page URL: ${ current_page_url }`);
+
+        // Get current page URL from context to prevent self-references
+        const all_exclude_urls = [
+            ...excludeUrls,
+            current_page_url,
+        ];
+        const exclude_urls_set = new Set(all_exclude_urls.map((u) => u.toLowerCase()));
+
+        // Filter out terms that point to excluded URLs
+        const filtered_mappings: LinkMappings = {};
+        for (const [
+            term,
+            def,
+        ] of Object.entries(mappings)) {
+            const resolved_def = resolveDefinition(term, mappings);
+            if (resolved_def?.url) {
+                const normalized_url = resolved_def.url.toLowerCase();
+                if (!exclude_urls_set.has(normalized_url)) {
+                    filtered_mappings[term] = def;
+                }
+            }
+        }
+
+        const sorted_terms = Object.keys(filtered_mappings)
+            .filter((term) => !exclude_set.has(term.toLowerCase()))
+            .sort((a, b) => b.length - a.length);
+
         const state: ProcessingState = {
-            mappings,
+            mappings:      filtered_mappings,
             sorted_terms,
             linked_counts,
-            max_links: maxLinksPerTerm,
-            base_url:  baseUrl,
+            max_links:     maxLinksPerTerm,
+            base_url:      baseUrl,
             is_debug,
         };
 
