@@ -61,11 +61,8 @@ export default function remarkUtmParams(options: UtmPluginOptions = {}) {
         excludeDomains = [],
     } = options;
 
-    /**
-   * @param {Root} tree
-   * @returns {void}
-   */
-    return function transformer(tree: unknown, file: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    return function transformer(tree: unknown, file: any): void {
         const campaign = String(file.data.astro.frontmatter?.[campaignField] ?? `blog-post`);
         const excludeSet = new Set(excludeDomains);
         const historyLength = file.history?.length ?? ZERO;

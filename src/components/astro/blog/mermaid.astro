@@ -11,7 +11,7 @@ const { code } = Astro.props;
 // Trim and normalize the code
 const normalizedCode = code.trim();
 
-const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
 
 // Render Mermaid to SVG at build time
 const svg = await renderMermaidToSVG(normalizedCode);

@@ -271,7 +271,7 @@ const projects = [
             </div>
 
             <div class="mx-auto max-w-6xl grid gap-8 md:grid-cols-2">
-                {projects.map((project, index) => (
+                {projects.map((project, _) => (
                     <div class={`project-card relative rounded-2xl border-2 ${project.borderColor} ${project.hoverBorder} bg-white p-8 shadow-lg hover:shadow-2xl opacity-0 animate-fade-in-up ${project.delay}`}>
                         <!-- Gradient Background -->
                         <div class={`gradient-bg absolute inset-0 rounded-2xl bg-gradient-to-br ${project.color} opacity-0 transition-opacity duration-500 pointer-events-none`}></div>

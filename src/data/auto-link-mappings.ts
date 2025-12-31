@@ -1495,7 +1495,7 @@ export async function generateBlogMappings(): Promise<LinkMappings> {
                     const raw = await readFile(file_path, `utf-8`);
                     const {
                         data,
-                    } = await matter(raw);
+                    } = matter(raw);
                     return {
                         frontmatter: {
                             ...data,
