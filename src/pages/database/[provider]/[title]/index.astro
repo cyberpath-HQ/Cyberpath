@@ -5,45 +5,43 @@ import { getCollection } from "astro:content";
  * Get the paths for the static site generation.
  */
 export async function getStaticPaths() {
-    const certifications = await getCollection("certifications", (entry) => {
-        return !entry.data.draft;
-    });
+  const certifications = await getCollection("certifications", (entry) => {
+    return !entry.data.draft;
+  });
 
-    return certifications.map((certification) => {
-        const [ provider, title ] = certification.id.split("/");
+  return certifications.map((certification) => {
+    const [provider, title] = certification.id.split("/");
 
-        return {
-            params: {
-                provider,
-                title,
-            },
-            props:  {
-                certification,
-                provider,
-            },
-        };
-    });
+    return {
+      params: {
+        provider,
+        title,
+      },
+      props: {
+        certification,
+        provider,
+      },
+    };
+  });
 }
 
-const {
-          provider,
-          title,
-      } = Astro.params;
+const { provider, title } = Astro.params;
 
-const url = `https://certdb.cyberpath-hq.com/database/${provider}/${title}`
-const content = `0; url=${url}`
+const url = `https://certdb.cyberpath-hq.com/database/${provider}/${title}`;
+const content = `0; url=${url}`;
 ---
+
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content={content} />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="canonical" href={url} />
-        <title>Redirecting...</title>
-    </head>
-    <body>
-        <h1>
-            Redirecting to <a href={url}>Cyberpath CertDb</a>
-        </h1>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={content} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={url} />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <h1>
+      Redirecting to <a href={url}>CyberPath CertDb</a>
+    </h1>
+  </body>
 </html>

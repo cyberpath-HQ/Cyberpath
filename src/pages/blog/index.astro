@@ -86,14 +86,14 @@ const json_ld = makeJsonLd<WebSite>({
   "@context": "https://schema.org",
   "@id": "https://cyberpath-hq.com/",
   url: new URL("/blog", Astro.site).toString(),
-  name: "Cyberpath Blog",
+  name: "CyberPath Blog",
   description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
   inLanguage: "en-US",
   author: {
     "@type": "Person",
-    name: "Cyberpath",
+    name: "CyberPath",
     email: "support@cyberpath-hq.com",
-    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description: "CyberPath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
   image: {
@@ -101,15 +101,15 @@ const json_ld = makeJsonLd<WebSite>({
     url: new URL("/CyberPath-og.webp", Astro.site).toString(),
     width: "1920",
     height: "933",
-    description: "Cyberpath Blog",
+    description: "CyberPath Blog",
   },
   datePublished: new Date(2025, 12, 29).toISOString(),
   dateModified: new Date().toISOString(),
   publisher: {
     "@type": "Person",
-    name: "Cyberpath",
+    name: "CyberPath",
     email: "support@cyberpath-hq.com",
-    description: "Cyberpath is a platform dedicated to cybersecurity education and career development.",
+    description: "CyberPath is a platform dedicated to cybersecurity education and career development.",
     url: "https://cyberpath-hq.com",
   },
 });
@@ -118,11 +118,11 @@ const json_ld = makeJsonLd<WebSite>({
 <Layout
   JSON_LD={json_ld}
   seo={{
-    title: "Blog - Cyberpath",
+    title: "Blog - CyberPath",
     description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
     canonical: new URL("/blog", Astro.site).toString(),
     openGraph: {
-      title: "Blog - Cyberpath",
+      title: "Blog - CyberPath",
       description: "Read our latest articles about cybersecurity, certifications, career paths, and more.",
       type: "website" as const,
       url: new URL("/blog", Astro.site).toString(),
@@ -131,10 +131,10 @@ const json_ld = makeJsonLd<WebSite>({
           url: new URL("/CyberPath-og.webp", Astro.site).toString(),
           width: 1920,
           height: 933,
-          alt: "Blog - Cyberpath",
+          alt: "Blog - CyberPath",
         },
       ],
-      site_name: "Cyberpath",
+      site_name: "CyberPath",
     },
     additionalMetaTags: [
       {

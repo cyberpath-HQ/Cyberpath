@@ -1,11 +1,6 @@
 ---
-import {
-    dash,
-    zip,
-} from "radash";
-import {
-    CAREER_PATH_SPECIAL_HIDDEN,
-} from "src/lib/career-paths";
+import { dash, zip } from "radash";
+import { CAREER_PATH_SPECIAL_HIDDEN } from "src/lib/career-paths";
 import { CareerPathsList } from "src/lib/career-paths";
 import type { CareerPathCollection } from "src/lib/career-paths";
 
@@ -13,45 +8,44 @@ import type { CareerPathCollection } from "src/lib/career-paths";
  * Get the paths for the static site generation.
  */
 export function getStaticPaths() {
-    const career_paths: CareerPathCollection = CareerPathsList.filter((entry) => {
-        return entry !== CAREER_PATH_SPECIAL_HIDDEN;
-    });
+  const career_paths: CareerPathCollection = CareerPathsList.filter((entry) => {
+    return entry !== CAREER_PATH_SPECIAL_HIDDEN;
+  });
 
-    const kebab_career_paths = career_paths.map((career_path) => {
-        return dash(career_path);
-    });
+  const kebab_career_paths = career_paths.map((career_path) => {
+    return dash(career_path);
+  });
 
-    return zip(kebab_career_paths, career_paths).map(([ path, career_path ]) => {
-        return {
-            params: {
-                path,
-            },
-            props:  {
-                path,
-                career_path,
-            },
-        };
-    });
+  return zip(kebab_career_paths, career_paths).map(([path, career_path]) => {
+    return {
+      params: {
+        path,
+      },
+      props: {
+        path,
+        career_path,
+      },
+    };
+  });
 }
 
-const {
-          path,
-      } = Astro.params;
+const { path } = Astro.params;
 
-const url = `https://certdb.cyberpath-hq.com/career-paths/${path}`
-const content = `0; url=${url}`
+const url = `https://certdb.cyberpath-hq.com/career-paths/${path}`;
+const content = `0; url=${url}`;
 ---
+
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content={content} />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="canonical" href={url} />
-        <title>Redirecting...</title>
-    </head>
-    <body>
-        <h1>
-            Redirecting to <a href={url}>Cyberpath CertDb</a>
-        </h1>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={content} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={url} />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <h1>
+      Redirecting to <a href={url}>CyberPath CertDb</a>
+    </h1>
+  </body>
 </html>

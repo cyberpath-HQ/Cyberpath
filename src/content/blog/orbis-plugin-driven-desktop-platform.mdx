@@ -29,7 +29,7 @@ sacrifice security through loose plugin systems or impose significant developmen
 Orbis addresses these challenges through its schema-driven architecture and WebAssembly sandboxing.
 
 <InfoBox title="Project Context">
-  Orbis is an open-source project developed by Cyberpath HQ, designed to simplify building extensible desktop
+  Orbis is an open-source project developed by CyberPath HQ, designed to simplify building extensible desktop
   applications. The project is available on GitHub under the Apache 2.0 license, with comprehensive documentation at
   orbis.cyberpath-hq.com. Built on Tauri, it leverages Rust for the backend and React for the frontend, providing a
   modern foundation for desktop application development.
@@ -165,21 +165,23 @@ receives a capability token that must accompany all network requests, preventing
     Plugins run in separate WASM instances with no direct access to the host system or other plugins.
   </FeatureCard>
 
-  <FeatureCard title="Declarative Permissions">
-    Plugins declare required capabilities in their manifest, reviewed before installation.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Declarative Permissions">
+  Plugins declare required capabilities in their manifest, reviewed before installation.
+</FeatureCard>
 
-  <FeatureCard title="Runtime Enforcement">
-    The platform validates and enforces permissions at runtime, blocking unauthorized operations.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Runtime Enforcement">
+  The platform validates and enforces permissions at runtime, blocking unauthorized operations.
+</FeatureCard>
 
-  <FeatureCard title="Hot Loading">
-    Plugins can be loaded and unloaded at runtime without restarting the application.
-  </FeatureCard>
+{" "}
+<FeatureCard title="Hot Loading">
+  Plugins can be loaded and unloaded at runtime without restarting the application.
+</FeatureCard>
 
-  <FeatureCard title="API Routes">
-    Plugins define custom API endpoints for backend logic and data processing.
-  </FeatureCard>
+{" "}
+<FeatureCard title="API Routes">Plugins define custom API endpoints for backend logic and data processing.</FeatureCard>
 
   <FeatureCard title="State Isolation">
     Each plugin page has its own state store, preventing interference between plugins.

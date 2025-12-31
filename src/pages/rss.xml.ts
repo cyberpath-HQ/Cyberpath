@@ -6,7 +6,7 @@ export async function GET(context: APIContext) {
     const blog = await getCollection(`blog`);
 
     return rss({
-        title:       `Cyberpath Blog`,
+        title:       `CyberPath Blog`,
         description: `Latest articles and insights on cybersecurity certifications, career paths, and industry trends`,
         site:        context.site?.toString() ?? `https://cyberpath-hq.com`,
         items:       blog.map((post) => ({

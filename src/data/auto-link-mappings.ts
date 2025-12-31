@@ -27,7 +27,7 @@ export const LINK_MAPPINGS: LinkMappings = {
     Cyberpath: {
         url:      `/`,
         internal: true,
-        title:    `Cyberpath - Cybersecurity Tools & Resources`,
+        title:    `CyberPath - Cybersecurity Tools & Resources`,
     },
     CyberPath: {
         url:      `/`,
@@ -89,25 +89,25 @@ export const LINK_MAPPINGS: LinkMappings = {
         internal: false,
         title:    `Orbis Documentation`,
     },
-    "Cyberpath blog": {
+    "CyberPath blog": {
         url:      `/blog`,
         internal: true,
-        title:    `Cyberpath Blog - Cybersecurity Articles`,
+        title:    `CyberPath Blog - Cybersecurity Articles`,
     },
     "our blog": {
         url:      `/blog`,
         internal: true,
-        title:    `Cyberpath Blog`,
+        title:    `CyberPath Blog`,
     },
-    "Cyberpath GitHub": {
+    "CyberPath GitHub": {
         url:      `https://github.com/cyberpath-HQ`,
         internal: false,
-        title:    `Cyberpath on GitHub`,
+        title:    `CyberPath on GitHub`,
     },
     "cyberpath-HQ": {
         url:      `https://github.com/cyberpath-HQ`,
         internal: false,
-        title:    `Cyberpath GitHub Organization`,
+        title:    `CyberPath GitHub Organization`,
     },
     "Blue Team Specialist": {
         url:      `https://certdb.cyberpath-hq.com/career-paths/blue-team-specialist`,
