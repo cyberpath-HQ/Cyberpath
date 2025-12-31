@@ -1,5 +1,5 @@
 import type {
-    GetImageResult, ImageMetadata
+    ImageMetadata
 } from "astro";
 import ebalo_avatar from "@assets/avatars/ebalo-portrait-square.png";
 import { getImage } from "astro:assets";
@@ -8,8 +8,8 @@ export interface Author {
     id:      string
     name:    string
     avatar?:   {
-        default: GetImageResult
-        blur:    GetImageResult
+        default: string
+        blur:    string
     }
     bio?:      string
     twitter?:  string
@@ -38,8 +38,8 @@ export const AUTHORS: Record<string, Author> = {
 };
 
 async function prepareAuthorAvatar(avatar: ImageMetadata | undefined): Promise<{
-    default: GetImageResult
-    blur:    GetImageResult
+    default: string
+    blur:    string
 } | undefined> {
     if (!avatar) {
         return undefined;
@@ -61,8 +61,8 @@ async function prepareAuthorAvatar(avatar: ImageMetadata | undefined): Promise<{
     });
 
     return {
-        default: image,
-        blur:    blurImage,
+        default: image.src,
+        blur:    blurImage.src,
     };
 }
 
