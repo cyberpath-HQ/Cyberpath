@@ -4,17 +4,16 @@
 
 import { visit } from 'unist-util-visit';
 import {
-    LINK_MAPPINGS, type LinkDefinition, type LinkMappings
+    getLinkMappings, type LinkDefinition, type LinkMappings
 } from '../data/auto-link-mappings';
+
+const LINK_MAPPINGS = await getLinkMappings();
 
 /** Constant for zero/empty checks */
 const ZERO = 0;
 
 /** Constant for single increment */
 const ONE = 1;
-
-/** Constant for slice offset */
-const SLICE_OFFSET = -1;
 
 /**
  * Configuration options for the auto-link plugin
@@ -66,27 +65,71 @@ function buildPattern(opts: PatternOptions): RegExp {
 }
 
 /**
- * Options for URL resolution
+ * Checks if a URL is internal based on its format
+ * Internal URLs start with '/' or have no protocol
  */
-interface ResolveUrlOptions {
-    definition: LinkDefinition
-    baseUrl:    string
+function isInternalUrl(url: string): boolean {
+    return url.startsWith(`/`) || (!url.startsWith(`http://`) && !url.startsWith(`https://`));
 }
 
 /**
- * Resolves a URL based on whether it's internal or external
+ * Options for URL resolution
  */
-function resolveUrl(opts: ResolveUrlOptions): string {
-    if (opts.definition.internal) {
-        const base = opts.baseUrl.endsWith(`/`)
-            ? opts.baseUrl.slice(ZERO, SLICE_OFFSET)
-            : opts.baseUrl;
-        const path = opts.definition.url.startsWith(`/`)
-            ? opts.definition.url
-            : `/${ opts.definition.url }`;
-        return `${ base }${ path }`;
+interface ResolveUrlOptions {
+    url:     string
+    baseUrl: string
+}
+
+/**
+ * Resolves a URL to its full form using URL objects
+ */
+function resolveUrl(opts: ResolveUrlOptions): URL {
+    if (isInternalUrl(opts.url)) {
+        // For internal URLs, combine with base
+        const base = new URL(opts.baseUrl);
+        return new URL(opts.url, base);
     }
-    return opts.definition.url;
+
+    // For external URLs, return as-is
+    return new URL(opts.url);
+}
+
+/**
+ * Resolves alias references to get the actual definition
+ */
+function resolveDefinition(
+    term: string,
+    mappings: LinkMappings,
+    visited = new Set<string>()
+): LinkDefinition | null {
+    if (visited.has(term)) {
+        // Circular reference detected
+        return null;
+    }
+
+    visited.add(term);
+
+    const definition = mappings[term];
+    if (!definition) {
+        return null;
+    }
+
+    // If it's an alias, resolve it
+    if (definition.aliasOf) {
+        const resolvedDef = resolveDefinition(definition.aliasOf, mappings, visited);
+        if (!resolvedDef) {
+            return null;
+        }
+
+        // Merge with any override properties from the alias
+        return {
+            ...resolvedDef,
+            caseSensitive: definition.caseSensitive ?? resolvedDef.caseSensitive,
+            wholeWord:     definition.wholeWord ?? resolvedDef.wholeWord,
+        };
+    }
+
+    return definition;
 }
 
 /**
@@ -123,7 +166,11 @@ function findMatches(text: string, state: ProcessingState): Array<FoundMatch> {
     const matches: Array<FoundMatch> = [];
 
     for (const term of state.sorted_terms) {
-        const definition = state.mappings[term];
+        const definition = resolveDefinition(term, state.mappings);
+        if (!definition) {
+            continue;
+        }
+
         const term_key = term.toLowerCase();
         const count = state.linked_counts.get(term_key) ?? ZERO;
 
@@ -180,14 +227,18 @@ function createLinkNode(
     match_data: FoundMatch,
     base_url: string
 ): Record<string, unknown> {
-    const url = resolveUrl({
-        definition: match_data.definition,
-        baseUrl:    base_url,
+    if (!match_data.definition.url) {
+        throw new Error(`Link definition must have a URL: ${ match_data.term }`);
+    }
+
+    const resolved_url = resolveUrl({
+        url:     match_data.definition.url,
+        baseUrl: base_url,
     });
 
     const link_node: Record<string, unknown> = {
         type:     `link`,
-        url,
+        url:      resolved_url.href,
         children: [ createTextNode(match_data.term) ],
     };
 

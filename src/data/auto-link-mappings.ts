@@ -2,11 +2,8 @@
  * Represents a link definition with URL and metadata
  */
 export interface LinkDefinition {
-    /** The URL to link to */
-    url: string
-
-    /** Whether the link is internal (relative to baseUrl) or external */
-    internal: boolean
+    /** The URL to link to (internal: starts with '/', external: full URL) */
+    url?: string
 
     /** Optional title attribute for the link */
     title?: string
@@ -16,6 +13,9 @@ export interface LinkDefinition {
 
     /** Whether to match whole words only (default: true) */
     wholeWord?: boolean
+
+    /** Reference to another term to inherit its definition (avoids duplication) */
+    aliasOf?: string
 }
 
 /**
@@ -23,1035 +23,1521 @@ export interface LinkDefinition {
  */
 export type LinkMappings = Record<string, LinkDefinition>;
 
-export const LINK_MAPPINGS: LinkMappings = {
+/**
+ * Static link mappings for common cybersecurity terms and resources
+ */
+const STATIC_MAPPINGS: LinkMappings = {
+    // CyberPath Properties
+    "CyberPath - Cybersecurity Tools & Resources": {
+        url:   `/`,
+        title: `CyberPath - Cybersecurity Tools & Resources`,
+    },
     Cyberpath: {
-        url:      `/`,
-        internal: true,
-        title:    `CyberPath - Cybersecurity Tools & Resources`,
+        aliasOf: `CyberPath - Cybersecurity Tools & Resources`,
     },
     CyberPath: {
-        url:      `/`,
-        internal: true,
-        title:    `CyberPath - Cybersecurity Tools & Resources`,
+        aliasOf: `CyberPath - Cybersecurity Tools & Resources`,
+    },
+
+    // CertDb
+    "CertDb - Cybersecurity Certification Database": {
+        url:   `https://certdb.cyberpath-hq.com/`,
+        title: `CertDb - Cybersecurity Certification Database`,
     },
     CertDb: {
-        url:      `https://certdb.cyberpath-hq.com/`,
-        internal: false,
-        title:    `CertDb - Cybersecurity Certification Database`,
+        aliasOf: `CertDb - Cybersecurity Certification Database`,
     },
     "certification database": {
-        url:      `https://certdb.cyberpath-hq.com/`,
-        internal: false,
-        title:    `CertDb - Cybersecurity Certification Database`,
+        aliasOf: `CertDb - Cybersecurity Certification Database`,
     },
     "certifications database": {
-        url:      `https://certdb.cyberpath-hq.com/`,
-        internal: false,
-        title:    `CertDb - Cybersecurity Certification Database`,
+        aliasOf: `CertDb - Cybersecurity Certification Database`,
     },
     "cybersecurity certifications": {
-        url:      `https://certdb.cyberpath-hq.com/`,
-        internal: false,
-        title:    `CertDb - Cybersecurity Certification Database`,
+        aliasOf: `CertDb - Cybersecurity Certification Database`,
     },
     "cybersecurity certification": {
-        url:      `https://certdb.cyberpath-hq.com/`,
-        internal: false,
-        title:    `CertDb - Cybersecurity Certification Database`,
+        aliasOf: `CertDb - Cybersecurity Certification Database`,
+    },
+
+    // Career Paths
+    "Explore Cybersecurity Career Paths": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths`,
+        title: `Explore Cybersecurity Career Paths`,
     },
     "career paths": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths`,
-        internal: false,
-        title:    `Explore Cybersecurity Career Paths`,
+        aliasOf: `Explore Cybersecurity Career Paths`,
     },
     "career path": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths`,
-        internal: false,
-        title:    `Explore Cybersecurity Career Paths`,
+        aliasOf: `Explore Cybersecurity Career Paths`,
+    },
+
+    // Orbis
+    "Orbis - Plugin-Driven Desktop Platform": {
+        url:   `https://orbis.cyberpath-hq.com/`,
+        title: `Orbis - Plugin-Driven Desktop Platform`,
     },
     Orbis: {
-        url:      `https://orbis.cyberpath-hq.com/`,
-        internal: false,
-        title:    `Orbis - Plugin-Driven Desktop Platform`,
+        aliasOf: `Orbis - Plugin-Driven Desktop Platform`,
     },
     "orbis platform": {
-        url:      `https://orbis.cyberpath-hq.com/`,
-        internal: false,
-        title:    `Orbis - Plugin-Driven Desktop Platform`,
+        aliasOf: `Orbis - Plugin-Driven Desktop Platform`,
+    },
+
+    "Orbis Documentation": {
+        url:   `https://orbis.cyberpath-hq.com/docs`,
+        title: `Orbis Documentation`,
     },
     "orbis documentation": {
-        url:      `https://orbis.cyberpath-hq.com/docs`,
-        internal: false,
-        title:    `Orbis Documentation`,
+        aliasOf: `Orbis Documentation`,
     },
     "orbis docs": {
-        url:      `https://orbis.cyberpath-hq.com/docs`,
-        internal: false,
-        title:    `Orbis Documentation`,
+        aliasOf: `Orbis Documentation`,
+    },
+
+    // Blog
+    "CyberPath Blog - Cybersecurity Articles": {
+        url:   `/blog`,
+        title: `CyberPath Blog - Cybersecurity Articles`,
     },
     "CyberPath blog": {
-        url:      `/blog`,
-        internal: true,
-        title:    `CyberPath Blog - Cybersecurity Articles`,
+        aliasOf: `CyberPath Blog - Cybersecurity Articles`,
     },
     "our blog": {
-        url:      `/blog`,
-        internal: true,
-        title:    `CyberPath Blog`,
+        aliasOf: `CyberPath Blog - Cybersecurity Articles`,
+    },
+
+    // GitHub
+    "CyberPath on GitHub": {
+        url:   `https://github.com/cyberpath-HQ`,
+        title: `CyberPath on GitHub`,
     },
     "CyberPath GitHub": {
-        url:      `https://github.com/cyberpath-HQ`,
-        internal: false,
-        title:    `CyberPath on GitHub`,
+        aliasOf: `CyberPath on GitHub`,
     },
     "cyberpath-HQ": {
-        url:      `https://github.com/cyberpath-HQ`,
-        internal: false,
-        title:    `CyberPath GitHub Organization`,
+        aliasOf: `CyberPath on GitHub`,
+    },
+
+    // Career Paths - Specific
+    "Blue Team Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/blue-team-specialist`,
+        title: `Blue Team Specialist Career Path`,
     },
     "Blue Team Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/blue-team-specialist`,
-        internal: false,
-        title:    `Blue Team Specialist Career Path`,
+        aliasOf: `Blue Team Specialist Career Path`,
     },
     "blue team": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/blue-team-specialist`,
-        internal: false,
-        title:    `Blue Team Specialist Career Path`,
+        aliasOf: `Blue Team Specialist Career Path`,
+    },
+
+    "Cloud Security Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/cloud-security-specialist`,
+        title: `Cloud Security Specialist Career Path`,
     },
     "Cloud Security Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/cloud-security-specialist`,
-        internal: false,
-        title:    `Cloud Security Specialist Career Path`,
+        aliasOf: `Cloud Security Specialist Career Path`,
     },
     "cloud security": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/cloud-security-specialist`,
-        internal: false,
-        title:    `Cloud Security Career Path`,
+        aliasOf: `Cloud Security Specialist Career Path`,
+    },
+
+    "Cybersecurity Manager Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/cybersecurity-manager`,
+        title: `Cybersecurity Manager Career Path`,
     },
     "Cybersecurity Manager": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/cybersecurity-manager`,
-        internal: false,
-        title:    `Cybersecurity Manager Career Path`,
+        aliasOf: `Cybersecurity Manager Career Path`,
+    },
+
+    "Malware Developer Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/malware-developer`,
+        title: `Malware Developer Career Path`,
     },
     "Malware Developer": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/malware-developer`,
-        internal: false,
-        title:    `Malware Developer Career Path`,
+        aliasOf: `Malware Developer Career Path`,
+    },
+
+    "OSINT Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/osint-specialist`,
+        title: `OSINT Specialist Career Path`,
     },
     "OSINT Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/osint-specialist`,
-        internal: false,
-        title:    `OSINT Specialist Career Path`,
+        aliasOf: `OSINT Specialist Career Path`,
+    },
+
+    "Penetration Tester Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/penetration-tester`,
+        title: `Penetration Tester Career Path`,
     },
     "Penetration Tester": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/penetration-tester`,
-        internal: false,
-        title:    `Penetration Tester Career Path`,
+        aliasOf: `Penetration Tester Career Path`,
     },
     "penetration testing": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/penetration-tester`,
-        internal: false,
-        title:    `Penetration Testing Career Path`,
+        aliasOf: `Penetration Tester Career Path`,
+    },
+
+    "Red Team Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/red-team-specialist`,
+        title: `Red Team Specialist Career Path`,
     },
     "Red Team Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/red-team-specialist`,
-        internal: false,
-        title:    `Red Team Specialist Career Path`,
+        aliasOf: `Red Team Specialist Career Path`,
     },
     "red team": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/red-team-specialist`,
-        internal: false,
-        title:    `Red Team Specialist Career Path`,
+        aliasOf: `Red Team Specialist Career Path`,
+    },
+
+    "Risk Management Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/risk-management-specialist`,
+        title: `Risk Management Specialist Career Path`,
     },
     "Risk Management Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/risk-management-specialist`,
-        internal: false,
-        title:    `Risk Management Specialist Career Path`,
+        aliasOf: `Risk Management Specialist Career Path`,
+    },
+
+    "Security Operations Specialist Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/security-operations-specialist`,
+        title: `Security Operations Specialist Career Path`,
     },
     "Security Operations Specialist": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/security-operations-specialist`,
-        internal: false,
-        title:    `Security Operations Specialist Career Path`,
+        aliasOf: `Security Operations Specialist Career Path`,
     },
     "security operations": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/security-operations-specialist`,
-        internal: false,
-        title:    `Security Operations Career Path`,
+        aliasOf: `Security Operations Specialist Career Path`,
+    },
+
+    "Threat Hunter Career Path": {
+        url:   `https://certdb.cyberpath-hq.com/career-paths/threat-hunter`,
+        title: `Threat Hunter Career Path`,
     },
     "Threat Hunter": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/threat-hunter`,
-        internal: false,
-        title:    `Threat Hunter Career Path`,
+        aliasOf: `Threat Hunter Career Path`,
     },
     "threat hunting": {
-        url:      `https://certdb.cyberpath-hq.com/career-paths/threat-hunter`,
-        internal: false,
-        title:    `Threat Hunting Career Path`,
+        aliasOf: `Threat Hunter Career Path`,
+    },
+
+    // Certifications & Training Organizations
+    "Offensive Security": {
+        url:   `https://www.offsec.com/`,
+        title: `Offensive Security`,
     },
     "offensive security": {
-        url:      `https://www.offsec.com/`,
-        internal: false,
-        title:    `Offensive Security - Training & Certifications`,
+        aliasOf: `Offensive Security`,
     },
     OffSec: {
-        url:      `https://www.offsec.com/`,
-        internal: false,
-        title:    `Offensive Security`,
+        aliasOf: `Offensive Security`,
     },
-    "Offensive Security": {
-        url:      `https://www.offsec.com/`,
-        internal: false,
-        title:    `Offensive Security`,
+
+    "OSCP - Offensive Security Certified Professional": {
+        url:   `https://www.offsec.com/courses/pen-200/`,
+        title: `OSCP - Offensive Security Certified Professional`,
     },
     OSCP: {
-        url:      `https://www.offsec.com/courses/pen-200/`,
-        internal: false,
-        title:    `OSCP - Offensive Security Certified Professional`,
+        aliasOf: `OSCP - Offensive Security Certified Professional`,
+    },
+
+    "OSEP - Offensive Security Experienced Penetration Tester": {
+        url:   `https://www.offsec.com/courses/pen-300/`,
+        title: `OSEP - Offensive Security Experienced Penetration Tester`,
     },
     OSEP: {
-        url:      `https://www.offsec.com/courses/pen-300/`,
-        internal: false,
-        title:    `OSEP - Offensive Security Experienced Penetration Tester`,
+        aliasOf: `OSEP - Offensive Security Experienced Penetration Tester`,
+    },
+
+    "OSWE - Offensive Security Web Expert": {
+        url:   `https://www.offsec.com/courses/web-300/`,
+        title: `OSWE - Offensive Security Web Expert`,
     },
     OSWE: {
-        url:      `https://www.offsec.com/courses/web-300/`,
-        internal: false,
-        title:    `OSWE - Offensive Security Web Expert`,
+        aliasOf: `OSWE - Offensive Security Web Expert`,
+    },
+
+    "OSED - Offensive Security Exploit Developer": {
+        url:   `https://www.offsec.com/courses/exp-301/`,
+        title: `OSED - Offensive Security Exploit Developer`,
     },
     OSED: {
-        url:      `https://www.offsec.com/courses/exp-301/`,
-        internal: false,
-        title:    `OSED - Offensive Security Exploit Developer`,
+        aliasOf: `OSED - Offensive Security Exploit Developer`,
+    },
+
+    "OSWP - Offensive Security Wireless Professional": {
+        url:   `https://www.offsec.com/courses/pen-210/`,
+        title: `OSWP - Offensive Security Wireless Professional`,
     },
     OSWP: {
-        url:      `https://www.offsec.com/courses/pen-210/`,
-        internal: false,
-        title:    `OSWP - Offensive Security Wireless Professional`,
+        aliasOf: `OSWP - Offensive Security Wireless Professional`,
+    },
+
+    "OSCE3 - Offensive Security Certified Expert 3": {
+        url:   `https://www.offsec.com/courses/osce3/`,
+        title: `OSCE3 - Offensive Security Certified Expert 3`,
     },
     OSCE3: {
-        url:      `https://www.offsec.com/courses/osce3/`,
-        internal: false,
-        title:    `OSCE3 - Offensive Security Certified Expert 3`,
+        aliasOf: `OSCE3 - Offensive Security Certified Expert 3`,
+    },
+
+    "(ISC)² - Cybersecurity Certifications": {
+        url:   `https://www.isc2.org/`,
+        title: `(ISC)² - Cybersecurity Certifications`,
     },
     ISC2: {
-        url:      `https://www.isc2.org/`,
-        internal: false,
-        title:    `ISC2 - Cybersecurity Certifications`,
+        aliasOf: `(ISC)² - Cybersecurity Certifications`,
     },
     "(ISC)²": {
-        url:      `https://www.isc2.org/`,
-        internal: false,
-        title:    `(ISC)² - Cybersecurity Certifications`,
+        aliasOf: `(ISC)² - Cybersecurity Certifications`,
+    },
+
+    "CISSP - Certified Information Systems Security Professional": {
+        url:   `https://www.isc2.org/certifications/cissp`,
+        title: `CISSP - Certified Information Systems Security Professional`,
     },
     CISSP: {
-        url:      `https://www.isc2.org/certifications/cissp`,
-        internal: false,
-        title:    `CISSP - Certified Information Systems Security Professional`,
+        aliasOf: `CISSP - Certified Information Systems Security Professional`,
+    },
+
+    "CCSP - Certified Cloud Security Professional": {
+        url:   `https://www.isc2.org/certifications/ccsp`,
+        title: `CCSP - Certified Cloud Security Professional`,
     },
     CCSP: {
-        url:      `https://www.isc2.org/certifications/ccsp`,
-        internal: false,
-        title:    `CCSP - Certified Cloud Security Professional`,
+        aliasOf: `CCSP - Certified Cloud Security Professional`,
+    },
+
+    "SSCP - Systems Security Certified Practitioner": {
+        url:   `https://www.isc2.org/certifications/sscp`,
+        title: `SSCP - Systems Security Certified Practitioner`,
     },
     SSCP: {
-        url:      `https://www.isc2.org/certifications/sscp`,
-        internal: false,
-        title:    `SSCP - Systems Security Certified Practitioner`,
+        aliasOf: `SSCP - Systems Security Certified Practitioner`,
+    },
+
+    "CompTIA - IT Certifications": {
+        url:   `https://www.comptia.org/`,
+        title: `CompTIA - IT Certifications`,
     },
     CompTIA: {
-        url:      `https://www.comptia.org/`,
-        internal: false,
-        title:    `CompTIA - IT Certifications`,
+        aliasOf: `CompTIA - IT Certifications`,
+    },
+
+    "CompTIA Security+ Certification": {
+        url:   `https://www.comptia.org/certifications/security`,
+        title: `CompTIA Security+ Certification`,
     },
     "CompTIA Security+": {
-        url:      `https://www.comptia.org/certifications/security`,
-        internal: false,
-        title:    `CompTIA Security+ Certification`,
+        aliasOf: `CompTIA Security+ Certification`,
     },
     "Security+": {
-        url:      `https://www.comptia.org/certifications/security`,
-        internal: false,
-        title:    `CompTIA Security+ Certification`,
+        aliasOf: `CompTIA Security+ Certification`,
+    },
+
+    "CompTIA CySA+ - Cybersecurity Analyst": {
+        url:   `https://www.comptia.org/certifications/cybersecurity-analyst`,
+        title: `CompTIA CySA+ - Cybersecurity Analyst`,
     },
     "CompTIA CySA+": {
-        url:      `https://www.comptia.org/certifications/cybersecurity-analyst`,
-        internal: false,
-        title:    `CompTIA CySA+ Certification`,
+        aliasOf: `CompTIA CySA+ - Cybersecurity Analyst`,
     },
     "CySA+": {
-        url:      `https://www.comptia.org/certifications/cybersecurity-analyst`,
-        internal: false,
-        title:    `CompTIA CySA+ - Cybersecurity Analyst`,
+        aliasOf: `CompTIA CySA+ - Cybersecurity Analyst`,
+    },
+
+    "CompTIA PenTest+ Certification": {
+        url:   `https://www.comptia.org/certifications/pentest`,
+        title: `CompTIA PenTest+ Certification`,
     },
     "CompTIA PenTest+": {
-        url:      `https://www.comptia.org/certifications/pentest`,
-        internal: false,
-        title:    `CompTIA PenTest+ Certification`,
+        aliasOf: `CompTIA PenTest+ Certification`,
     },
     "PenTest+": {
-        url:      `https://www.comptia.org/certifications/pentest`,
-        internal: false,
-        title:    `CompTIA PenTest+ Certification`,
+        aliasOf: `CompTIA PenTest+ Certification`,
+    },
+
+    "CompTIA CASP+ - Advanced Security Practitioner": {
+        url:   `https://www.comptia.org/certifications/comptia-advanced-security-practitioner`,
+        title: `CompTIA CASP+ - Advanced Security Practitioner`,
     },
     "CompTIA CASP+": {
-        url:      `https://www.comptia.org/certifications/comptia-advanced-security-practitioner`,
-        internal: false,
-        title:    `CompTIA CASP+ Certification`,
+        aliasOf: `CompTIA CASP+ - Advanced Security Practitioner`,
     },
     "CASP+": {
-        url:      `https://www.comptia.org/certifications/comptia-advanced-security-practitioner`,
-        internal: false,
-        title:    `CompTIA CASP+ - Advanced Security Practitioner`,
+        aliasOf: `CompTIA CASP+ - Advanced Security Practitioner`,
+    },
+
+    "CompTIA Network+ Certification": {
+        url:   `https://www.comptia.org/certifications/network`,
+        title: `CompTIA Network+ Certification`,
     },
     "CompTIA Network+": {
-        url:      `https://www.comptia.org/certifications/network`,
-        internal: false,
-        title:    `CompTIA Network+ Certification`,
+        aliasOf: `CompTIA Network+ Certification`,
     },
     "Network+": {
-        url:      `https://www.comptia.org/certifications/network`,
-        internal: false,
-        title:    `CompTIA Network+ Certification`,
+        aliasOf: `CompTIA Network+ Certification`,
+    },
+
+    "EC-Council - Cybersecurity Certifications": {
+        url:   `https://www.eccouncil.org/`,
+        title: `EC-Council - Cybersecurity Certifications`,
     },
     "EC-Council": {
-        url:      `https://www.eccouncil.org/`,
-        internal: false,
-        title:    `EC-Council - Cybersecurity Certifications`,
+        aliasOf: `EC-Council - Cybersecurity Certifications`,
+    },
+
+    "CEH - Certified Ethical Hacker": {
+        url:   `https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/`,
+        title: `CEH - Certified Ethical Hacker`,
     },
     CEH: {
-        url:      `https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/`,
-        internal: false,
-        title:    `CEH - Certified Ethical Hacker`,
+        aliasOf: `CEH - Certified Ethical Hacker`,
     },
     "Certified Ethical Hacker": {
-        url:      `https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/`,
-        internal: false,
-        title:    `Certified Ethical Hacker`,
+        aliasOf: `CEH - Certified Ethical Hacker`,
+    },
+
+    "CPENT - Certified Penetration Testing Professional": {
+        url:   `https://www.eccouncil.org/programs/certified-penetration-testing-professional-cpent/`,
+        title: `CPENT - Certified Penetration Testing Professional`,
     },
     CPENT: {
-        url:      `https://www.eccouncil.org/programs/certified-penetration-testing-professional-cpent/`,
-        internal: false,
-        title:    `CPENT - Certified Penetration Testing Professional`,
+        aliasOf: `CPENT - Certified Penetration Testing Professional`,
+    },
+
+    "CHFI - Computer Hacking Forensic Investigator": {
+        url:   `https://www.eccouncil.org/programs/computer-hacking-forensic-investigator-chfi/`,
+        title: `CHFI - Computer Hacking Forensic Investigator`,
     },
     CHFI: {
-        url:      `https://www.eccouncil.org/programs/computer-hacking-forensic-investigator-chfi/`,
-        internal: false,
-        title:    `CHFI - Computer Hacking Forensic Investigator`,
+        aliasOf: `CHFI - Computer Hacking Forensic Investigator`,
+    },
+
+    "GIAC - Global Information Assurance Certification": {
+        url:   `https://www.giac.org/`,
+        title: `GIAC - Global Information Assurance Certification`,
     },
     GIAC: {
-        url:      `https://www.giac.org/`,
-        internal: false,
-        title:    `GIAC - Global Information Assurance Certification`,
+        aliasOf: `GIAC - Global Information Assurance Certification`,
+    },
+
+    "SANS Institute - Cybersecurity Training": {
+        url:   `https://www.sans.org/`,
+        title: `SANS Institute - Cybersecurity Training`,
     },
     SANS: {
-        url:      `https://www.sans.org/`,
-        internal: false,
-        title:    `SANS Institute - Cybersecurity Training`,
+        aliasOf: `SANS Institute - Cybersecurity Training`,
     },
     "SANS Institute": {
-        url:      `https://www.sans.org/`,
-        internal: false,
-        title:    `SANS Institute - Cybersecurity Training`,
+        aliasOf: `SANS Institute - Cybersecurity Training`,
+    },
+
+    "GSEC - GIAC Security Essentials": {
+        url:   `https://www.giac.org/certifications/security-essentials-gsec/`,
+        title: `GSEC - GIAC Security Essentials`,
     },
     GSEC: {
-        url:      `https://www.giac.org/certifications/security-essentials-gsec/`,
-        internal: false,
-        title:    `GSEC - GIAC Security Essentials`,
+        aliasOf: `GSEC - GIAC Security Essentials`,
+    },
+
+    "GCIH - GIAC Certified Incident Handler": {
+        url:   `https://www.giac.org/certifications/certified-incident-handler-gcih/`,
+        title: `GCIH - GIAC Certified Incident Handler`,
     },
     GCIH: {
-        url:      `https://www.giac.org/certifications/certified-incident-handler-gcih/`,
-        internal: false,
-        title:    `GCIH - GIAC Certified Incident Handler`,
+        aliasOf: `GCIH - GIAC Certified Incident Handler`,
+    },
+
+    "GPEN - GIAC Penetration Tester": {
+        url:   `https://www.giac.org/certifications/penetration-tester-gpen/`,
+        title: `GPEN - GIAC Penetration Tester`,
     },
     GPEN: {
-        url:      `https://www.giac.org/certifications/penetration-tester-gpen/`,
-        internal: false,
-        title:    `GPEN - GIAC Penetration Tester`,
+        aliasOf: `GPEN - GIAC Penetration Tester`,
+    },
+
+    "GWAPT - GIAC Web Application Penetration Tester": {
+        url:   `https://www.giac.org/certifications/web-application-penetration-tester-gwapt/`,
+        title: `GWAPT - GIAC Web Application Penetration Tester`,
     },
     GWAPT: {
-        url:      `https://www.giac.org/certifications/web-application-penetration-tester-gwapt/`,
-        internal: false,
-        title:    `GWAPT - GIAC Web Application Penetration Tester`,
+        aliasOf: `GWAPT - GIAC Web Application Penetration Tester`,
+    },
+
+    "GCFA - GIAC Certified Forensic Analyst": {
+        url:   `https://www.giac.org/certifications/certified-forensic-analyst-gcfa/`,
+        title: `GCFA - GIAC Certified Forensic Analyst`,
     },
     GCFA: {
-        url:      `https://www.giac.org/certifications/certified-forensic-analyst-gcfa/`,
-        internal: false,
-        title:    `GCFA - GIAC Certified Forensic Analyst`,
+        aliasOf: `GCFA - GIAC Certified Forensic Analyst`,
+    },
+
+    "ISACA - IT Governance & Security": {
+        url:   `https://www.isaca.org/`,
+        title: `ISACA - IT Governance & Security`,
     },
     ISACA: {
-        url:      `https://www.isaca.org/`,
-        internal: false,
-        title:    `ISACA - IT Governance & Security`,
+        aliasOf: `ISACA - IT Governance & Security`,
+    },
+
+    "CISM - Certified Information Security Manager": {
+        url:   `https://www.isaca.org/credentialing/cism`,
+        title: `CISM - Certified Information Security Manager`,
     },
     CISM: {
-        url:      `https://www.isaca.org/credentialing/cism`,
-        internal: false,
-        title:    `CISM - Certified Information Security Manager`,
+        aliasOf: `CISM - Certified Information Security Manager`,
+    },
+
+    "CISA - Certified Information Systems Auditor": {
+        url:   `https://www.isaca.org/credentialing/cisa`,
+        title: `CISA - Certified Information Systems Auditor`,
     },
     CISA: {
-        url:      `https://www.isaca.org/credentialing/cisa`,
-        internal: false,
-        title:    `CISA - Certified Information Systems Auditor`,
+        aliasOf: `CISA - Certified Information Systems Auditor`,
+    },
+
+    "CRISC - Certified in Risk and Information Systems Control": {
+        url:   `https://www.isaca.org/credentialing/crisc`,
+        title: `CRISC - Certified in Risk and Information Systems Control`,
     },
     CRISC: {
-        url:      `https://www.isaca.org/credentialing/crisc`,
-        internal: false,
-        title:    `CRISC - Certified in Risk and Information Systems Control`,
+        aliasOf: `CRISC - Certified in Risk and Information Systems Control`,
+    },
+
+    // Frameworks & Methodologies
+    "MITRE ATT&CK Framework": {
+        url:   `https://attack.mitre.org/`,
+        title: `MITRE ATT&CK Framework`,
     },
     "MITRE ATT&CK": {
-        url:      `https://attack.mitre.org/`,
-        internal: false,
-        title:    `MITRE ATT&CK Framework`,
+        aliasOf: `MITRE ATT&CK Framework`,
     },
     "ATT&CK": {
-        url:      `https://attack.mitre.org/`,
-        internal: false,
-        title:    `MITRE ATT&CK Framework`,
+        aliasOf: `MITRE ATT&CK Framework`,
+    },
+
+    "Lockheed Martin Cyber Kill Chain": {
+        url:   `https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html`,
+        title: `Lockheed Martin Cyber Kill Chain`,
     },
     "Cyber Kill Chain": {
-        url:      `https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html`,
-        internal: false,
-        title:    `Lockheed Martin Cyber Kill Chain`,
+        aliasOf: `Lockheed Martin Cyber Kill Chain`,
     },
     "kill chain": {
-        url:      `https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html`,
-        internal: false,
-        title:    `Cyber Kill Chain`,
+        aliasOf: `Lockheed Martin Cyber Kill Chain`,
+    },
+
+    "Diamond Model of Intrusion Analysis": {
+        url:   `https://www.threatintel.academy/diamond-model/`,
+        title: `Diamond Model of Intrusion Analysis`,
     },
     "Diamond Model": {
-        url:      `https://www.threatintel.academy/diamond-model/`,
-        internal: false,
-        title:    `Diamond Model of Intrusion Analysis`,
+        aliasOf: `Diamond Model of Intrusion Analysis`,
+    },
+
+    "STRIDE Threat Modeling": {
+        url:   `https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats`,
+        title: `STRIDE Threat Modeling`,
     },
     STRIDE: {
-        url:      `https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats`,
-        internal: false,
-        title:    `STRIDE Threat Modeling`,
+        aliasOf: `STRIDE Threat Modeling`,
+    },
+
+    // Vulnerability Databases
+    "CVE - Common Vulnerabilities and Exposures": {
+        url:   `https://cve.mitre.org/`,
+        title: `CVE - Common Vulnerabilities and Exposures`,
     },
     CVE: {
-        url:      `https://cve.mitre.org/`,
-        internal: false,
-        title:    `CVE - Common Vulnerabilities and Exposures`,
+        aliasOf: `CVE - Common Vulnerabilities and Exposures`,
+    },
+
+    "CVSS - Common Vulnerability Scoring System": {
+        url:   `https://www.first.org/cvss/`,
+        title: `CVSS - Common Vulnerability Scoring System`,
     },
     CVSS: {
-        url:      `https://www.first.org/cvss/`,
-        internal: false,
-        title:    `CVSS - Common Vulnerability Scoring System`,
+        aliasOf: `CVSS - Common Vulnerability Scoring System`,
+    },
+
+    "NVD - National Vulnerability Database": {
+        url:   `https://nvd.nist.gov/`,
+        title: `NVD - National Vulnerability Database`,
     },
     NVD: {
-        url:      `https://nvd.nist.gov/`,
-        internal: false,
-        title:    `NVD - National Vulnerability Database`,
+        aliasOf: `NVD - National Vulnerability Database`,
+    },
+
+    "CWE - Common Weakness Enumeration": {
+        url:   `https://cwe.mitre.org/`,
+        title: `CWE - Common Weakness Enumeration`,
     },
     CWE: {
-        url:      `https://cwe.mitre.org/`,
-        internal: false,
-        title:    `CWE - Common Weakness Enumeration`,
+        aliasOf: `CWE - Common Weakness Enumeration`,
+    },
+
+    // Threats & Attack Types
+    "Zero-Day Vulnerability": {
+        url:   `https://en.wikipedia.org/wiki/Zero-day_(computing)`,
+        title: `Zero-Day Vulnerability`,
     },
     "zero-day": {
-        url:      `https://en.wikipedia.org/wiki/Zero-day_(computing)`,
-        internal: false,
-        title:    `Zero-Day Vulnerability`,
+        aliasOf: `Zero-Day Vulnerability`,
     },
     "0-day": {
-        url:      `https://en.wikipedia.org/wiki/Zero-day_(computing)`,
-        internal: false,
-        title:    `Zero-Day Vulnerability`,
+        aliasOf: `Zero-Day Vulnerability`,
+    },
+
+    "Advanced Persistent Threat Groups": {
+        url:   `https://attack.mitre.org/groups/`,
+        title: `Advanced Persistent Threat Groups`,
     },
     APT: {
-        url:      `https://attack.mitre.org/groups/`,
-        internal: false,
-        title:    `APT - Advanced Persistent Threat`,
+        aliasOf: `Advanced Persistent Threat Groups`,
     },
     "Advanced Persistent Threat": {
-        url:      `https://attack.mitre.org/groups/`,
-        internal: false,
-        title:    `Advanced Persistent Threat Groups`,
+        aliasOf: `Advanced Persistent Threat Groups`,
+    },
+
+    // OWASP
+    "OWASP - Open Web Application Security Project": {
+        url:   `https://owasp.org/`,
+        title: `OWASP - Open Web Application Security Project`,
     },
     OWASP: {
-        url:      `https://owasp.org/`,
-        internal: false,
-        title:    `OWASP - Open Web Application Security Project`,
+        aliasOf: `OWASP - Open Web Application Security Project`,
+    },
+
+    "OWASP Top 10 Web Application Security Risks": {
+        url:   `https://owasp.org/www-project-top-ten/`,
+        title: `OWASP Top 10 Web Application Security Risks`,
     },
     "OWASP Top 10": {
-        url:      `https://owasp.org/www-project-top-ten/`,
-        internal: false,
-        title:    `OWASP Top 10 Web Application Security Risks`,
+        aliasOf: `OWASP Top 10 Web Application Security Risks`,
     },
     "OWASP Top Ten": {
-        url:      `https://owasp.org/www-project-top-ten/`,
-        internal: false,
-        title:    `OWASP Top 10`,
+        aliasOf: `OWASP Top 10 Web Application Security Risks`,
+    },
+
+    "OWASP ZAP - Zed Attack Proxy": {
+        url:   `https://www.zaproxy.org/`,
+        title: `OWASP ZAP - Zed Attack Proxy`,
     },
     "OWASP ZAP": {
-        url:      `https://www.zaproxy.org/`,
-        internal: false,
-        title:    `OWASP ZAP - Zed Attack Proxy`,
+        aliasOf: `OWASP ZAP - Zed Attack Proxy`,
+    },
+
+    // Common Vulnerabilities
+    "SQL Injection Attack": {
+        url:   `https://owasp.org/www-community/attacks/SQL_Injection`,
+        title: `SQL Injection Attack`,
     },
     "SQL injection": {
-        url:      `https://owasp.org/www-community/attacks/SQL_Injection`,
-        internal: false,
-        title:    `SQL Injection Attack`,
+        aliasOf: `SQL Injection Attack`,
     },
     SQLi: {
-        url:      `https://owasp.org/www-community/attacks/SQL_Injection`,
-        internal: false,
-        title:    `SQL Injection`,
+        aliasOf: `SQL Injection Attack`,
+    },
+
+    "Cross-Site Scripting (XSS)": {
+        url:   `https://owasp.org/www-community/attacks/xss/`,
+        title: `Cross-Site Scripting (XSS)`,
     },
     XSS: {
-        url:      `https://owasp.org/www-community/attacks/xss/`,
-        internal: false,
-        title:    `Cross-Site Scripting (XSS)`,
+        aliasOf: `Cross-Site Scripting (XSS)`,
     },
     "Cross-Site Scripting": {
-        url:      `https://owasp.org/www-community/attacks/xss/`,
-        internal: false,
-        title:    `Cross-Site Scripting`,
+        aliasOf: `Cross-Site Scripting (XSS)`,
+    },
+
+    "Cross-Site Request Forgery (CSRF)": {
+        url:   `https://owasp.org/www-community/attacks/csrf`,
+        title: `Cross-Site Request Forgery (CSRF)`,
     },
     CSRF: {
-        url:      `https://owasp.org/www-community/attacks/csrf`,
-        internal: false,
-        title:    `Cross-Site Request Forgery (CSRF)`,
+        aliasOf: `Cross-Site Request Forgery (CSRF)`,
+    },
+
+    "Remote Code Execution": {
+        url:   `https://en.wikipedia.org/wiki/Arbitrary_code_execution`,
+        title: `Remote Code Execution`,
     },
     RCE: {
-        url:      `https://en.wikipedia.org/wiki/Arbitrary_code_execution`,
-        internal: false,
-        title:    `Remote Code Execution`,
+        aliasOf: `Remote Code Execution`,
+    },
+
+    "Buffer Overflow Vulnerability": {
+        url:   `https://owasp.org/www-community/vulnerabilities/Buffer_Overflow`,
+        title: `Buffer Overflow Vulnerability`,
     },
     "buffer overflow": {
-        url:      `https://owasp.org/www-community/vulnerabilities/Buffer_Overflow`,
-        internal: false,
-        title:    `Buffer Overflow Vulnerability`,
+        aliasOf: `Buffer Overflow Vulnerability`,
+    },
+
+    "Privilege Escalation Techniques": {
+        url:   `https://attack.mitre.org/tactics/TA0004/`,
+        title: `Privilege Escalation Techniques`,
     },
     "privilege escalation": {
-        url:      `https://attack.mitre.org/tactics/TA0004/`,
-        internal: false,
-        title:    `Privilege Escalation Techniques`,
+        aliasOf: `Privilege Escalation Techniques`,
+    },
+
+    "Lateral Movement Techniques": {
+        url:   `https://attack.mitre.org/tactics/TA0008/`,
+        title: `Lateral Movement Techniques`,
     },
     "lateral movement": {
-        url:      `https://attack.mitre.org/tactics/TA0008/`,
-        internal: false,
-        title:    `Lateral Movement Techniques`,
+        aliasOf: `Lateral Movement Techniques`,
+    },
+
+    "Phishing Attacks": {
+        url:   `https://attack.mitre.org/techniques/T1566/`,
+        title: `Phishing Attacks`,
     },
     phishing: {
-        url:      `https://attack.mitre.org/techniques/T1566/`,
-        internal: false,
-        title:    `Phishing Attacks`,
+        aliasOf: `Phishing Attacks`,
+    },
+
+    "Spear Phishing Attacks": {
+        url:   `https://attack.mitre.org/techniques/T1566/001/`,
+        title: `Spear Phishing Attacks`,
     },
     "spear phishing": {
-        url:      `https://attack.mitre.org/techniques/T1566/001/`,
-        internal: false,
-        title:    `Spear Phishing Attacks`,
+        aliasOf: `Spear Phishing Attacks`,
+    },
+
+    "Social Engineering Attacks": {
+        url:   `https://attack.mitre.org/techniques/T1566/`,
+        title: `Social Engineering Attacks`,
     },
     "social engineering": {
-        url:      `https://attack.mitre.org/techniques/T1566/`,
-        internal: false,
-        title:    `Social Engineering Attacks`,
+        aliasOf: `Social Engineering Attacks`,
+    },
+
+    Ransomware: {
+        url:   `https://attack.mitre.org/software/`,
+        title: `Ransomware`,
     },
     ransomware: {
-        url:      `https://attack.mitre.org/software/`,
-        internal: false,
-        title:    `Ransomware`,
+        aliasOf: `Ransomware`,
+    },
+
+    Malware: {
+        url:   `https://attack.mitre.org/software/`,
+        title: `Malware`,
     },
     malware: {
-        url:      `https://attack.mitre.org/software/`,
-        internal: false,
-        title:    `Malware`,
+        aliasOf: `Malware`,
+    },
+
+    Rootkit: {
+        url:   `https://attack.mitre.org/techniques/T1014/`,
+        title: `Rootkit`,
     },
     rootkit: {
-        url:      `https://attack.mitre.org/techniques/T1014/`,
-        internal: false,
-        title:    `Rootkit`,
+        aliasOf: `Rootkit`,
+    },
+
+    "Backdoor Persistence": {
+        url:   `https://attack.mitre.org/techniques/T1547/`,
+        title: `Backdoor Persistence`,
     },
     backdoor: {
-        url:      `https://attack.mitre.org/techniques/T1547/`,
-        internal: false,
-        title:    `Backdoor Persistence`,
+        aliasOf: `Backdoor Persistence`,
+    },
+
+    "Command and Control (C2)": {
+        url:   `https://attack.mitre.org/tactics/TA0011/`,
+        title: `Command and Control (C2)`,
     },
     C2: {
-        url:      `https://attack.mitre.org/tactics/TA0011/`,
-        internal: false,
-        title:    `Command and Control (C2)`,
+        aliasOf: `Command and Control (C2)`,
+    },
+
+    "Distributed Denial of Service": {
+        url:   `https://attack.mitre.org/techniques/T0814/`,
+        title: `Distributed Denial of Service`,
     },
     DDoS: {
-        url:      `https://attack.mitre.org/techniques/T0814/`,
-        internal: false,
-        title:    `Distributed Denial of Service`,
+        aliasOf: `Distributed Denial of Service`,
+    },
+
+    "Man-in-the-Middle Attack": {
+        url:   `https://attack.mitre.org/techniques/T1557/`,
+        title: `Man-in-the-Middle Attack`,
     },
     "man-in-the-middle": {
-        url:      `https://attack.mitre.org/techniques/T1557/`,
-        internal: false,
-        title:    `Man-in-the-Middle Attack`,
+        aliasOf: `Man-in-the-Middle Attack`,
     },
     MITM: {
-        url:      `https://attack.mitre.org/techniques/T1557/`,
-        internal: false,
-        title:    `Man-in-the-Middle Attack`,
+        aliasOf: `Man-in-the-Middle Attack`,
+    },
+
+    "Server-Side Request Forgery": {
+        url:   `https://owasp.org/www-community/attacks/Server_Side_Request_Forgery`,
+        title: `Server-Side Request Forgery`,
     },
     SSRF: {
-        url:      `https://owasp.org/www-community/attacks/Server_Side_Request_Forgery`,
-        internal: false,
-        title:    `Server-Side Request Forgery`,
+        aliasOf: `Server-Side Request Forgery`,
+    },
+
+    "XML External Entity Attack": {
+        url:   `https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing`,
+        title: `XML External Entity Attack`,
     },
     XXE: {
-        url:      `https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing`,
-        internal: false,
-        title:    `XML External Entity Attack`,
+        aliasOf: `XML External Entity Attack`,
+    },
+
+    "Insecure Direct Object Reference": {
+        url:   `https://owasp.org/www-project-web-security-testing-guide/latest/` +
+               `4-Web_Application_Security_Testing/05-Authorization_Testing/` +
+               `04-Testing_for_Insecure_Direct_Object_References`,
+        title: `Insecure Direct Object Reference`,
     },
     IDOR: {
-        url:      `https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/04-Testing_for_Insecure_Direct_Object_References`,
-        internal: false,
-        title:    `Insecure Direct Object Reference`,
+        aliasOf: `Insecure Direct Object Reference`,
+    },
+
+    Shellcode: {
+        url:   `https://en.wikipedia.org/wiki/Shellcode`,
+        title: `Shellcode`,
     },
     shellcode: {
-        url:      `https://en.wikipedia.org/wiki/Shellcode`,
-        internal: false,
-        title:    `Shellcode`,
+        aliasOf: `Shellcode`,
+    },
+
+    // Security Tools
+    "Metasploit Framework": {
+        url:   `https://www.metasploit.com/`,
+        title: `Metasploit Framework`,
     },
     Metasploit: {
-        url:      `https://www.metasploit.com/`,
-        internal: false,
-        title:    `Metasploit Framework`,
+        aliasOf: `Metasploit Framework`,
+    },
+
+    "Burp Suite - Web Security Testing": {
+        url:   `https://portswigger.net/burp`,
+        title: `Burp Suite - Web Security Testing`,
     },
     "Burp Suite": {
-        url:      `https://portswigger.net/burp`,
-        internal: false,
-        title:    `Burp Suite - Web Security Testing`,
+        aliasOf: `Burp Suite - Web Security Testing`,
+    },
+
+    "Nmap - Network Scanner": {
+        url:   `https://nmap.org/`,
+        title: `Nmap - Network Scanner`,
     },
     Nmap: {
-        url:      `https://nmap.org/`,
-        internal: false,
-        title:    `Nmap - Network Scanner`,
+        aliasOf: `Nmap - Network Scanner`,
+    },
+
+    "Wireshark - Network Protocol Analyzer": {
+        url:   `https://www.wireshark.org/`,
+        title: `Wireshark - Network Protocol Analyzer`,
     },
     Wireshark: {
-        url:      `https://www.wireshark.org/`,
-        internal: false,
-        title:    `Wireshark - Network Protocol Analyzer`,
+        aliasOf: `Wireshark - Network Protocol Analyzer`,
+    },
+
+    "Kali Linux - Penetration Testing Distribution": {
+        url:   `https://www.kali.org/`,
+        title: `Kali Linux - Penetration Testing Distribution`,
     },
     "Kali Linux": {
-        url:      `https://www.kali.org/`,
-        internal: false,
-        title:    `Kali Linux - Penetration Testing Distribution`,
+        aliasOf: `Kali Linux - Penetration Testing Distribution`,
     },
     Kali: {
-        url:      `https://www.kali.org/`,
-        internal: false,
-        title:    `Kali Linux`,
+        aliasOf: `Kali Linux - Penetration Testing Distribution`,
+    },
+
+    "Cobalt Strike - Adversary Simulation": {
+        url:   `https://www.cobaltstrike.com/`,
+        title: `Cobalt Strike - Adversary Simulation`,
     },
     "Cobalt Strike": {
-        url:      `https://www.cobaltstrike.com/`,
-        internal: false,
-        title:    `Cobalt Strike - Adversary Simulation`,
+        aliasOf: `Cobalt Strike - Adversary Simulation`,
+    },
+
+    "Nessus Vulnerability Scanner": {
+        url:   `https://www.tenable.com/products/nessus`,
+        title: `Nessus Vulnerability Scanner`,
     },
     Nessus: {
-        url:      `https://www.tenable.com/products/nessus`,
-        internal: false,
-        title:    `Nessus Vulnerability Scanner`,
+        aliasOf: `Nessus Vulnerability Scanner`,
+    },
+
+    "OpenVAS - Open Vulnerability Assessment Scanner": {
+        url:   `https://www.openvas.org/`,
+        title: `OpenVAS - Open Vulnerability Assessment Scanner`,
     },
     OpenVAS: {
-        url:      `https://www.openvas.org/`,
-        internal: false,
-        title:    `OpenVAS - Open Vulnerability Assessment Scanner`,
+        aliasOf: `OpenVAS - Open Vulnerability Assessment Scanner`,
+    },
+
+    "SQLMap - SQL Injection Tool": {
+        url:   `https://sqlmap.org/`,
+        title: `SQLMap - SQL Injection Tool`,
     },
     SQLMap: {
-        url:      `https://sqlmap.org/`,
-        internal: false,
-        title:    `SQLMap - SQL Injection Tool`,
+        aliasOf: `SQLMap - SQL Injection Tool`,
     },
     sqlmap: {
-        url:      `https://sqlmap.org/`,
-        internal: false,
-        title:    `SQLMap - SQL Injection Tool`,
+        aliasOf: `SQLMap - SQL Injection Tool`,
+    },
+
+    "Hashcat - Password Recovery": {
+        url:   `https://hashcat.net/hashcat/`,
+        title: `Hashcat - Password Recovery`,
     },
     Hashcat: {
-        url:      `https://hashcat.net/hashcat/`,
-        internal: false,
-        title:    `Hashcat - Password Recovery`,
+        aliasOf: `Hashcat - Password Recovery`,
+    },
+
+    "John the Ripper Password Cracker": {
+        url:   `https://www.openwall.com/john/`,
+        title: `John the Ripper Password Cracker`,
     },
     "John the Ripper": {
-        url:      `https://www.openwall.com/john/`,
-        internal: false,
-        title:    `John the Ripper Password Cracker`,
+        aliasOf: `John the Ripper Password Cracker`,
+    },
+
+    "BloodHound - Active Directory Attack Path": {
+        url:   `https://github.com/BloodHoundAD/BloodHound`,
+        title: `BloodHound - Active Directory Attack Path`,
     },
     BloodHound: {
-        url:      `https://github.com/BloodHoundAD/BloodHound`,
-        internal: false,
-        title:    `BloodHound - Active Directory Attack Path`,
+        aliasOf: `BloodHound - Active Directory Attack Path`,
+    },
+
+    "Mimikatz - Credential Extraction": {
+        url:   `https://github.com/gentilkiwi/mimikatz`,
+        title: `Mimikatz - Credential Extraction`,
     },
     Mimikatz: {
-        url:      `https://github.com/gentilkiwi/mimikatz`,
-        internal: false,
-        title:    `Mimikatz - Credential Extraction`,
+        aliasOf: `Mimikatz - Credential Extraction`,
+    },
+
+    "Impacket - Network Protocol Toolkit": {
+        url:   `https://github.com/fortra/impacket`,
+        title: `Impacket - Network Protocol Toolkit`,
     },
     Impacket: {
-        url:      `https://github.com/fortra/impacket`,
-        internal: false,
-        title:    `Impacket - Network Protocol Toolkit`,
+        aliasOf: `Impacket - Network Protocol Toolkit`,
+    },
+
+    "Ghidra - Reverse Engineering Tool": {
+        url:   `https://ghidra-sre.org/`,
+        title: `Ghidra - Reverse Engineering Tool`,
     },
     Ghidra: {
-        url:      `https://ghidra-sre.org/`,
-        internal: false,
-        title:    `Ghidra - Reverse Engineering Tool`,
+        aliasOf: `Ghidra - Reverse Engineering Tool`,
+    },
+
+    "IDA Pro - Disassembler": {
+        url:   `https://hex-rays.com/ida-pro/`,
+        title: `IDA Pro - Disassembler`,
     },
     "IDA Pro": {
-        url:      `https://hex-rays.com/ida-pro/`,
-        internal: false,
-        title:    `IDA Pro - Disassembler`,
+        aliasOf: `IDA Pro - Disassembler`,
+    },
+
+    "radare2 - Reverse Engineering": {
+        url:   `https://rada.re/n/`,
+        title: `radare2 - Reverse Engineering`,
     },
     radare2: {
-        url:      `https://rada.re/n/`,
-        internal: false,
-        title:    `radare2 - Reverse Engineering`,
+        aliasOf: `radare2 - Reverse Engineering`,
+    },
+
+    "Snort - IDS/IPS": {
+        url:   `https://www.snort.org/`,
+        title: `Snort - IDS/IPS`,
     },
     Snort: {
-        url:      `https://www.snort.org/`,
-        internal: false,
-        title:    `Snort - IDS/IPS`,
+        aliasOf: `Snort - IDS/IPS`,
+    },
+
+    "Suricata - Network Threat Detection": {
+        url:   `https://suricata.io/`,
+        title: `Suricata - Network Threat Detection`,
     },
     Suricata: {
-        url:      `https://suricata.io/`,
-        internal: false,
-        title:    `Suricata - Network Threat Detection`,
+        aliasOf: `Suricata - Network Threat Detection`,
+    },
+
+    "Zeek - Network Analysis Framework": {
+        url:   `https://zeek.org/`,
+        title: `Zeek - Network Analysis Framework`,
     },
     Zeek: {
-        url:      `https://zeek.org/`,
-        internal: false,
-        title:    `Zeek - Network Analysis Framework`,
+        aliasOf: `Zeek - Network Analysis Framework`,
+    },
+
+    "Splunk - SIEM": {
+        url:   `https://www.splunk.com/`,
+        title: `Splunk - SIEM`,
     },
     Splunk: {
-        url:      `https://www.splunk.com/`,
-        internal: false,
-        title:    `Splunk - SIEM`,
+        aliasOf: `Splunk - SIEM`,
     },
+
     "Elastic Security": {
-        url:      `https://www.elastic.co/security`,
-        internal: false,
-        title:    `Elastic Security`,
+        url:   `https://www.elastic.co/security`,
+        title: `Elastic Security`,
+    },
+
+    "Elastic Stack (ELK)": {
+        url:   `https://www.elastic.co/elastic-stack`,
+        title: `Elastic Stack (ELK)`,
     },
     "ELK Stack": {
-        url:      `https://www.elastic.co/elastic-stack`,
-        internal: false,
-        title:    `Elastic Stack (ELK)`,
+        aliasOf: `Elastic Stack (ELK)`,
+    },
+
+    "Wazuh - Security Platform": {
+        url:   `https://wazuh.com/`,
+        title: `Wazuh - Security Platform`,
     },
     Wazuh: {
-        url:      `https://wazuh.com/`,
-        internal: false,
-        title:    `Wazuh - Security Platform`,
+        aliasOf: `Wazuh - Security Platform`,
+    },
+
+    // Training Platforms
+    "TryHackMe - Cybersecurity Training": {
+        url:   `https://tryhackme.com/`,
+        title: `TryHackMe - Cybersecurity Training`,
     },
     TryHackMe: {
-        url:      `https://tryhackme.com/`,
-        internal: false,
-        title:    `TryHackMe - Cybersecurity Training`,
+        aliasOf: `TryHackMe - Cybersecurity Training`,
+    },
+
+    "Hack The Box": {
+        url:   `https://www.hackthebox.com/`,
+        title: `Hack The Box`,
     },
     HackTheBox: {
-        url:      `https://www.hackthebox.com/`,
-        internal: false,
-        title:    `Hack The Box - Cybersecurity Training`,
-    },
-    "Hack The Box": {
-        url:      `https://www.hackthebox.com/`,
-        internal: false,
-        title:    `Hack The Box`,
+        aliasOf: `Hack The Box`,
     },
     HTB: {
-        url:      `https://www.hackthebox.com/`,
-        internal: false,
-        title:    `Hack The Box`,
+        aliasOf: `Hack The Box`,
+    },
+
+    "VulnHub - Vulnerable VMs": {
+        url:   `https://www.vulnhub.com/`,
+        title: `VulnHub - Vulnerable VMs`,
     },
     VulnHub: {
-        url:      `https://www.vulnhub.com/`,
-        internal: false,
-        title:    `VulnHub - Vulnerable VMs`,
+        aliasOf: `VulnHub - Vulnerable VMs`,
+    },
+
+    "PentesterLab - Web Penetration Testing": {
+        url:   `https://pentesterlab.com/`,
+        title: `PentesterLab - Web Penetration Testing`,
     },
     PentesterLab: {
-        url:      `https://pentesterlab.com/`,
-        internal: false,
-        title:    `PentesterLab - Web Penetration Testing`,
+        aliasOf: `PentesterLab - Web Penetration Testing`,
     },
+
     "Web Security Academy": {
-        url:      `https://portswigger.net/web-security`,
-        internal: false,
-        title:    `Web Security Academy`,
+        url:   `https://portswigger.net/web-security`,
+        title: `Web Security Academy`,
+    },
+
+    "OverTheWire Wargames": {
+        url:   `https://overthewire.org/wargames/`,
+        title: `OverTheWire Wargames`,
     },
     OverTheWire: {
-        url:      `https://overthewire.org/wargames/`,
-        internal: false,
-        title:    `OverTheWire Wargames`,
+        aliasOf: `OverTheWire Wargames`,
+    },
+
+    "CTFtime - CTF Archive": {
+        url:   `https://ctftime.org/`,
+        title: `CTFtime - CTF Archive`,
     },
     CTFtime: {
-        url:      `https://ctftime.org/`,
-        internal: false,
-        title:    `CTFtime - CTF Archive`,
+        aliasOf: `CTFtime - CTF Archive`,
+    },
+
+    // Application Security
+    "SAST - Static Application Security Testing": {
+        url:   `https://owasp.org/www-community/Source_Code_Analysis_Tools`,
+        title: `SAST - Static Application Security Testing`,
     },
     SAST: {
-        url:      `https://owasp.org/www-community/Source_Code_Analysis_Tools`,
-        internal: false,
-        title:    `SAST - Static Application Security Testing`,
+        aliasOf: `SAST - Static Application Security Testing`,
+    },
+
+    "DAST - Dynamic Application Security Testing": {
+        url:   `https://owasp.org/www-community/Vulnerability_Scanning_Tools`,
+        title: `DAST - Dynamic Application Security Testing`,
     },
     DAST: {
-        url:      `https://owasp.org/www-community/Vulnerability_Scanning_Tools`,
-        internal: false,
-        title:    `DAST - Dynamic Application Security Testing`,
+        aliasOf: `DAST - Dynamic Application Security Testing`,
+    },
+
+    "SBOM - Software Bill of Materials": {
+        url:   `https://www.cisa.gov/sbom`,
+        title: `SBOM - Software Bill of Materials`,
     },
     SBOM: {
-        url:      `https://www.cisa.gov/sbom`,
-        internal: false,
-        title:    `SBOM - Software Bill of Materials`,
+        aliasOf: `SBOM - Software Bill of Materials`,
+    },
+
+    "DevSecOps - Security in DevOps": {
+        url:   `https://www.devsecops.org/`,
+        title: `DevSecOps - Security in DevOps`,
     },
     DevSecOps: {
-        url:      `https://www.devsecops.org/`,
-        internal: false,
-        title:    `DevSecOps - Security in DevOps`,
+        aliasOf: `DevSecOps - Security in DevOps`,
+    },
+
+    "Snyk - Developer Security Platform": {
+        url:   `https://snyk.io/`,
+        title: `Snyk - Developer Security Platform`,
     },
     Snyk: {
-        url:      `https://snyk.io/`,
-        internal: false,
-        title:    `Snyk - Developer Security Platform`,
+        aliasOf: `Snyk - Developer Security Platform`,
+    },
+
+    "SonarQube - Code Quality": {
+        url:   `https://www.sonarsource.com/products/sonarqube/`,
+        title: `SonarQube - Code Quality`,
     },
     SonarQube: {
-        url:      `https://www.sonarsource.com/products/sonarqube/`,
-        internal: false,
-        title:    `SonarQube - Code Quality`,
+        aliasOf: `SonarQube - Code Quality`,
+    },
+
+    "Semgrep - Code Analysis": {
+        url:   `https://semgrep.dev/`,
+        title: `Semgrep - Code Analysis`,
     },
     Semgrep: {
-        url:      `https://semgrep.dev/`,
-        internal: false,
-        title:    `Semgrep - Code Analysis`,
+        aliasOf: `Semgrep - Code Analysis`,
+    },
+
+    "Trivy - Container Security Scanner": {
+        url:   `https://trivy.dev/`,
+        title: `Trivy - Container Security Scanner`,
     },
     Trivy: {
-        url:      `https://trivy.dev/`,
-        internal: false,
-        title:    `Trivy - Container Security Scanner`,
+        aliasOf: `Trivy - Container Security Scanner`,
+    },
+
+    // Cryptography & Authentication
+    "TLS - Transport Layer Security": {
+        url:   `https://en.wikipedia.org/wiki/Transport_Layer_Security`,
+        title: `TLS - Transport Layer Security`,
     },
     TLS: {
-        url:      `https://en.wikipedia.org/wiki/Transport_Layer_Security`,
-        internal: false,
-        title:    `TLS - Transport Layer Security`,
+        aliasOf: `TLS - Transport Layer Security`,
+    },
+
+    "HTTPS - Secure HTTP": {
+        url:   `https://en.wikipedia.org/wiki/HTTPS`,
+        title: `HTTPS - Secure HTTP`,
     },
     HTTPS: {
-        url:      `https://en.wikipedia.org/wiki/HTTPS`,
-        internal: false,
-        title:    `HTTPS - Secure HTTP`,
+        aliasOf: `HTTPS - Secure HTTP`,
+    },
+
+    "OAuth - Authorization Framework": {
+        url:   `https://oauth.net/`,
+        title: `OAuth - Authorization Framework`,
     },
     OAuth: {
-        url:      `https://oauth.net/`,
-        internal: false,
-        title:    `OAuth - Authorization Framework`,
+        aliasOf: `OAuth - Authorization Framework`,
+    },
+
+    "JWT - JSON Web Tokens": {
+        url:   `https://jwt.io/`,
+        title: `JWT - JSON Web Tokens`,
     },
     JWT: {
-        url:      `https://jwt.io/`,
-        internal: false,
-        title:    `JWT - JSON Web Tokens`,
+        aliasOf: `JWT - JSON Web Tokens`,
+    },
+
+    "Kerberos Authentication": {
+        url:   `https://web.mit.edu/kerberos/`,
+        title: `Kerberos Authentication`,
     },
     Kerberos: {
-        url:      `https://web.mit.edu/kerberos/`,
-        internal: false,
-        title:    `Kerberos Authentication`,
+        aliasOf: `Kerberos Authentication`,
     },
+
     "Active Directory": {
-        url:      `https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview`,
-        internal: false,
-        title:    `Active Directory`,
+        url:   `https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/` +
+               `get-started/virtual-dc/active-directory-domain-services-overview`,
+        title: `Active Directory`,
+    },
+
+    "MFA - Multi-Factor Authentication": {
+        url:   `https://en.wikipedia.org/wiki/Multi-factor_authentication`,
+        title: `MFA - Multi-Factor Authentication`,
     },
     MFA: {
-        url:      `https://en.wikipedia.org/wiki/Multi-factor_authentication`,
-        internal: false,
-        title:    `MFA - Multi-Factor Authentication`,
+        aliasOf: `MFA - Multi-Factor Authentication`,
+    },
+
+    "Two-Factor Authentication": {
+        url:   `https://en.wikipedia.org/wiki/Multi-factor_authentication`,
+        title: `Two-Factor Authentication`,
     },
     "2FA": {
-        url:      `https://en.wikipedia.org/wiki/Multi-factor_authentication`,
-        internal: false,
-        title:    `Two-Factor Authentication`,
+        aliasOf: `Two-Factor Authentication`,
+    },
+
+    "PKI - Public Key Infrastructure": {
+        url:   `https://en.wikipedia.org/wiki/Public_key_infrastructure`,
+        title: `PKI - Public Key Infrastructure`,
     },
     PKI: {
-        url:      `https://en.wikipedia.org/wiki/Public_key_infrastructure`,
-        internal: false,
-        title:    `PKI - Public Key Infrastructure`,
+        aliasOf: `PKI - Public Key Infrastructure`,
+    },
+
+    // Compliance & Standards
+    "GDPR - General Data Protection Regulation": {
+        url:   `https://gdpr.eu/`,
+        title: `GDPR - General Data Protection Regulation`,
     },
     GDPR: {
-        url:      `https://gdpr.eu/`,
-        internal: false,
-        title:    `GDPR - General Data Protection Regulation`,
+        aliasOf: `GDPR - General Data Protection Regulation`,
+    },
+
+    "HIPAA - Health Insurance Portability and Accountability Act": {
+        url:   `https://www.hhs.gov/hipaa/index.html`,
+        title: `HIPAA - Health Insurance Portability and Accountability Act`,
     },
     HIPAA: {
-        url:      `https://www.hhs.gov/hipaa/index.html`,
-        internal: false,
-        title:    `HIPAA - Health Insurance Portability and Accountability Act`,
+        aliasOf: `HIPAA - Health Insurance Portability and Accountability Act`,
+    },
+
+    "PCI DSS - Payment Card Industry Data Security Standard": {
+        url:   `https://www.pcisecuritystandards.org/`,
+        title: `PCI DSS - Payment Card Industry Data Security Standard`,
     },
     "PCI DSS": {
-        url:      `https://www.pcisecuritystandards.org/`,
-        internal: false,
-        title:    `PCI DSS - Payment Card Industry Data Security Standard`,
+        aliasOf: `PCI DSS - Payment Card Industry Data Security Standard`,
+    },
+
+    "SOC 2 Compliance": {
+        url:   `https://www.aicpa.org/interestareas/frc/assuranceadvisoryservices/aicpasoc2report`,
+        title: `SOC 2 Compliance`,
     },
     "SOC 2": {
-        url:      `https://www.aicpa.org/interestareas/frc/assuranceadvisoryservices/aicpasoc2report`,
-        internal: false,
-        title:    `SOC 2 Compliance`,
+        aliasOf: `SOC 2 Compliance`,
+    },
+
+    "ISO 27001 Information Security": {
+        url:   `https://www.iso.org/isoiec-27001-information-security.html`,
+        title: `ISO 27001 Information Security`,
     },
     "ISO 27001": {
-        url:      `https://www.iso.org/isoiec-27001-information-security.html`,
-        internal: false,
-        title:    `ISO 27001 Information Security`,
+        aliasOf: `ISO 27001 Information Security`,
+    },
+
+    "NIST Cybersecurity": {
+        url:   `https://www.nist.gov/cybersecurity`,
+        title: `NIST Cybersecurity`,
     },
     NIST: {
-        url:      `https://www.nist.gov/cybersecurity`,
-        internal: false,
-        title:    `NIST Cybersecurity`,
+        aliasOf: `NIST Cybersecurity`,
     },
+
     "NIST Cybersecurity Framework": {
-        url:      `https://www.nist.gov/cyberframework`,
-        internal: false,
-        title:    `NIST Cybersecurity Framework`,
+        url:   `https://www.nist.gov/cyberframework`,
+        title: `NIST Cybersecurity Framework`,
     },
+
     FedRAMP: {
-        url:      `https://www.fedramp.gov/`,
-        internal: false,
-        title:    `FedRAMP`,
+        url:   `https://www.fedramp.gov/`,
+        title: `FedRAMP`,
     },
+
     "CIS Controls": {
-        url:      `https://www.cisecurity.org/controls`,
-        internal: false,
-        title:    `CIS Controls`,
+        url:   `https://www.cisecurity.org/controls`,
+        title: `CIS Controls`,
+    },
+
+    // Threat Intelligence
+    "IOC - Indicators of Compromise": {
+        url:   `https://en.wikipedia.org/wiki/Indicator_of_compromise`,
+        title: `IOC - Indicators of Compromise`,
     },
     IOC: {
-        url:      `https://en.wikipedia.org/wiki/Indicator_of_compromise`,
-        internal: false,
-        title:    `IOC - Indicators of Compromise`,
+        aliasOf: `IOC - Indicators of Compromise`,
+    },
+
+    "STIX - Structured Threat Information Expression": {
+        url:   `https://oasis-open.github.io/cti-documentation/stix/intro`,
+        title: `STIX - Structured Threat Information Expression`,
     },
     STIX: {
-        url:      `https://oasis-open.github.io/cti-documentation/stix/intro`,
-        internal: false,
-        title:    `STIX - Structured Threat Information Expression`,
+        aliasOf: `STIX - Structured Threat Information Expression`,
+    },
+
+    "TAXII - Trusted Automated Exchange of Intelligence Information": {
+        url:   `https://oasis-open.github.io/cti-documentation/taxii/intro`,
+        title: `TAXII - Trusted Automated Exchange of Intelligence Information`,
     },
     TAXII: {
-        url:      `https://oasis-open.github.io/cti-documentation/taxii/intro`,
-        internal: false,
-        title:    `TAXII - Trusted Automated Exchange of Intelligence Information`,
+        aliasOf: `TAXII - Trusted Automated Exchange of Intelligence Information`,
+    },
+
+    "YARA Rules": {
+        url:   `https://yara.readthedocs.io/`,
+        title: `YARA Rules`,
     },
     YARA: {
-        url:      `https://yara.readthedocs.io/`,
-        internal: false,
-        title:    `YARA Rules`,
+        aliasOf: `YARA Rules`,
+    },
+
+    "Sigma Detection Rules": {
+        url:   `https://github.com/SigmaHQ/sigma`,
+        title: `Sigma Detection Rules`,
     },
     Sigma: {
-        url:      `https://github.com/SigmaHQ/sigma`,
-        internal: false,
-        title:    `Sigma Detection Rules`,
+        aliasOf: `Sigma Detection Rules`,
+    },
+
+    "MISP - Malware Information Sharing Platform": {
+        url:   `https://www.misp-project.org/`,
+        title: `MISP - Malware Information Sharing Platform`,
     },
     MISP: {
-        url:      `https://www.misp-project.org/`,
-        internal: false,
-        title:    `MISP - Malware Information Sharing Platform`,
+        aliasOf: `MISP - Malware Information Sharing Platform`,
     },
+
     VirusTotal: {
-        url:      `https://www.virustotal.com/`,
-        internal: false,
-        title:    `VirusTotal`,
+        url:   `https://www.virustotal.com/`,
+        title: `VirusTotal`,
+    },
+
+    "Shodan - Search Engine for IoT": {
+        url:   `https://www.shodan.io/`,
+        title: `Shodan - Search Engine for IoT`,
     },
     Shodan: {
-        url:      `https://www.shodan.io/`,
-        internal: false,
-        title:    `Shodan - Search Engine for IoT`,
+        aliasOf: `Shodan - Search Engine for IoT`,
+    },
+
+    // Incident Response & Forensics
+    "Incident Response": {
+        url:   `https://www.nist.gov/publications/computer-security-incident-handling-guide`,
+        title: `Incident Response`,
     },
     "incident response": {
-        url:      `https://www.nist.gov/publications/computer-security-incident-handling-guide`,
-        internal: false,
-        title:    `Incident Response`,
+        aliasOf: `Incident Response`,
+    },
+
+    "DFIR - Digital Forensics and Incident Response": {
+        url:   `https://www.sans.org/digital-forensics-incident-response/`,
+        title: `DFIR - Digital Forensics and Incident Response`,
     },
     DFIR: {
-        url:      `https://www.sans.org/digital-forensics-incident-response/`,
-        internal: false,
-        title:    `DFIR - Digital Forensics and Incident Response`,
+        aliasOf: `DFIR - Digital Forensics and Incident Response`,
     },
     "digital forensics": {
-        url:      `https://www.sans.org/digital-forensics-incident-response/`,
-        internal: false,
-        title:    `Digital Forensics`,
+        aliasOf: `DFIR - Digital Forensics and Incident Response`,
+    },
+
+    "SOC - Security Operations Center": {
+        url:   `https://en.wikipedia.org/wiki/Security_operations_center`,
+        title: `SOC - Security Operations Center`,
     },
     SOC: {
-        url:      `https://en.wikipedia.org/wiki/Security_operations_center`,
-        internal: false,
-        title:    `SOC - Security Operations Center`,
+        aliasOf: `SOC - Security Operations Center`,
     },
     "Security Operations Center": {
-        url:      `https://en.wikipedia.org/wiki/Security_operations_center`,
-        internal: false,
-        title:    `Security Operations Center`,
+        aliasOf: `SOC - Security Operations Center`,
     },
+
+    // Cloud Security
     "AWS Security": {
-        url:      `https://aws.amazon.com/security/`,
-        internal: false,
-        title:    `AWS Security`,
+        url:   `https://aws.amazon.com/security/`,
+        title: `AWS Security`,
     },
+
     "Azure Security": {
-        url:      `https://azure.microsoft.com/en-us/explore/security`,
-        internal: false,
-        title:    `Azure Security`,
+        url:   `https://azure.microsoft.com/en-us/explore/security`,
+        title: `Azure Security`,
+    },
+
+    "Google Cloud Security": {
+        url:   `https://cloud.google.com/security`,
+        title: `Google Cloud Security`,
     },
     "GCP Security": {
-        url:      `https://cloud.google.com/security`,
-        internal: false,
-        title:    `Google Cloud Security`,
+        aliasOf: `Google Cloud Security`,
+    },
+
+    "Kubernetes Security": {
+        url:   `https://kubernetes.io/docs/concepts/security/`,
+        title: `Kubernetes Security`,
     },
     "Kubernetes security": {
-        url:      `https://kubernetes.io/docs/concepts/security/`,
-        internal: false,
-        title:    `Kubernetes Security`,
+        aliasOf: `Kubernetes Security`,
+    },
+
+    "Container Security": {
+        url:   `https://kubernetes.io/docs/concepts/security/`,
+        title: `Container Security`,
     },
     "container security": {
-        url:      `https://kubernetes.io/docs/concepts/security/`,
-        internal: false,
-        title:    `Container Security`,
+        aliasOf: `Container Security`,
+    },
+
+    "Falco - Runtime Security": {
+        url:   `https://falco.org/`,
+        title: `Falco - Runtime Security`,
     },
     Falco: {
-        url:      `https://falco.org/`,
-        internal: false,
-        title:    `Falco - Runtime Security`,
+        aliasOf: `Falco - Runtime Security`,
+    },
+
+    // Programming Languages
+    "Rust Programming Language": {
+        url:   `https://www.rust-lang.org/`,
+        title: `Rust Programming Language`,
     },
     Rust: {
-        url:      `https://www.rust-lang.org/`,
-        internal: false,
-        title:    `Rust Programming Language`,
+        aliasOf: `Rust Programming Language`,
+    },
+
+    "Python Programming Language": {
+        url:   `https://www.python.org/`,
+        title: `Python Programming Language`,
     },
     Python: {
-        url:      `https://www.python.org/`,
-        internal: false,
-        title:    `Python Programming Language`,
+        aliasOf: `Python Programming Language`,
+    },
+
+    "Go Programming Language": {
+        url:   `https://go.dev/`,
+        title: `Go Programming Language`,
     },
     Go: {
-        url:      `https://go.dev/`,
-        internal: false,
-        title:    `Go Programming Language`,
+        aliasOf: `Go Programming Language`,
     },
+
     PowerShell: {
-        url:      `https://docs.microsoft.com/en-us/powershell/`,
-        internal: false,
-        title:    `PowerShell`,
+        url:   `https://docs.microsoft.com/en-us/powershell/`,
+        title: `PowerShell`,
+    },
+
+    // Secure Development
+    "OWASP Secure Coding Practices": {
+        url:   `https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/`,
+        title: `OWASP Secure Coding Practices`,
     },
     "secure coding": {
-        url:      `https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/`,
-        internal: false,
-        title:    `OWASP Secure Coding Practices`,
+        aliasOf: `OWASP Secure Coding Practices`,
+    },
+
+    "Memory Safety": {
+        url:   `https://en.wikipedia.org/wiki/Memory_safety`,
+        title: `Memory Safety`,
     },
     "memory safety": {
-        url:      `https://en.wikipedia.org/wiki/Memory_safety`,
-        internal: false,
-        title:    `Memory Safety`,
+        aliasOf: `Memory Safety`,
+    },
+
+    // Practice Environments
+    "OWASP WebGoat - Insecure Web Application for Learning": {
+        url:   `https://owasp.org/www-project-webgoat/`,
+        title: `OWASP WebGoat - Insecure Web Application for Learning`,
     },
     "OWASP WebGoat": {
-        url:      `https://owasp.org/www-project-webgoat/`,
-        internal: false,
-        title:    `OWASP WebGoat - Insecure Web Application for Learning`,
+        aliasOf: `OWASP WebGoat - Insecure Web Application for Learning`,
+    },
+
+    "DVWA - Damn Vulnerable Web Application": {
+        url:   `https://github.com/digininja/DVWA`,
+        title: `DVWA - Damn Vulnerable Web Application`,
     },
     DVWA: {
-        url:      `https://github.com/digininja/DVWA`,
-        internal: false,
-        title:    `DVWA - Damn Vulnerable Web Application`,
+        aliasOf: `DVWA - Damn Vulnerable Web Application`,
+    },
+
+    "Metasploitable - Vulnerable VM for Metasploit Testing": {
+        url:   `https://github.com/rapid7/metasploitable3`,
+        title: `Metasploitable - Vulnerable VM for Metasploit Testing`,
     },
     Metasploitable: {
-        url:      `https://github.com/rapid7/metasploitable3`,
-        internal: false,
-        title:    `Metasploitable - Vulnerable VM for Metasploit Testing`,
+        aliasOf: `Metasploitable - Vulnerable VM for Metasploit Testing`,
     },
 };
+
+/**
+ * Dynamically generate link mappings for all blog posts
+ * Note: This function requires Astro runtime and should be called from .astro files
+ */
+export async function generateBlogMappings(): Promise<LinkMappings> {
+    const first_char = 0;
+    const char_after_first = 1;
+    const min_slug_length = 10;
+
+    try {
+        // Dynamically import getCollection to avoid issues during config loading
+        const {
+            getCollection,
+        } = await import(`astro:content`);
+        const blogPosts = await getCollection(`blog`);
+        const mappings: LinkMappings = {};
+
+        for (const post of blogPosts) {
+            if (post.data.draft) {
+                continue;
+            }
+
+            const url = `/blog/${ post.id.replace(/\.mdx?$/, ``) }`;
+            const {
+                title,
+            } = post.data;
+
+            // Add mapping with the exact title
+            mappings[title] = {
+                url,
+                title,
+            };
+
+            // Optionally add slug-based variations if they differ significantly
+            const slug = post.id.replace(/\.mdx?$/, ``);
+            const readableSlug = slug
+                .split(`-`)
+                .map((word: string) => word.charAt(first_char).toUpperCase() +
+                                       word.slice(char_after_first))
+                .join(` `);
+
+            // Only add if it's different from the title and not too generic
+            if (readableSlug !== title && readableSlug.length > min_slug_length) {
+                mappings[readableSlug] = {
+                    aliasOf: title,
+                };
+            }
+        }
+
+        return mappings;
+    }
+    catch (error) {
+        console.warn(`Failed to load blog posts for auto-linking:`, error);
+        return {};
+    }
+}
+
+/**
+ * Combined link mappings (static + dynamic blog posts)
+ * This should be called at build time to include all blog posts
+ */
+export async function getLinkMappings(): Promise<LinkMappings> {
+    const blogMappings = await generateBlogMappings();
+    return {
+        ...STATIC_MAPPINGS,
+        ...blogMappings,
+    };
+}
+
+/**
+ * Synchronous export for backwards compatibility
+ * Note: This won't include blog post mappings. Use getLinkMappings() for full set.
+ */
+export const LINK_MAPPINGS = STATIC_MAPPINGS;
