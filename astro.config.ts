@@ -12,7 +12,6 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import remarkAutoLink from "./src/lib/auto-link-remark-plugin";
 import remarkUtmParams from "./src/lib/utm-remark-plugin";
-import purgecss from 'astro-purgecss';
 
 // https://astro.build/config
 export default defineConfig({
@@ -45,8 +44,7 @@ export default defineConfig({
             extendMarkdownConfig: true,
             gfm:                  true,
             optimize:             true,
-        }),
-        purgecss(),
+        })
     ],
     build:        {
         assets: `assets`,
