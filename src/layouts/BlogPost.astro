@@ -11,7 +11,7 @@ import { ReadingProgress } from "@/components/react/reading-progress";
 import { ShareButtons } from "@/components/react/share-buttons";
 import RelatedPosts from "@/components/astro/blog/related-posts.astro";
 import OptimizedImage from "@/components/astro/common/OptimizedImage.astro";
-import {OptimizedImage as ReactOptimizedImage} from "@/components/react/optimized-image";
+import { OptimizedImage as ReactOptimizedImage } from "@/components/react/optimized-image";
 import "@/styles/globals.css";
 import { render } from "astro:content";
 import { getAuthor } from "@/data/authors";
@@ -207,8 +207,19 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
       <!-- Author Card -->
       <Card className="mb-8 p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.src} className="h-16 w-16">
-            {author.avatar && <ReactOptimizedImage src={author.avatar.src} alt={author.name} width={64} height={64} />}
+          <AuthorAvatar client:only="react" name={author.name} avatarSrc={author.avatar?.default.src} className="h-16 w-16">
+            {
+              author.avatar && (
+                <ReactOptimizedImage
+                  client:only="react"
+                  src={author.avatar.default.src}
+                  blurSrc={author.avatar.blur.src}
+                  alt={author.name}
+                  width={64}
+                  height={64}
+                />
+              )
+            }
           </AuthorAvatar>
 
           <div class="flex-1 space-y-2">

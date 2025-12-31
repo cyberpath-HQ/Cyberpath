@@ -1,10 +1,16 @@
-import type { ImageMetadata } from "astro";
+import type {
+    GetImageResult, ImageMetadata
+} from "astro";
 import ebalo_avatar from "@assets/avatars/ebalo-portrait-square.png";
+import { getImage } from "astro:assets";
 
 export interface Author {
-    id:        string
-    name:      string
-    avatar?:   ImageMetadata
+    id:      string
+    name:    string
+    avatar?:   {
+        default: GetImageResult
+        blur:    GetImageResult
+    }
     bio?:      string
     twitter?:  string
     github?:   string
@@ -27,9 +33,38 @@ export const AUTHORS: Record<string, Author> = {
         medium:   `https://ebalo.medium.com/`,
         devto:    `https://dev.to/ebalo`,
         email:    `emanuele.balsamo@cyberpath-hq.com`,
-        avatar:   ebalo_avatar,
+        avatar:   await prepareAuthorAvatar(ebalo_avatar),
     },
 };
+
+async function prepareAuthorAvatar(avatar: ImageMetadata | undefined): Promise<{
+    default: GetImageResult
+    blur:    GetImageResult
+} | undefined> {
+    if (!avatar) {
+        return undefined;
+    }
+
+    const image = await getImage({
+        src:     avatar,
+        width:   64,
+        height:  64,
+        format:  `webp`,
+        quality:  80,
+    });
+    const blurImage = await getImage({
+        src:     avatar,
+        width:   10,
+        height:  10,
+        format:  `webp`,
+        quality:  10,
+    });
+
+    return {
+        default: image,
+        blur:    blurImage,
+    };
+}
 
 export function getAuthor(id: string): Author | undefined {
     return AUTHORS[id];
