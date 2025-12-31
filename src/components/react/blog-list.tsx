@@ -16,17 +16,16 @@ import {
     ALL_CATEGORIES, getCategoryColor, type Category
 } from "@/lib/categories";
 import type { Author } from "@/data/authors";
-import type { GetImageResult } from "astro";
 import { cn } from "@/lib/utils";
 
 interface BlogListProps {
     posts:              Array<SearchableBlogPost>
     authors:            Record<string, Author>
     itemsPerPage?:      number
-    images:             Record<string, GetImageResult | undefined>
-    author_images:      Record<string, GetImageResult | undefined>
-    blur_images:        Record<string, GetImageResult | undefined>
-    author_blur_images: Record<string, GetImageResult | undefined>
+    images:             Record<string, string | undefined>
+    author_images:      Record<string, string | undefined>
+    blur_images:        Record<string, string | undefined>
+    author_blur_images: Record<string, string | undefined>
     index:              FuseIndex<SearchableBlogPost>
 }
 
@@ -40,6 +39,8 @@ export function BlogList({
     author_blur_images,
     index,
 }: BlogListProps): React.JSX.Element {
+    console.log({images, blur_images, author_images, author_blur_images});
+
     const [
         searchQuery,
         setSearchQuery,
@@ -277,117 +278,117 @@ export function BlogList({
 
             {/* Results Count */}
             <div className="text-sm text-muted-foreground">
-                {filteredPosts.length === posts.length
-? (
-          <span>Showing all {posts.length} articles</span>
-        )
-: (
-          <span>
-              Found {filteredPosts.length} of {posts.length} articles
-          </span>
-        )}
+                {
+                    filteredPosts.length === posts.length
+                    ? (
+                    <span>Showing all {posts.length} articles</span>
+                    )
+                    : (
+                    <span>
+                        Found {filteredPosts.length} of {posts.length} articles
+                    </span>
+                    )
+                }
             </div>
 
             {/* Blog Posts Grid */}
-            {paginatedPosts.length > 0
-? (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {paginatedPosts.map((post) => {
-                const author = authors[post.data.author];
-                if (!author) {
-                    return null;
-                }
+            {
+                paginatedPosts.length > 0
+                ? (
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {paginatedPosts.map((post) => {
+                            const author = authors[post.data.author];
+                            if (!author) {
+                                return null;
+                            }
 
-                return (
-                    <a key={post.id} href={post.data.url} className="group block h-full">
-                        <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
-                            {images[post.id] && (
-                                <div className="aspect-[16/9] transition-all hover:border-primary/50 overflow-hidden rounded-t-xl">
-                                    <OptimizedImage
-                                        src={images[post.id]!.src}
-                                        blurSrc={blur_images[post.id]?.src}
-                                        alt={post.data.title}
-                                        width={images[post.id]!.options.width}
-                                        height={images[post.id]!.options.height}
-                                        loading="lazy"
-                                        className={cn(
-                                            `h-full w-full object-cover transition-transform group-hover:scale-105`,
-                                            post.data.heroClass
+                            return (
+                                <a key={post.id} href={post.data.url} className="group block h-full">
+                                    <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50">
+                                        {images[post.id] && blur_images[post.id] && (
+                                            <div className="aspect-[16/9] transition-all hover:border-primary/50 overflow-hidden rounded-t-xl">
+                                                <OptimizedImage
+                                                    src={images[post.id]!}
+                                                    blurSrc={blur_images[post.id]!}
+                                                    alt={post.data.title}
+                                                    loading="lazy"
+                                                    className={cn(
+                                                        `h-full w-full object-cover transition-transform group-hover:scale-105`,
+                                                        post.data.heroClass
+                                                    )}
+                                                />
+                                            </div>
                                         )}
-                                    />
-                                </div>
-                            )}
-                            <CardHeader>
-                                <div className="mb-2 flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <AuthorAvatar name={author.name} avatarSrc={author.avatar?.default.src} className="h-8 w-8">
-                                            <OptimizedImage
-                                                src={author_images[post.data.author]?.src ?? ``}
-                                                blurSrc={author_blur_images[post.data.author]?.src}
-                                                alt={author.name}
-                                                width={author_images[post.data.author]?.options.width}
-                                                height={author_images[post.data.author]?.options.height}
-                                                loading="lazy"
-                                            />
-                                        </AuthorAvatar>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium">{author.name}</span>
-                                            <span className="text-xs text-muted-foreground">
-                                                {new Date(post.data.pubDate).toLocaleDateString(`en-US`, {
-                                                    year:  `numeric`,
-                                                    month: `short`,
-                                                    day:   `numeric`,
-                                                })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Badge className={getCategoryColor(post.data.category)}>{post.data.category}</Badge>
-                                </div>
+                                        <CardHeader>
+                                            <div className="mb-2 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <AuthorAvatar name={author.name} avatarSrc={author.avatar?.default} className="h-8 w-8">
+                                                        <OptimizedImage
+                                                            src={author_images[post.data.author] ?? ``}
+                                                            blurSrc={author_blur_images[post.data.author] ?? ``}
+                                                            alt={author.name}
+                                                            loading="lazy"
+                                                        />
+                                                    </AuthorAvatar>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-medium">{author.name}</span>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {new Date(post.data.pubDate).toLocaleDateString(`en-US`, {
+                                                                year:  `numeric`,
+                                                                month: `short`,
+                                                                day:   `numeric`,
+                                                            })}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Badge className={getCategoryColor(post.data.category)}>{post.data.category}</Badge>
+                                            </div>
 
-                                <CardTitle className="line-clamp-2 group-hover:text-primary">{post.data.title}</CardTitle>
-                                <CardDescription className="line-clamp-3">{post.data.description}</CardDescription>
-                            </CardHeader>
+                                            <CardTitle className="line-clamp-2 group-hover:text-primary">{post.data.title}</CardTitle>
+                                            <CardDescription className="line-clamp-3">{post.data.description}</CardDescription>
+                                        </CardHeader>
 
-                            <CardContent>
-                                {post.data.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-2">
-                                        {post.data.tags.slice(0, 2).map((tag) => (
-                                            <Badge key={tag} variant="secondary" className="text-xs">
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                        {post.data.tags.length > 2 && (
-                                            <Badge variant="secondary" className="text-xs">
-                                                +{post.data.tags.length - 2}
-                                            </Badge>
+                                        <CardContent>
+                                            {post.data.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-2">
+                                                    {post.data.tags.slice(0, 2).map((tag) => (
+                                                        <Badge key={tag} variant="secondary" className="text-xs">
+                                                            {tag}
+                                                        </Badge>
+                                                    ))}
+                                                    {post.data.tags.length > 2 && (
+                                                        <Badge variant="secondary" className="text-xs">
+                                                            +{post.data.tags.length - 2}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </CardContent>
+
+                                        {post.data.readingTime && (
+                                            <CardFooter>
+                                                <span className="text-sm text-muted-foreground">{post.data.readingTime}</span>
+                                            </CardFooter>
                                         )}
-                                    </div>
-                                )}
-                            </CardContent>
-
-                            {post.data.readingTime && (
-                                <CardFooter>
-                                    <span className="text-sm text-muted-foreground">{post.data.readingTime}</span>
-                                </CardFooter>
-                            )}
-                        </Card>
-                    </a>
-                );
-            })}
-        </div>
-      )
-: (
-        <div className="py-16 text-center">
-            <p className="text-xl text-muted-foreground">No articles found matching your criteria.</p>
-            {has_active_filters && (
-                <Button variant="outline" onClick={clearFilters} className="mt-4">
-                    Clear filters
-                </Button>
-            )}
-        </div>
-      )}
+                                    </Card>
+                                </a>
+                            );
+                        })}
+                    </div>
+                )
+                : (
+                    <div className="py-16 text-center">
+                        <p className="text-xl text-muted-foreground">No articles found matching your criteria.</p>
+                        {has_active_filters && (
+                            <Button variant="outline" onClick={clearFilters} className="mt-4">
+                                Clear filters
+                            </Button>
+                        )}
+                    </div>
+                )
+            }
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -412,8 +413,9 @@ export function BlogList({
                             (_, i) => i + 1
                         ).map((page) => {
                             // Show first page, last page, current page, and pages around current
-                            const showPage =
-                page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1);
+                            const showPage = page === 1 ||
+                                page === totalPages ||
+                                (page >= currentPage - 1 && page <= currentPage + 1);
 
                             if (!showPage) {
                                 // Show ellipsis

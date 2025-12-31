@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect, useRef, useState
 } from "react";
 import { cn } from "@/lib/utils";
@@ -42,15 +43,15 @@ export function OptimizedImage({
         }
     }, []);
 
-    const handleLoad = (): void => {
+    const handleLoad = useCallback((): void => {
         setIsLoaded(true);
-    };
+    }, []);
 
-    const handleError = (): void => {
+    const handleError = useCallback((): void => {
     // Still mark as loaded to hide blur
         setIsLoaded(true);
         console.error(`Failed to load image:`, src);
-    };
+    }, [ src ]);
 
     // If no blur placeholder or loading is eager, just render the image
     if (!blurSrc || loading === `eager`) {
