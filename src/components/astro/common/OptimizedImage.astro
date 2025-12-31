@@ -1,0 +1,180 @@
+---
+import { Picture, getImage, type LocalImageProps, type RemoteImageProps } from "astro:assets";
+import type { ImageMetadata, ImageOutputFormat } from "astro";
+import { cn } from "@/lib/utils";
+import type { HTMLAttributes } from "react";
+
+export type Props = (LocalImageProps | RemoteImageProps) & {
+	formats?: ImageOutputFormat[];
+	fallbackFormat?: ImageOutputFormat;
+	pictureAttributes?: HTMLAttributes<'picture'>;
+};
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className = "",
+  loading = "lazy",
+  decoding = "async",
+  sizes = "(min-width: 1024px) 1024px, (min-width: 768px) 768px, 100vw",
+  formats = ["webp", "avif"],
+  fallbackFormat = "webp",
+  quality = 80,
+  ...rest
+} = Astro.props;
+
+// Generate low-quality blur placeholder for all images
+const blurImage = await getImage({
+  src,
+  width: 100,
+  height: Math.round((height && width ? (+height / +width) * 100 : 56) ), // Maintain aspect ratio or default to 16:9
+  quality: 10,
+  format: "webp",
+});
+
+// Build Picture props conditionally
+const pictureProps: any = {
+  src,
+  alt,
+  formats,
+  quality,
+  loading,
+  decoding,
+  sizes,
+  class: cn(`optimized-image`, className),
+  pictureAttributes: {
+    className: "optimized-picture",
+  },
+  ...rest,
+};
+
+// Only add width/height if defined
+if (width !== undefined) pictureProps.width = width;
+if (height !== undefined) pictureProps.height = height;
+---
+
+{
+    loading === "eager" 
+    ? (
+        <Picture {...pictureProps} class={className} inferSize={true} />
+    )
+    : (
+        <div class={cn("optimized-image-wrapper", className)}>
+            <img src={blurImage.src} alt={alt} aria-hidden="true" class={cn("blur-placeholder", className)} />
+            <Picture {...pictureProps} inferSize={true} />
+        </div>
+    )
+}
+
+<script is:inline>
+  function initOptimizedImages() {
+    const wrappers = document.querySelectorAll(".optimized-image-wrapper");
+
+    wrappers.forEach((wrapper) => {
+      const img = wrapper.querySelector(".optimized-image");
+
+      if (!img) return;
+
+      const markAsLoaded = () => {
+        wrapper.classList.add("loaded");
+      };
+
+      // Check if image is already loaded
+      if (img.complete && img.naturalHeight !== 0) {
+        markAsLoaded();
+      } else {
+        // Wait for image to load
+        img.addEventListener("load", markAsLoaded, { once: true });
+
+        // Handle errors gracefully
+        img.addEventListener(
+          "error",
+          () => {
+            markAsLoaded(); // Still mark as loaded to hide blur
+            console.error("Failed to load image:", img.src);
+          },
+          { once: true }
+        );
+      }
+    });
+  }
+
+  // Initialize on page load
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initOptimizedImages);
+  } else {
+    initOptimizedImages();
+  }
+
+  // Re-initialize for Astro view transitions
+  document.addEventListener("astro:page-load", initOptimizedImages);
+  document.addEventListener("astro:after-swap", initOptimizedImages);
+</script>
+
+<style>
+  .optimized-image-wrapper {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 0.5rem;
+  }
+
+  .blur-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    filter: blur(20px);
+    transform: scale(1.1);
+    opacity: 1;
+    transition: opacity 0.4s ease-out;
+    z-index: 1;
+  }
+
+  .optimized-image-wrapper.loaded .blur-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .optimized-picture {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .optimized-image {
+    display: block;
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+  }
+
+  .optimized-image-wrapper.loaded .optimized-image {
+    opacity: 1;
+  }
+
+  /* Responsive image handling */
+  @media (max-width: 768px) {
+    .optimized-image-wrapper {
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .optimized-image-wrapper {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .optimized-image-wrapper {
+      max-width: 1024px;
+      margin: 0 auto;
+    }
+  }
+</style>
