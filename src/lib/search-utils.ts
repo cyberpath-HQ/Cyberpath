@@ -6,11 +6,12 @@ import {
 import fuse, {
     type FuseIndex, type IFuseOptions
 } from "fuse.js";
+import { omit } from "radash";
 
 /**
  * Searchable blog post interface for Fuse.js
  */
-export interface SearchableBlogPost extends CollectionEntry<`blog`> {
+export interface SearchableBlogPost extends Omit<CollectionEntry<`blog`>, `body` | `rendered` | `filePath`> {
     data: CollectionEntry<`blog`>[`data`] & {
         category:    Category
         readingTime: string
@@ -37,7 +38,11 @@ export function createSearchablePost(
     }
 
     return {
-        ...post,
+        ...omit(post, [
+            `body`,
+            `rendered`,
+            `filePath`,
+        ]),
         data: {
             ...post.data,
             category,
