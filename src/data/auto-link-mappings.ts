@@ -1039,4 +1039,19 @@ export const LINK_MAPPINGS: LinkMappings = {
         internal: false,
         title:    `Memory Safety`,
     },
+    "OWASP WebGoat": {
+        url:      `https://owasp.org/www-project-webgoat/`,
+        internal: false,
+        title:    `OWASP WebGoat - Insecure Web Application for Learning`,
+    },
+    DVWA: {
+        url:      `https://github.com/digininja/DVWA`,
+        internal: false,
+        title:    `DVWA - Damn Vulnerable Web Application`,
+    },
+    Metasploitable: {
+        url:      `https://github.com/rapid7/metasploitable3`,
+        internal: false,
+        title:    `Metasploitable - Vulnerable VM for Metasploit Testing`,
+    },
 };
