@@ -58,12 +58,12 @@ if (height !== undefined) pictureProps.height = height;
 {
     loading === "eager" 
     ? (
-        <Picture {...pictureProps} class={className} inferSize={true} />
+        <Picture {...pictureProps} alt={alt} class={className} inferSize={true} />
     )
     : (
         <div class={cn("optimized-image-wrapper", className)}>
             <img src={blurImage.src} alt={alt} aria-hidden="true" class={cn("blur-placeholder", className)} />
-            <Picture {...pictureProps} inferSize={true} />
+            <Picture {...pictureProps} alt={alt} inferSize={true} />
         </div>
     )
 }

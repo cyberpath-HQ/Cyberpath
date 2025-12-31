@@ -74,7 +74,7 @@ export function OptimizedImage({
             {/* Blur placeholder */}
             <img
                 src={blurSrc}
-                alt=""
+                alt={alt}
                 aria-hidden="true"
                 className={cn(
                     `absolute inset-0 w-full h-full object-cover blur-xl scale-110 transition-opacity duration-400`,
