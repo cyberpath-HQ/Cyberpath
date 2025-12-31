@@ -14,7 +14,7 @@ interface AuthorAvatarProps {
 
 export function AuthorAvatar({
     name, avatarSrc, className = `h-8 w-8`,
-    children
+    children,
 }: AuthorAvatarProps) {
     const getInitials = useMemo(
         () => name
