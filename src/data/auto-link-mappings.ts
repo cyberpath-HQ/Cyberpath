@@ -1,3 +1,8 @@
+import { glob } from "glob";
+import { readFile } from 'fs/promises';
+import matter from "gray-matter";
+import path from "path";
+
 /**
  * Represents a link definition with URL and metadata
  */
@@ -1478,21 +1483,41 @@ export async function generateBlogMappings(): Promise<LinkMappings> {
 
     try {
         // Dynamically import getCollection to avoid issues during config loading
-        const {
-            getCollection,
-        } = await import(`astro:content`);
-        const blogPosts = await getCollection(`blog`);
+        const files = await glob(`../content/blog/**/*.{md,mdx}`, {
+            nodir: true,
+            cwd:   import.meta.dirname,
+        });
+        console.log(`[auto-link] Found ${ files.length } blog post files for link mapping generation.`);
+        const blogPosts = await Promise.all(
+            files.map(
+                async(file) => {
+                    const file_path = path.normalize(path.join(import.meta.dirname, file));
+                    const raw = await readFile(file_path, `utf-8`);
+                    const {
+                        data,
+                    } = await matter(raw);
+                    return {
+                        frontmatter: {
+                            ...data,
+                            id: path.basename(file),
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        } as Record<string, any>,
+                    };
+                }
+            )
+        );
         const mappings: LinkMappings = {};
 
         for (const post of blogPosts) {
-            if (post.data.draft) {
+            if (post.frontmatter.draft) {
                 continue;
             }
 
-            const url = `/blog/${ post.id.replace(/\.mdx?$/, ``) }`;
+            const url = `/blog/${ post.frontmatter.id.replace(/\.mdx?$/, ``) }`;
             const {
                 title,
-            } = post.data;
+                linkHooks,
+            } = post.frontmatter;
 
             // Add mapping with the exact title
             mappings[title] = {
@@ -1500,8 +1525,19 @@ export async function generateBlogMappings(): Promise<LinkMappings> {
                 title,
             };
 
+            // Add custom link hooks if provided
+            if (linkHooks && Array.isArray(linkHooks)) {
+                linkHooks
+                    .filter((hook) => hook?.trim())
+                    .forEach((hook) => {
+                        mappings[hook] = {
+                            aliasOf: title,
+                        };
+                    });
+            }
+
             // Optionally add slug-based variations if they differ significantly
-            const slug = post.id.replace(/\.mdx?$/, ``);
+            const slug = post.frontmatter.id.replace(/\.mdx?$/, ``);
             const readableSlug = slug
                 .split(`-`)
                 .map((word: string) => word.charAt(first_char).toUpperCase() +
@@ -1516,10 +1552,11 @@ export async function generateBlogMappings(): Promise<LinkMappings> {
             }
         }
 
+        console.log(`[auto-link] Generated ${ Object.keys(mappings).length } blog post link mappings for auto-linking.`);
         return mappings;
     }
     catch (error) {
-        console.warn(`Failed to load blog posts for auto-linking:`, error);
+        console.warn(`[auto-link] Failed to load blog posts for auto-linking:`, error);
         return {};
     }
 }
