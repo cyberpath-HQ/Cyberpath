@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && astro preferences disable devToolbar && npx puppeteer browsers install chrome && node ./scripts/screenshot.js",
+    "build": "astro check && npx puppeteer browsers install chrome && astro build && astro preferences disable devToolbar && node ./scripts/screenshot.js",
     "preview": "astro preview",
     "astro": "astro"
   },
