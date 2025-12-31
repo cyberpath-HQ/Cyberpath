@@ -272,10 +272,6 @@ function buildChildren(
         const link_node = createLinkNode(m, state.base_url);
         new_children.push(link_node);
 
-        if (state.is_debug) {
-            console.log(`[auto-link] Linked "${ m.term }" → ${ link_node.url }`);
-        }
-
         last_index = m.end;
     }
 
@@ -312,10 +308,6 @@ function processNode(opts: ProcessNodeOptions): void {
     }
 
     matches.sort((a, b) => a.start - b.start);
-
-    if (opts.state.is_debug) {
-        console.log(`[auto-link] Found ${ matches.length } matches in text`);
-    }
 
     const new_children = buildChildren(text, matches, opts.state);
     const {
@@ -368,13 +360,13 @@ export default function remarkAutoLink(options: AutoLinkPluginOptions = {}) {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     return function transformer(tree: unknown, file: any): void {
+        const historyLength = file.history?.length ?? ZERO;
         const filename = path.basename(
-            file.history?.[file.history.length - 1] ?? `unknown`
+            file.history?.[historyLength - ONE] ?? `unknown`
         ).replace(/\.(md|mdx)$/, ``);
         const linked_counts = new Map<string, number>();
 
         const current_page_url = `/blog/${ filename }`;
-        console.log(`[auto-link] Processing page URL: ${ current_page_url }`);
 
         // Get current page URL from context to prevent self-references
         const all_exclude_urls = [
@@ -431,5 +423,31 @@ export default function remarkAutoLink(options: AutoLinkPluginOptions = {}) {
                 state,
             });
         });
+
+        // Calculate total links added
+        const totalLinksAdded = Array.from(linked_counts.values()).reduce((sum, count) => sum + count, ZERO);
+        const uniqueTermsLinked = linked_counts.size;
+
+        // Print summary if any links were added
+        if (totalLinksAdded > ZERO) {
+            console.group(`\n[Auto-Link Plugin]`);
+            console.log(`Page URL: ${ current_page_url }`);
+            console.log(`Links created: ${ totalLinksAdded }`);
+            console.log(`Unique terms linked: ${ uniqueTermsLinked }`);
+
+            if (linked_counts.size > ZERO) {
+                console.group(`Link distribution by term:`);
+                const sortedCounts = Array.from(linked_counts.entries())
+                    .sort((a, b) => b[ONE] - a[ONE]);
+                for (const [
+                    term,
+                    count,
+                ] of sortedCounts) {
+                    console.log(`• "${ term }": ${ count }x`);
+                }
+                console.groupEnd();
+            }
+            console.groupEnd();
+        }
     };
 }
