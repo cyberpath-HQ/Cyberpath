@@ -36,18 +36,19 @@ const blurImage = await getImage({
 });
 
 // Build Picture props conditionally
-const pictureProps: Props = {
+const pictureProps: any = {
   src,
-alt,
-width,
-height,
-class: className,
-loading,
-decoding,
-sizes,
-formats,
-fallbackFormat,
-quality,
+  alt,
+  width,
+  height,
+  inferSize: true,
+  class: className,
+  loading,
+  decoding,
+  sizes,
+  formats,
+  fallbackFormat,
+  quality,
   pictureAttributes: {
     className: cn(`optimized-image`, className),
     ...pictureAttributes,
@@ -66,7 +67,7 @@ if (height !== undefined) pictureProps.height = height;
   ) : (
     <div class={cn("optimized-image-wrapper", className)}>
       <img src={blurImage.src} alt={alt} aria-hidden="true" class={cn("blur-placeholder", className)} />
-      <Picture {...pictureProps} alt={alt} inferSize={true} class={className} fallbackFormat="webp" />
+      <Picture {...pictureProps} alt={alt} class={className} inferSize={true} />
     </div>
   )
 }
@@ -83,7 +84,7 @@ if (height !== undefined) pictureProps.height = height;
         (el) => el.tagName === "IMG"
       )[0];
 
-      if (!img || img.tagName !== 'IMG') {
+      if (!img || img.tagName !== "IMG") {
         return;
       }
 
