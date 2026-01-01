@@ -1,12 +1,13 @@
-import aspectRatio from "@tailwindcss/aspect-ratio";
-import forms from "@tailwindcss/forms";
+// import aspectRatio from "@tailwindcss/aspect-ratio";
+// import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
-import animate from "tailwindcss-animate";
+
+// import animate from "tailwindcss-animate";
 
 export default {
-    darkMode: [ `class` ],
+    darkMode: `class`,
     content:  [ `./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}` ],
     theme:    {
         extend: {
@@ -80,10 +81,5 @@ export default {
             },
         },
     },
-    plugins:  [
-        forms,
-        typography,
-        aspectRatio,
-        animate,
-    ],
+    plugins:  [ typography ],
 } as Config;
