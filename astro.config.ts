@@ -16,6 +16,8 @@ import remarkUtmParams from "./src/lib/utm-remark-plugin";
 
 import playformInline from "@playform/inline";
 
+import playformCompress from "@playform/compress";
+
 // https://astro.build/config
 export default defineConfig({
     site:          `https://cyberpath-hq.com`,
@@ -26,9 +28,9 @@ export default defineConfig({
         sitemap({
             filter: (page) => !(
                 page.includes(`/database`) ||
-        page.includes(`/developers`) ||
-        page.includes(`/contributors`) ||
-        page.includes(`/career-paths`)
+    page.includes(`/developers`) ||
+    page.includes(`/contributors`) ||
+    page.includes(`/career-paths`)
             ),
         }),
         expressiveCode({
@@ -54,6 +56,50 @@ export default defineConfig({
                 preloadFonts:        true,
                 keyframes:           `critical`,
                 compress:            true,
+            },
+        }),
+        playformCompress({
+            CSS: {
+                csso: {
+                    comments:    false,
+                    sourceMap:   false,
+                    restructure: true,
+                },
+                lightningcss: {
+                    minify:    true,
+                    sourceMap: false,
+                },
+            },
+            HTML: {
+                "html-minifier-terser": {
+                    caseSensitive:                 false,
+                    collapseBooleanAttributes:     true,
+                    collapseInlineTagWhitespace:   false,
+                    collapseWhitespace:            true,
+                    conservativeCollapse:          false,
+                    decodeEntities:               true,
+                    html5:                         true,
+                    keepClosingSlash:              false,
+                    continueOnParseError:          true,
+                    minifyCSS:                     true,
+                    minifyJS:                      true,
+                    removeComments:                true,
+                    removeRedundantAttributes:     true,
+                    removeScriptTypeAttributes:    true,
+                    removeStyleLinkTypeAttributes: true,
+                    useShortDoctype:               true,
+                    noNewlinesBeforeTagClose:      true,
+                    minifyURLs:                    true,
+                    processConditionalComments:    true,
+                    processScripts:                [ `application/ld+json` ],
+                    removeEmptyAttributes:         true,
+                    removeAttributeQuotes:         true,
+                    quoteCharacter:                `"`,
+                    removeOptionalTags:            true,
+                    sortAttributes:                true,
+                    sortClassName:                 true,
+                    removeTagWhitespace:           false,
+                },
             },
         }),
     ],
