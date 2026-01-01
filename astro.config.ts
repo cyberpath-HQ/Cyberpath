@@ -1,3 +1,4 @@
+/* eslint-disable no-inline-comments */
 // @ts-check
 import mdx from "@astrojs/mdx";
 
@@ -13,6 +14,8 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import remarkAutoLink from "./src/lib/auto-link-remark-plugin";
 import remarkUtmParams from "./src/lib/utm-remark-plugin";
 
+import playformInline from "@playform/inline";
+
 // https://astro.build/config
 export default defineConfig({
     site:          `https://cyberpath-hq.com`,
@@ -23,9 +26,9 @@ export default defineConfig({
         sitemap({
             filter: (page) => !(
                 page.includes(`/database`) ||
-            page.includes(`/developers`) ||
-            page.includes(`/contributors`) ||
-            page.includes(`/career-paths`)
+        page.includes(`/developers`) ||
+        page.includes(`/contributors`) ||
+        page.includes(`/career-paths`)
             ),
         }),
         expressiveCode({
@@ -41,6 +44,17 @@ export default defineConfig({
             extendMarkdownConfig: true,
             gfm:                  true,
             optimize:             true,
+        }),
+        playformInline({
+            Beasties: {
+                minimumExternalSize: 1024, // 1 KB
+                pruneSource:         true,
+                mergeStylesheets:    true,
+                inlineFonts:         true,
+                preloadFonts:        true,
+                keyframes:           `critical`,
+                compress:            true,
+            },
         }),
     ],
     build:        {
@@ -81,5 +95,7 @@ export default defineConfig({
                 optimize: true,
             }),
         ],
+        appType: `mpa`,
+
     },
 });
