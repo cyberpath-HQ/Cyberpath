@@ -44,7 +44,7 @@ export default defineConfig({
             extendMarkdownConfig: true,
             gfm:                  true,
             optimize:             true,
-        })
+        }),
     ],
     build:        {
         assets: `assets`,
