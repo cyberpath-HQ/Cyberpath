@@ -18,13 +18,68 @@ const svg = await renderMermaidToSVG(normalizedCode);
 ---
 
 <div class="mermaid-wrapper not-prose my-8">
-  <div class="mermaid-container rounded-lg border bg-card p-2">
+  <div class="mermaid-container rounded-lg border bg-card p-2 relative">
+    <button
+      class="download-btn z-10 cursor-pointer absolute top-2 right-2 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 gap-2"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-download-icon lucide-download"
+        ><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"
+        ></path></svg
+      >
+      Download
+    </button>
     <div id={id} class="mermaid-svg-wrapper" set:html={svg} />
   </div>
 </div>
 
 <script>
   import Panzoom from "@panzoom/panzoom";
+
+  // Function to download SVG as WebP
+  function downloadSVGAsPNG(svgElement: SVGElement, filename = "diagram.webp") {
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgData);
+    const img = new Image();
+    img.onload = () => {
+      const rect = svgElement.getBoundingClientRect();
+      const devicePixelRatio = window.devicePixelRatio || 1;
+      const scale = 10 * devicePixelRatio; // Increased scale with device pixel ratio for crisp text
+      const canvas = document.createElement("canvas");
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.imageSmoothingEnabled = true;
+        if ("imageSmoothingQuality" in ctx) {
+          ctx.imageSmoothingQuality = "high";
+        }
+        ctx.drawImage(img, 0, 0, rect.width * scale, rect.height * scale);
+      }
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }, "image/webp");
+    };
+    img.src = svgUrl;
+  }
 
   // Enable pan and zoom for Mermaid diagrams
   function panzoomMermaid(id: string): void {
@@ -43,10 +98,19 @@ const svg = await renderMermaidToSVG(normalizedCode);
     // Add mouse wheel zoom
     container.addEventListener("wheel", panzoomInstance.zoomWithWheel);
   }
-  
+
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".mermaid-svg-wrapper").forEach((element) => {
       panzoomMermaid(element.id);
+    });
+
+    // Add download functionality
+    document.querySelectorAll(".download-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const svg = (btn as HTMLElement).parentElement?.querySelector(".mermaid-svg-wrapper svg") as SVGElement;
+        console.log(svg);
+        if (svg) downloadSVGAsPNG(svg);
+      });
     });
   });
 </script>
