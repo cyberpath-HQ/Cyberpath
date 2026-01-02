@@ -23,7 +23,7 @@ retry_api_call() {
 
     # Check if rate limited
     if echo "$response" | jq -e '.status == 429' >/dev/null 2>&1; then
-      local wait_time=$(echo "$response" | jq -r '.error | capture("try again in (?<seconds>\d+) seconds").seconds // 30')
+      local wait_time=$(echo "$response" | jq -r '.error | capture("try again in (?<seconds>[0-9]+) seconds").seconds // "30"')
       echo "Rate limit reached, waiting $wait_time seconds before retry..."
       sleep "$wait_time"
       ((retry++))
