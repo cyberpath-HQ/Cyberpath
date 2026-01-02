@@ -85,8 +85,6 @@ $CONTENT"
       --arg canonical "$CANONICAL_URL" \
       --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
       --arg description "$DESCRIPTION" \
-      --arg cover "$COVER_URL" \
-      --arg org "$ORGANIZATION_ID" \
       '{
         article: {
           title: $title,
@@ -96,8 +94,16 @@ $CONTENT"
           canonical_url: $canonical,
           description: $description,
           series: "Cyberpath Blog"
-        } + if $cover != "" then {cover_image: $cover} else {} end + if $org != "" then {organization_id: $org} else {} end
+        }
       }')
+    
+    if [ -n "$COVER_URL" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg cover "$COVER_URL" '.article.cover_image = $cover')
+    fi
+    
+    if [ -n "$ORGANIZATION_ID" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
+    fi
     
     RESPONSE=$(curl -s -X PUT "https://dev.to/api/articles/$ARTICLE_ID" \
       -H "Content-Type: application/json" \
@@ -114,8 +120,6 @@ $CONTENT"
       --arg canonical "$CANONICAL_URL" \
       --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
       --arg description "$DESCRIPTION" \
-      --arg cover "$COVER_URL" \
-      --arg org "$ORGANIZATION_ID" \
       '{
         article: {
           title: $title,
@@ -125,8 +129,16 @@ $CONTENT"
           canonical_url: $canonical,
           description: $description,
           series: "Cyberpath Blog"
-        } + if $cover != "" then {cover_image: $cover} else {} end + if $org != "" then {organization_id: $org} else {} end
+        }
       }')
+    
+    if [ -n "$COVER_URL" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg cover "$COVER_URL" '.article.cover_image = $cover')
+    fi
+    
+    if [ -n "$ORGANIZATION_ID" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
+    fi
     
     RESPONSE=$(curl -s -X POST "https://dev.to/api/articles" \
       -H "Content-Type: application/json" \
