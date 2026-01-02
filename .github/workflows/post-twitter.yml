@@ -111,6 +111,8 @@ jobs:
       - name: Post to X (Twitter)
         if: steps.changed-files.outputs.files != ''
         env:
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
         run: |
