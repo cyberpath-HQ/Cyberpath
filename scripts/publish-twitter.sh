@@ -73,6 +73,12 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   # Process the blog post with remark plugins
   PROCESSED=$(node scripts/process-blog-post.js "$file" twitter)
   
+  # Validate PROCESSED is valid JSON
+  if ! echo "$PROCESSED" | jq empty 2>/dev/null; then
+    echo "Invalid JSON output from process-blog-post.js: $PROCESSED"
+    exit 1
+  fi
+  
   # Extract frontmatter
   TITLE=$(echo "$PROCESSED" | jq -r '.frontmatter.title')
   DESCRIPTION=$(echo "$PROCESSED" | jq -r '.frontmatter.description // ""')
@@ -98,8 +104,7 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   echo "$TWEET_TEXT"
   echo "---"
   
-  # Post to Twitter using tweepy or similar
-  # For now, we'll use a Python script with tweepy
+  # Post to Twitter using tweepy
   python3 - <<PYTHON_SCRIPT
 import os
 import sys
