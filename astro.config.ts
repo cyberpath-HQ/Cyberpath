@@ -18,19 +18,38 @@ import playformInline from "@playform/inline";
 
 import playformCompress from "@playform/compress";
 
+// Import post aliases for redirect configuration
+import postAliases from "./src/data/post-aliases.json";
+import type { RedirectConfig } from "astro";
+
+// Generate redirects from aliases
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const redirects: Record<string, RedirectConfig> = {};
+for (const [
+    slug,
+    alias,
+] of Object.entries(postAliases)) {
+    redirects[`/p/${ alias }`] = {
+        status:      301,
+        destination: `/blog/${ slug }`,
+    };
+}
+
 // https://astro.build/config
 export default defineConfig({
     site:          `https://cyberpath-hq.com`,
     base:          `/`,
     trailingSlash: `ignore`,
+    redirects,
     integrations:  [
         react(),
         sitemap({
             filter: (page) => !(
                 page.includes(`/database`) ||
-    page.includes(`/developers`) ||
-    page.includes(`/contributors`) ||
-    page.includes(`/career-paths`)
+                page.includes(`/developers`) ||
+                page.includes(`/contributors`) ||
+                page.includes(`/career-paths`) ||
+                page.includes(`/p/`) // Exclude alias redirects from sitemap
             ),
         }),
         expressiveCode({
@@ -77,7 +96,7 @@ export default defineConfig({
                     collapseInlineTagWhitespace:   false,
                     collapseWhitespace:            true,
                     conservativeCollapse:          false,
-                    decodeEntities:               true,
+                    decodeEntities:                true,
                     html5:                         true,
                     keepClosingSlash:              false,
                     continueOnParseError:          true,
@@ -142,6 +161,5 @@ export default defineConfig({
             }),
         ],
         appType: `mpa`,
-
     },
 });
