@@ -28,6 +28,12 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   # Process the blog post with remark plugins
   PROCESSED=$(node scripts/process-blog-post.js "$file" devto)
   
+  # Validate PROCESSED is valid JSON
+  if ! echo "$PROCESSED" | jq empty 2>/dev/null; then
+    echo "Invalid JSON output from process-blog-post.js: $PROCESSED"
+    exit 1
+  fi
+  
   # Extract frontmatter and content
   TITLE=$(echo "$PROCESSED" | jq -r '.frontmatter.title')
   DESCRIPTION=$(echo "$PROCESSED" | jq -r '.frontmatter.description // ""')
@@ -43,13 +49,19 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
     HERO_PATH=$(realpath "$DIR/$HERO_IMAGE" 2>/dev/null || echo "")
     if [ -f "$HERO_PATH" ]; then
       echo "Uploading cover image: $HERO_PATH"
-      COVER_URL=$(curl -s -X POST "https://dev.to/api/images" \
+      IMAGE_RESPONSE=$(curl -s -X POST "https://dev.to/api/images" \
         -H "api-key: $DEVTO_API_KEY" \
-        -F "image=@$HERO_PATH" | jq -r '.url // ""')
-      if [ -n "$COVER_URL" ]; then
-        echo "Cover image uploaded: $COVER_URL"
+        -F "image=@$HERO_PATH")
+      
+      if echo "$IMAGE_RESPONSE" | jq empty 2>/dev/null; then
+        COVER_URL=$(echo "$IMAGE_RESPONSE" | jq -r '.url // ""')
+        if [ -n "$COVER_URL" ]; then
+          echo "Cover image uploaded: $COVER_URL"
+        else
+          echo "Failed to upload cover image: no URL in response"
+        fi
       else
-        echo "Failed to upload cover image"
+        echo "Invalid JSON response from dev.to images API: $IMAGE_RESPONSE"
       fi
     else
       echo "Hero image not found: $HERO_PATH"
@@ -66,9 +78,16 @@ $CONTENT"
   
   # Check if article already exists on dev.to
   ARTICLE_ID=""
-  EXISTING=$(curl -s -X GET "https://dev.to/api/articles/me/all" \
-    -H "api-key: $DEVTO_API_KEY" | \
-    jq -r --arg slug "$SLUG" '.[] | select(.slug | contains($slug)) | .id' | head -1)
+  ARTICLES_RESPONSE=$(curl -s -X GET "https://dev.to/api/articles/me/all" \
+    -H "api-key: $DEVTO_API_KEY")
+  
+  if echo "$ARTICLES_RESPONSE" | jq empty 2>/dev/null; then
+    EXISTING=$(echo "$ARTICLES_RESPONSE" | \
+      jq -r --arg slug "$SLUG" '.[] | select(.slug | contains($slug)) | .id' | head -1)
+  else
+    echo "Invalid JSON response from dev.to articles API: $ARTICLES_RESPONSE"
+    exit 1
+  fi
   
   if [ -n "$EXISTING" ]; then
     echo "Updating existing article ID: $EXISTING"
@@ -149,10 +168,15 @@ $CONTENT"
   fi
   
   # Check for errors
-  ERROR=$(echo "$RESPONSE" | jq -r '.error // empty')
-  if [ -n "$ERROR" ]; then
-    echo "Error: $ERROR"
-    echo "Full response: $RESPONSE"
+  if echo "$RESPONSE" | jq empty 2>/dev/null; then
+    ERROR=$(echo "$RESPONSE" | jq -r '.error // empty')
+    if [ -n "$ERROR" ]; then
+      echo "Error: $ERROR"
+      echo "Full response: $RESPONSE"
+      exit 1
+    fi
+  else
+    echo "Invalid JSON response from dev.to API: $RESPONSE"
     exit 1
   fi
   
