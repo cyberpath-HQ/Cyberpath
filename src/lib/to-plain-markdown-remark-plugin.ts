@@ -276,5 +276,36 @@ export default function remarkToPlainMarkdown(options: { fileSlug?: string } = {
                 }
             }
         });
+
+        // Merge text lines within paragraphs to single lines
+        const visitParagraphs = (node: any, ancestors: Array<any> = []): void => {
+            if (node.type === `paragraph` && node.children) {
+                const HAS_BLOCKQUOTE_OR_TABLE_ANCESTOR = ancestors.some(
+                    (ancestor: any) => ancestor.type === `blockquote` || ancestor.type === `table` || ancestor.type === `tableRow`
+                );
+                const is_table = node.children.some(
+                    (child: any) => child.type === `table` ||
+                        child.type === `tableRow` ||
+                        child.type === `tableCell` ||
+                        child.value?.split(`|`).length >= 3
+                );
+                if (!HAS_BLOCKQUOTE_OR_TABLE_ANCESTOR && !is_table) {
+                    for (const child of node.children) {
+                        if (child.type === `text` && child.value.includes(`\n`)) {
+                            child.value = child.value.replace(/\n/g, ` `);
+                        }
+                    }
+                }
+            }
+            if (node.children) {
+                for (const child of node.children) {
+                    visitParagraphs(child, [
+                        ...ancestors,
+                        node,
+                    ]);
+                }
+            }
+        };
+        visitParagraphs(tree);
     };
 }
