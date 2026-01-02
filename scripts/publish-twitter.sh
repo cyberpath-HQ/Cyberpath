@@ -26,8 +26,8 @@ generate_tweet() {
   # Extract key hashtags from tags (limit to 3 most relevant)
   local hashtags=""
   if [ -n "$tags" ] && echo "$tags" | jq empty 2>/dev/null; then
-    # Convert tags to hashtags, limit to first 3
-    hashtags=$(echo "$tags" | jq -r '.[:3] | map("#" + (. | gsub(" "; "") | gsub("-"; ""))) | join(" ")')
+    # Convert tags to hashtags, limit to first 3, only strings
+    hashtags=$(echo "$tags" | jq -r 'if type == "array" then .[:3] | map(select(type == "string") | "#" + (. | gsub(" "; "") | gsub("-"; ""))) | join(" ") else "" end')
   fi
   
   # Create an engaging tweet
