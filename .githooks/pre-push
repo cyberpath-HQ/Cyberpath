@@ -1,0 +1,119 @@
+#!/bin/bash
+# Pre-push hook: Validate aliases across all commits being pushed
+# Checks each commit individually for alias mutations
+
+set -e
+
+echo "🔍 Pre-push: Validating post aliases across commits..."
+
+# Get the remote and local refs
+remote="$1"
+url="$2"
+
+# Read stdin to get the refs being pushed
+while read local_ref local_sha remote_ref remote_sha; do
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        # Branch is being deleted, skip
+        continue
+    fi
+    
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        # New branch, check all commits
+        range="$local_sha"
+    else
+        # Existing branch, check new commits
+        range="$remote_sha..$local_sha"
+    fi
+    
+    # Get list of commits being pushed
+    commits=$(git rev-list "$range")
+    
+    if [ -z "$commits" ]; then
+        echo "✅ No new commits to validate"
+        exit 0
+    fi
+    
+    echo "📋 Checking $(echo "$commits" | wc -l) commit(s)..."
+    
+    # Check each commit
+    for commit in $commits; do
+        commit_msg=$(git log -1 --pretty=%B "$commit")
+        commit_short=$(git log -1 --pretty=%h "$commit")
+        commit_subject=$(git log -1 --pretty=%s "$commit")
+        
+        echo ""
+        echo "  Checking $commit_short: $commit_subject"
+        
+        # Check if this commit modifies post-aliases.json
+        if git diff-tree --no-commit-id --name-only -r "$commit" | grep -q "src/data/post-aliases.json"; then
+            echo "    → Alias file modified"
+            
+            # Check if commit message allows mutations
+            if echo "$commit_msg" | grep -qi "\[allow-alias-mutation\]"; then
+                echo "    ✅ Mutations allowed by commit message"
+                continue
+            fi
+            
+            # Get the previous commit
+            prev_commit="$commit^"
+            
+            # Check if this is the first commit
+            if ! git rev-parse "$prev_commit" >/dev/null 2>&1; then
+                echo "    ✅ First commit, no previous aliases to check"
+                continue
+            fi
+            
+            # Compare aliases between commits
+            if git show "$prev_commit:src/data/post-aliases.json" >/dev/null 2>&1; then
+                # Create temp files for comparison
+                prev_aliases=$(mktemp)
+                curr_aliases=$(mktemp)
+                
+                git show "$prev_commit:src/data/post-aliases.json" > "$prev_aliases"
+                git show "$commit:src/data/post-aliases.json" > "$curr_aliases"
+                
+                # Check for mutations using node
+                mutations=$(node -e "
+                    const prev = JSON.parse(require('fs').readFileSync('$prev_aliases', 'utf-8'));
+                    const curr = JSON.parse(require('fs').readFileSync('$curr_aliases', 'utf-8'));
+                    const mutations = [];
+                    for (const [slug, prevAlias] of Object.entries(prev)) {
+                        if (curr[slug] && curr[slug] !== prevAlias) {
+                            mutations.push({ slug, prevAlias, currAlias: curr[slug] });
+                        }
+                    }
+                    if (mutations.length > 0) {
+                        console.log('MUTATIONS_FOUND');
+                        mutations.forEach(m => {
+                            console.log(\`      - \${m.slug}: \${m.prevAlias} → \${m.currAlias}\`);
+                        });
+                    }
+                ")
+                
+                rm "$prev_aliases" "$curr_aliases"
+                
+                if echo "$mutations" | grep -q "MUTATIONS_FOUND"; then
+                    echo ""
+                    echo "    ❌ Alias mutations detected in commit $commit_short:"
+                    echo "$mutations" | grep -v "MUTATIONS_FOUND"
+                    echo ""
+                    echo "    Alias mutations break existing short URLs."
+                    echo "    To allow mutations, amend the commit message:"
+                    echo "    git commit --amend -m \"Your message [allow-alias-mutation]\""
+                    echo ""
+                    exit 1
+                fi
+                
+                echo "    ✅ No mutations detected"
+            else
+                echo "    ✅ No previous aliases file"
+            fi
+        else
+            echo "    ✅ No alias changes"
+        fi
+    done
+done
+
+echo ""
+echo "✅ Pre-push validation passed"
+exit 0

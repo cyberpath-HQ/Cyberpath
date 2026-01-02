@@ -1,0 +1,36 @@
+#!/bin/bash
+# Pre-commit hook: Generate and validate post aliases
+# This runs before each commit to ensure aliases are up-to-date
+
+set -e
+
+echo "🔍 Pre-commit: Checking post aliases..."
+
+# Generate aliases (this will add new ones, remove dead ones)
+# Don't allow mutations in pre-commit - they must be explicit
+if ! node scripts/generate-aliases.js generate; then
+    echo ""
+    echo "❌ Alias generation failed!"
+    echo "   Fix the issues above or add [allow-alias-mutation] to commit message"
+    exit 1
+fi
+
+# Check if aliases file was modified
+if git diff --name-only | grep -q "src/data/post-aliases.json"; then
+    echo "✅ Post aliases updated - adding to commit"
+    git add src/data/post-aliases.json
+elif git diff --cached --name-only | grep -q "src/data/post-aliases.json"; then
+    echo "✅ Post aliases already staged"
+else
+    echo "✅ No alias changes needed"
+fi
+
+# Validate aliases
+if ! node scripts/generate-aliases.js validate; then
+    echo ""
+    echo "❌ Alias validation failed!"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed"
+exit 0
