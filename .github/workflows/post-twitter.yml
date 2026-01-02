@@ -23,6 +23,11 @@ on:
       - "src/content/blog/**/*.mdx"
       - "src/content/blog/**/*.md"
   workflow_dispatch:
+    inputs:
+      max_posts:
+        description: "Maximum number of posts to post (optional, defaults to all)"
+        required: false
+        type: number
 
 jobs:
   post-twitter:
@@ -87,10 +92,18 @@ jobs:
         id: changed-files
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Manual trigger - process all blog posts, optionally limited
+            ALL_FILES=$(find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2-)
+            if [ -n "${{ github.event.inputs.max_posts }}" ]; then
+              CHANGED_FILES=$(echo "$ALL_FILES" | head -n ${{ github.event.inputs.max_posts }})
+            else
+              CHANGED_FILES="$ALL_FILES"
+            fi
             echo "files<<EOF" >> $GITHUB_OUTPUT
-            find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
+            # Automatic trigger - only changed files
             echo "files<<EOF" >> $GITHUB_OUTPUT
             git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
             echo "EOF" >> $GITHUB_OUTPUT
