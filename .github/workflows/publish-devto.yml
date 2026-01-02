@@ -28,9 +28,14 @@ on:
         description: "Maximum number of posts to publish (optional, defaults to all)"
         required: false
         type: number
+      organization_id:
+        description: "Organization ID to publish under (optional)"
+        required: false
+        type: string
 
 env:
   PUBLISH_MODE: ${{ github.event.inputs.publish_mode || 'draft' }}
+  ORGANIZATION_ID: ${{ vars.ORGANIZATION_ID || github.event.inputs.organization_id }}
 
 jobs:
   publish-devto:
@@ -111,6 +116,7 @@ jobs:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
           CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
           PUBLISH_MODE: ${{ env.PUBLISH_MODE }}
+          ORGANIZATION_ID: ${{ env.ORGANIZATION_ID }}
         run: |
           chmod +x scripts/publish-devto.sh
           ./scripts/publish-devto.sh

@@ -15,6 +15,7 @@ if [ -z "$CHANGED_FILES" ]; then
 fi
 
 PUBLISH_MODE="${PUBLISH_MODE:-draft}"
+ORGANIZATION_ID="${ORGANIZATION_ID:-}"
 
 # Read each changed file
 echo "$CHANGED_FILES" | while IFS= read -r file; do
@@ -33,8 +34,27 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   CANONICAL_URL=$(echo "$PROCESSED" | jq -r '.frontmatter.canonicalUrl')
   CONTENT=$(echo "$PROCESSED" | jq -r '.content')
   SLUG=$(echo "$PROCESSED" | jq -r '.frontmatter.slug')
+  HERO_IMAGE=$(echo "$PROCESSED" | jq -r '.frontmatter.heroImage // ""')
   
-  # Convert tags array to dev.to format (max 4 tags)
+  # Upload cover image if hero image exists
+  COVER_URL=""
+  if [ -n "$HERO_IMAGE" ]; then
+    DIR=$(dirname "$file")
+    HERO_PATH=$(realpath "$DIR/$HERO_IMAGE" 2>/dev/null || echo "")
+    if [ -f "$HERO_PATH" ]; then
+      echo "Uploading cover image: $HERO_PATH"
+      COVER_URL=$(curl -s -X POST "https://dev.to/api/images" \
+        -H "api-key: $DEVTO_API_KEY" \
+        -F "image=@$HERO_PATH" | jq -r '.url // ""')
+      if [ -n "$COVER_URL" ]; then
+        echo "Cover image uploaded: $COVER_URL"
+      else
+        echo "Failed to upload cover image"
+      fi
+    else
+      echo "Hero image not found: $HERO_PATH"
+    fi
+  fi
   TAG_ARRAY=$(echo "$PROCESSED" | jq -r '.frontmatter.tags // [] | .[0:4] | @json')
   
   # Add canonical URL notice at the top of the content
@@ -65,6 +85,8 @@ $CONTENT"
       --arg canonical "$CANONICAL_URL" \
       --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
       --arg description "$DESCRIPTION" \
+      --arg cover "$COVER_URL" \
+      --arg org "$ORGANIZATION_ID" \
       '{
         article: {
           title: $title,
@@ -74,7 +96,7 @@ $CONTENT"
           canonical_url: $canonical,
           description: $description,
           series: "Cyberpath Blog"
-        }
+        } + if $cover != "" then {cover_image: $cover} else {} end + if $org != "" then {organization_id: $org} else {} end
       }')
     
     RESPONSE=$(curl -s -X PUT "https://dev.to/api/articles/$ARTICLE_ID" \
@@ -92,6 +114,8 @@ $CONTENT"
       --arg canonical "$CANONICAL_URL" \
       --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
       --arg description "$DESCRIPTION" \
+      --arg cover "$COVER_URL" \
+      --arg org "$ORGANIZATION_ID" \
       '{
         article: {
           title: $title,
@@ -101,7 +125,7 @@ $CONTENT"
           canonical_url: $canonical,
           description: $description,
           series: "Cyberpath Blog"
-        }
+        } + if $cover != "" then {cover_image: $cover} else {} end + if $org != "" then {organization_id: $org} else {} end
       }')
     
     RESPONSE=$(curl -s -X POST "https://dev.to/api/articles" \
