@@ -49,9 +49,20 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
     HERO_PATH=$(realpath "$DIR/$HERO_IMAGE" 2>/dev/null || echo "")
     if [ -f "$HERO_PATH" ]; then
       echo "Uploading cover image: $HERO_PATH"
+      
+      # Determine MIME type
+      MIME_TYPE=$(file -b --mime-type "$HERO_PATH")
+      
+      # Encode image to base64
+      BASE64_DATA=$(base64 -w 0 "$HERO_PATH")
+      
+      # Prepare JSON payload
+      IMAGE_PAYLOAD="{\"image\": \"data:$MIME_TYPE;base64,$BASE64_DATA\"}"
+      
       IMAGE_RESPONSE=$(curl -s -X POST "https://dev.to/api/images" \
         -H "api-key: $DEVTO_API_KEY" \
-        -F "image=@$HERO_PATH")
+        -H "Content-Type: application/json" \
+        -d "$IMAGE_PAYLOAD")
       
       if echo "$IMAGE_RESPONSE" | jq empty 2>/dev/null; then
         COVER_URL=$(echo "$IMAGE_RESPONSE" | jq -r '.url // ""')
