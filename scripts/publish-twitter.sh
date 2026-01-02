@@ -149,8 +149,14 @@ try:
     print(f"✅ Tweet posted successfully!")
     print(f"Tweet ID: {response.data['id']}")
     print(f"URL: https://twitter.com/user/status/{response.data['id']}")
-except Exception as e:
+except tweepy.TweepyException as e:
     print(f"❌ Error posting tweet: {e}")
+    if hasattr(e, 'response') and e.response:
+        print(f"Response status: {e.response.status_code}")
+        print(f"Response text: {e.response.text}")
+    sys.exit(1)
+except Exception as e:
+    print(f"❌ Unexpected error: {e}")
     sys.exit(1)
 PYTHON_SCRIPT
   
