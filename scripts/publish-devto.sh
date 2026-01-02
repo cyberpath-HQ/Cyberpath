@@ -42,48 +42,14 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   SLUG=$(echo "$PROCESSED" | jq -r '.frontmatter.slug')
   HERO_IMAGE=$(echo "$PROCESSED" | jq -r '.frontmatter.heroImage // ""')
   
-  # Upload cover image if hero image exists
-  COVER_URL=""
+  # Determine main image URL if hero image exists
+  MAIN_IMAGE_URL=""
   if [ -n "$HERO_IMAGE" ]; then
-    DIR=$(dirname "$file")
-    HERO_PATH=$(realpath "$DIR/$HERO_IMAGE" 2>/dev/null || echo "")
-    if [ -f "$HERO_PATH" ]; then
-      echo "Uploading cover image: $HERO_PATH"
-      
-      # Determine MIME type
-      MIME_TYPE=$(file -b --mime-type "$HERO_PATH")
-      
-      # Encode image to base64
-      BASE64_DATA=$(base64 -w 0 "$HERO_PATH")
-      
-      # Prepare JSON payload
-      IMAGE_PAYLOAD="{\"image\": \"data:$MIME_TYPE;base64,$BASE64_DATA\"}"
-      
-      # Write payload to temp file to avoid argument list too long
-      TEMP_FILE=$(mktemp)
-      echo "$IMAGE_PAYLOAD" > "$TEMP_FILE"
-      
-      IMAGE_RESPONSE=$(curl -s -X POST "https://dev.to/api/images" \
-        -H "api-key: $DEVTO_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d @"$TEMP_FILE")
-      
-      # Clean up temp file
-      rm "$TEMP_FILE"
-      
-      if echo "$IMAGE_RESPONSE" | jq empty 2>/dev/null; then
-        COVER_URL=$(echo "$IMAGE_RESPONSE" | jq -r '.url // ""')
-        if [ -n "$COVER_URL" ]; then
-          echo "Cover image uploaded: $COVER_URL"
-        else
-          echo "Failed to upload cover image: no URL in response"
-        fi
-      else
-        echo "Invalid JSON response from dev.to images API: $IMAGE_RESPONSE"
-      fi
-    else
-      echo "Hero image not found: $HERO_PATH"
-    fi
+    # Extract site base URL from canonical URL
+    SITE_URL=$(echo "$CANONICAL_URL" | sed 's|/blog/.*||')
+    # Construct public image URL using the post slug
+    MAIN_IMAGE_URL="$SITE_URL/images/$SLUG.webp"
+    echo "Using main image: $MAIN_IMAGE_URL"
   fi
   TAG_ARRAY=$(echo "$PROCESSED" | jq -r '.frontmatter.tags // [] | .[0:4] | @json')
   
@@ -134,8 +100,8 @@ $CONTENT"
         }
       }')
     
-    if [ -n "$COVER_URL" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg cover "$COVER_URL" '.article.cover_image = $cover')
+    if [ -n "$MAIN_IMAGE_URL" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg image "$MAIN_IMAGE_URL" '.article.main_image = $image')
     fi
     
     if [ -n "$ORGANIZATION_ID" ]; then
@@ -169,8 +135,8 @@ $CONTENT"
         }
       }')
     
-    if [ -n "$COVER_URL" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg cover "$COVER_URL" '.article.cover_image = $cover')
+    if [ -n "$MAIN_IMAGE_URL" ]; then
+      PAYLOAD=$(echo "$PAYLOAD" | jq --arg image "$MAIN_IMAGE_URL" '.article.main_image = $image')
     fi
     
     if [ -n "$ORGANIZATION_ID" ]; then
