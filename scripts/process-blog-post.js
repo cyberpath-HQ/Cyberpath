@@ -16,6 +16,7 @@ const __dirname = path.dirname(__filename);
 
 // Import our remark plugins
 import { loadAliases } from './generate-aliases.js';
+import { pascal } from 'radash';
 
 const console_backup = {
     log:      console.log,
@@ -194,6 +195,8 @@ async function processBlogPost(filePath, platform = `devto`) {
         utm_medium:   platform,
         utm_campaign: frontmatter.title ?? `blog-post`,
     }).toString() }`;
+
+    frontmatter.tags = (frontmatter.tags ?? []).map((tag) => pascal(tag));
 
     return {
         frontmatter: {
