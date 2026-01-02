@@ -203,6 +203,11 @@ async function processBlogPost(filePath, platform = `devto`) {
     frontmatter.tags = (frontmatter.tags ?? []).map((tag) => pascal(tag))
         .filter((tag) => !tag.includes(`&`));
 
+    // Fix malformed URLs in the final content
+    const fixedContent = processedContent
+        .replace(/\[\*\*\[([^\]]+)\]\(([^"]*)"([^"]*)"\)\*\*\]\(([^)]+)\)/g, `[**$1**]($4)`)
+        .replace(/\[\*\*\[([^\]]+)\]\(([^)]+)\)\*\*\]\(([^)]+)\)/g, `[**$1**]($3)`);
+
     return {
         frontmatter: {
             ...frontmatter,
@@ -212,7 +217,7 @@ async function processBlogPost(filePath, platform = `devto`) {
             alias:        alias,
             slug:         filename,
         },
-        content: processedContent,
+        content: fixedContent,
         platform,
     };
 }
