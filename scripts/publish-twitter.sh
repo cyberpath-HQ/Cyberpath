@@ -71,7 +71,10 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   echo "Processing: $file"
   
   # Process the blog post with remark plugins
-  PROCESSED=$(node scripts/process-blog-post.js "$file" twitter)
+  if ! PROCESSED=$(node scripts/process-blog-post.js "$file" twitter 2>&1); then
+    echo "Failed to process $file: $PROCESSED"
+    exit 1
+  fi
   
   # Validate PROCESSED is valid JSON
   if ! echo "$PROCESSED" | jq empty 2>/dev/null; then
