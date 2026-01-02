@@ -113,6 +113,7 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
 python3 - <<PYTHON_SCRIPT
 import os
 import sys
+import time
 try:
     import requests
 except ImportError:
@@ -133,7 +134,7 @@ if not tweet_text:
     print("❌ TWEET_TEXT not set")
     sys.exit(1)
 
-# Post to Twitter API v2
+# Post to Twitter API v2 with rate limiting
 url = "https://api.x.com/2/tweets"
 payload = {"text": tweet_text}
 headers = {
@@ -141,22 +142,39 @@ headers = {
     "Content-Type": "application/json"
 }
 
-try:
-    response = requests.post(url, json=payload, headers=headers)
-    if response.status_code == 201:
-        data = response.json()
-        print(f"✅ Tweet posted successfully!")
-        print(f"Tweet ID: {data['data']['id']}")
-        print(f"URL: https://twitter.com/user/status/{data['data']['id']}")
-    else:
-        print(f"❌ Error posting tweet: {response.status_code}")
-        print(f"Response: {response.text}")
+max_retries = 5
+backoff = 10  # Start with 10 seconds (10, 20, 40, 80, 160)
+
+for attempt in range(max_retries):
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 201:
+            data = response.json()
+            print(f"✅ Tweet posted successfully!")
+            print(f"Tweet ID: {data['data']['id']}")
+            print(f"URL: https://twitter.com/user/status/{data['data']['id']}")
+            sys.exit(0)
+        elif response.status_code == 429:
+            if attempt < max_retries - 1:
+                print(f"❌ Rate limited (429). Retrying in {backoff} seconds... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(backoff)
+                backoff *= 2  # Exponential backoff
+            else:
+                print(f"❌ Error posting tweet: {response.status_code}")
+                print(f"Response: {response.text}")
+                sys.exit(1)
+        else:
+            print(f"❌ Error posting tweet: {response.status_code}")
+            print(f"Response: {response.text}")
+            sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
-except Exception as e:
-    print(f"❌ Unexpected error: {e}")
-    import traceback
-    traceback.print_exc()
-    sys.exit(1)
+
+print("❌ Max retries exceeded")
+sys.exit(1)
 PYTHON_SCRIPT
   
   if [ $? -ne 0 ]; then
