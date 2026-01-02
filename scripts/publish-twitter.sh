@@ -106,6 +106,9 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   echo "$TWEET_TEXT"
   echo "---"
   
+  # Export for Python
+  export TWEET_TEXT
+  
   # Post to Twitter using tweepy
   python3 - <<PYTHON_SCRIPT
 import os
@@ -116,6 +119,12 @@ import tweepy
 access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
 if not access_token:
     print("❌ TWITTER_ACCESS_TOKEN not set")
+    sys.exit(1)
+
+# Get tweet text from environment
+tweet_text = os.environ.get('TWEET_TEXT')
+if not tweet_text:
+    print("❌ TWEET_TEXT not set")
     sys.exit(1)
 
 # Create API client with OAuth 2.0
