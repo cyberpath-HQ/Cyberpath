@@ -4,9 +4,8 @@
 set -e
 
 # Check required environment variables
-if [ -z "$TWITTER_API_KEY" ] || [ -z "$TWITTER_API_SECRET" ] || \
-   [ -z "$TWITTER_ACCESS_TOKEN" ] || [ -z "$TWITTER_ACCESS_SECRET" ]; then
-  echo "Error: Twitter API credentials not set"
+if [ -z "$TWITTER_ACCESS_TOKEN" ]; then
+  echo "Error: TWITTER_ACCESS_TOKEN is not set"
   exit 1
 fi
 
@@ -111,39 +110,16 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   python3 - <<PYTHON_SCRIPT
 import os
 import sys
-try:
-    import tweepy
-except ImportError:
-    print("Installing tweepy...")
-    import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "tweepy"])
-    import tweepy
+import tweepy
 
-# Authenticate to Twitter
-auth = tweepy.OAuthHandler(
-    os.environ['TWITTER_API_KEY'],
-    os.environ['TWITTER_API_SECRET']
-)
-auth.set_access_token(
-    os.environ['TWITTER_ACCESS_TOKEN'],
-    os.environ['TWITTER_ACCESS_SECRET']
-)
+# Use OAuth 2.0 access token
+access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
+if not access_token:
+    print("❌ TWITTER_ACCESS_TOKEN not set")
+    sys.exit(1)
 
-# Create API object
-api = tweepy.API(auth)
-
-# For API v2
-client = tweepy.Client(
-    consumer_key=os.environ['TWITTER_API_KEY'],
-    consumer_secret=os.environ['TWITTER_API_SECRET'],
-    access_token=os.environ['TWITTER_ACCESS_TOKEN'],
-    access_token_secret=os.environ['TWITTER_ACCESS_SECRET'],
-    wait_on_rate_limit=True
-)
-
-# Post tweet
-tweet_text = """$TWEET_TEXT"""
-
+# Create API client with OAuth 2.0
+client = tweepy.Client(access_token=access_token)
 try:
     response = client.create_tweet(text=tweet_text)
     print(f"✅ Tweet posted successfully!")
