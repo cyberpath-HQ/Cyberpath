@@ -3,6 +3,40 @@
 
 set -e
 
+# Function to retry API calls with rate limit handling
+retry_api_call() {
+  local url="$1"
+  local method="${2:-GET}"
+  local data="$3"
+  local max_retries=5
+  local retry=0
+  local response
+
+  while [ $retry -lt $max_retries ]; do
+    if [ "$method" = "GET" ]; then
+      response=$(curl -s -X GET "$url" -H "api-key: $DEVTO_API_KEY")
+    elif [ "$method" = "POST" ]; then
+      response=$(curl -s -X POST "$url" -H "Content-Type: application/json" -H "api-key: $DEVTO_API_KEY" -d "$data")
+    elif [ "$method" = "PUT" ]; then
+      response=$(curl -s -X PUT "$url" -H "Content-Type: application/json" -H "api-key: $DEVTO_API_KEY" -d "$data")
+    fi
+
+    # Check if rate limited
+    if echo "$response" | jq -e '.status == 429' >/dev/null 2>&1; then
+      local wait_time=$(echo "$response" | jq -r '.error | capture("try again in (?<seconds>\d+) seconds").seconds // 30')
+      echo "Rate limit reached, waiting $wait_time seconds before retry..."
+      sleep "$wait_time"
+      ((retry++))
+    else
+      echo "$response"
+      return 0
+    fi
+  done
+
+  echo "Max retries exceeded for $url"
+  return 1
+}
+
 # Check required environment variables
 if [ -z "$DEVTO_API_KEY" ]; then
   echo "Error: DEVTO_API_KEY is not set"
@@ -62,8 +96,7 @@ $CONTENT"
   
   # Check if article already exists on dev.to
   ARTICLE_ID=""
-  ARTICLES_RESPONSE=$(curl -s -X GET "https://dev.to/api/articles/me/all" \
-    -H "api-key: $DEVTO_API_KEY")
+  ARTICLES_RESPONSE=$(retry_api_call "https://dev.to/api/articles/me/all")
   
   if echo "$ARTICLES_RESPONSE" | jq empty 2>/dev/null; then
     EXISTING=$(echo "$ARTICLES_RESPONSE" | \
@@ -108,10 +141,7 @@ $CONTENT"
       PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
     fi
     
-    RESPONSE=$(curl -s -X PUT "https://dev.to/api/articles/$ARTICLE_ID" \
-      -H "Content-Type: application/json" \
-      -H "api-key: $DEVTO_API_KEY" \
-      -d "$PAYLOAD")
+    RESPONSE=$(retry_api_call "https://dev.to/api/articles/$ARTICLE_ID" "PUT" "$PAYLOAD")
     
     echo "Updated article: $(echo "$RESPONSE" | jq -r '.url // "Error"')"
   else
@@ -143,10 +173,7 @@ $CONTENT"
       PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
     fi
     
-    RESPONSE=$(curl -s -X POST "https://dev.to/api/articles" \
-      -H "Content-Type: application/json" \
-      -H "api-key: $DEVTO_API_KEY" \
-      -d "$PAYLOAD")
+    RESPONSE=$(retry_api_call "https://dev.to/api/articles" "POST" "$PAYLOAD")
     
     echo "Created article: $(echo "$RESPONSE" | jq -r '.url // "Error"')"
   fi
