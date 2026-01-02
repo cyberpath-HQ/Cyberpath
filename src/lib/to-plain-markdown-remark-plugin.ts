@@ -100,7 +100,13 @@ export default function remarkToPlainMarkdown(options: { fileSlug?: string } = {
                 else if (mdxNode.name === `Alert`) {
                     const variant = mdxNode.attributes?.find((attr: any) => attr.name === `variant`)?.value ?? ``;
                     const title = mdxNode.attributes?.find((attr: any) => attr.name === `title`)?.value ?? ``;
-                    const body = mdxNode.children ? mdxNode.children.map(getPlainText).join(` `) : ``;
+                    const body = mdxNode.children
+                        ? mdxNode.children
+                            .map(getPlainText)
+                            .join(` `)
+                            .replace(/\n+/g, ` `)
+                            .trim()
+                        : ``;
                     const newNode = {
                         type:     `blockquote`,
                         children: [
@@ -143,7 +149,13 @@ export default function remarkToPlainMarkdown(options: { fileSlug?: string } = {
                 }
                 else if (mdxNode.name === `InfoBox`) {
                     const title = mdxNode.attributes?.find((attr: any) => attr.name === `title`)?.value ?? ``;
-                    const body = mdxNode.children ? mdxNode.children.map(getPlainText).join(` `) : ``;
+                    const body = mdxNode.children
+                        ? mdxNode.children
+                            .map(getPlainText)
+                            .join(` `)
+                            .replace(/\n+/g, ` `)
+                            .trim()
+                        : ``;
                     const newNode = {
                         type:     `blockquote`,
                         children: [
