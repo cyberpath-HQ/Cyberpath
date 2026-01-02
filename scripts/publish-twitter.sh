@@ -109,18 +109,22 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
   # Export for Python
   export TWEET_TEXT
   
-  # Post to Twitter using tweepy
-  python3 - <<PYTHON_SCRIPT
+# Post to Twitter using requests
+python3 - <<PYTHON_SCRIPT
 import os
 import sys
-import tweepy
+try:
+    import requests
+except ImportError:
+    print("Installing requests...")
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
+    import requests
 
 # Use OAuth 2.0 access token
 access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
-consumer_key = os.environ.get('TWITTER_API_KEY')
-consumer_secret = os.environ.get('TWITTER_API_SECRET')
-if not access_token or not consumer_key or not consumer_secret:
-    print("❌ Twitter credentials not set")
+if not access_token:
+    print("❌ TWITTER_ACCESS_TOKEN not set")
     sys.exit(1)
 
 # Get tweet text from environment
@@ -129,25 +133,29 @@ if not tweet_text:
     print("❌ TWEET_TEXT not set")
     sys.exit(1)
 
-# Create API client with OAuth 2.0
-client = tweepy.Client(
-    consumer_key=consumer_key,
-    consumer_secret=consumer_secret,
-    access_token=access_token
-)
+# Post to Twitter API v2
+url = "https://api.x.com/2/tweets"
+payload = {"text": tweet_text}
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Content-Type": "application/json"
+}
+
 try:
-    response = client.create_tweet(text=tweet_text)
-    print(f"✅ Tweet posted successfully!")
-    print(f"Tweet ID: {response.data['id']}")
-    print(f"URL: https://twitter.com/user/status/{response.data['id']}")
-except tweepy.TweepyException as e:
-    print(f"❌ Error posting tweet: {e}")
-    if hasattr(e, 'response') and e.response:
-        print(f"Response status: {e.response.status_code}")
-        print(f"Response text: {e.response.text}")
-    sys.exit(1)
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code == 201:
+        data = response.json()
+        print(f"✅ Tweet posted successfully!")
+        print(f"Tweet ID: {data['data']['id']}")
+        print(f"URL: https://twitter.com/user/status/{data['data']['id']}")
+    else:
+        print(f"❌ Error posting tweet: {response.status_code}")
+        print(f"Response: {response.text}")
+        sys.exit(1)
 except Exception as e:
     print(f"❌ Unexpected error: {e}")
+    import traceback
+    traceback.print_exc()
     sys.exit(1)
 PYTHON_SCRIPT
   
