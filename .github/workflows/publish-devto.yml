@@ -24,6 +24,10 @@ on:
           - draft
           - published
         default: "draft"
+      max_posts:
+        description: "Maximum number of posts to publish (optional, defaults to all)"
+        required: false
+        type: number
 
 env:
   PUBLISH_MODE: ${{ github.event.inputs.publish_mode || 'draft' }}
@@ -84,9 +88,15 @@ jobs:
         run: |
           # Get list of changed blog post files
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            # Manual trigger - process all blog posts
+            # Manual trigger - process all blog posts, optionally limited
+            ALL_FILES=$(find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) -printf '%T@ %p\n' | sort -nr | cut -d' ' -f2-)
+            if [ -n "${{ github.event.inputs.max_posts }}" ]; then
+              CHANGED_FILES=$(echo "$ALL_FILES" | head -n ${{ github.event.inputs.max_posts }})
+            else
+              CHANGED_FILES="$ALL_FILES"
+            fi
             echo "files<<EOF" >> $GITHUB_OUTPUT
-            find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
             # Automatic trigger - only changed files
