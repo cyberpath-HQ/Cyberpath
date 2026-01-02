@@ -46,7 +46,7 @@ const svg = await renderMermaidToSVG(normalizedCode);
   import Panzoom from "@panzoom/panzoom";
 
   // Function to download SVG as WebP
-  function downloadSVGAsPNG(svgElement: SVGElement, filename = "diagram.webp") {
+  function downloadSVGAsPNG(svgElement: SVGElement, filename = "diagram.png") {
     const svgData = new XMLSerializer().serializeToString(svgElement);
     const svgUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgData);
     const img = new Image();
@@ -76,7 +76,7 @@ const svg = await renderMermaidToSVG(normalizedCode);
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
         }
-      }, "image/webp");
+      }, "image/png");
     };
     img.src = svgUrl;
   }
