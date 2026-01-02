@@ -122,6 +122,7 @@ async function processBlogPost(filePath, platform = `devto`) {
 
     const remarkAutoLink = (await import(`../src/lib/auto-link-remark-plugin.ts`)).default;
     const remarkUtmParams = (await import(`../src/lib/utm-remark-plugin.ts`)).default;
+    const remarkToPlainMarkdown = (await import(`../src/lib/to-plain-markdown-remark-plugin.ts`)).default;
     const {
         remark,
     } = await import(`remark`);
@@ -145,6 +146,9 @@ async function processBlogPost(filePath, platform = `devto`) {
             medium:        platform,
             campaignField: `title`,
             is_silent:     true,
+        })
+        .use(remarkToPlainMarkdown, {
+            fileSlug:     filename,
         });
 
     // Create a mock vfile structure for the plugins
@@ -208,9 +212,7 @@ async function processBlogPost(filePath, platform = `devto`) {
             alias:        alias,
             slug:         filename,
         },
-        content: processedContent.replaceAll(`\n\n`, `@@NEWLINE@@`)
-            .replaceAll(`\n`, ` `)
-            .replaceAll(`@@NEWLINE@@`, `\n\n`),
+        content: processedContent,
         platform,
     };
 }
