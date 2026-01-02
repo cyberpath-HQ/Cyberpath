@@ -196,7 +196,8 @@ async function processBlogPost(filePath, platform = `devto`) {
         utm_campaign: frontmatter.title ?? `blog-post`,
     }).toString() }`;
 
-    frontmatter.tags = (frontmatter.tags ?? []).map((tag) => pascal(tag));
+    frontmatter.tags = (frontmatter.tags ?? []).map((tag) => pascal(tag))
+        .filter((tag) => !tag.includes(`&`));
 
     return {
         frontmatter: {
@@ -207,7 +208,9 @@ async function processBlogPost(filePath, platform = `devto`) {
             alias:        alias,
             slug:         filename,
         },
-        content: processedContent,
+        content: processedContent.replaceAll(`\n\n`, `@@NEWLINE@@`)
+            .replaceAll(`\n`, ` `)
+            .replaceAll(`@@NEWLINE@@`, `\n\n`),
         platform,
     };
 }
