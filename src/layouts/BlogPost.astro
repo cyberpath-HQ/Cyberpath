@@ -35,7 +35,7 @@ const { title, description, pubDate, updatedDate, heroImage, heroClass, tags, au
 const readingTime = getReadingTime(entry.body!).text;
 const author = getAuthor(authorId);
 
-const alias = postAliases[entry.id];
+const alias = postAliases[entry.id as keyof typeof postAliases] as string | undefined;
 const shortUrl = alias ? new URL(`/p/${alias}`, Astro.site).toString() : undefined;
 
 if (!author) {
