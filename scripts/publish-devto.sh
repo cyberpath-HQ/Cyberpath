@@ -59,10 +59,17 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
       # Prepare JSON payload
       IMAGE_PAYLOAD="{\"image\": \"data:$MIME_TYPE;base64,$BASE64_DATA\"}"
       
+      # Write payload to temp file to avoid argument list too long
+      TEMP_FILE=$(mktemp)
+      echo "$IMAGE_PAYLOAD" > "$TEMP_FILE"
+      
       IMAGE_RESPONSE=$(curl -s -X POST "https://dev.to/api/images" \
         -H "api-key: $DEVTO_API_KEY" \
         -H "Content-Type: application/json" \
-        -d "$IMAGE_PAYLOAD")
+        -d @"$TEMP_FILE")
+      
+      # Clean up temp file
+      rm "$TEMP_FILE"
       
       if echo "$IMAGE_RESPONSE" | jq empty 2>/dev/null; then
         COVER_URL=$(echo "$IMAGE_RESPONSE" | jq -r '.url // ""')
