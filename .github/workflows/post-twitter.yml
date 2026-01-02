@@ -1,0 +1,114 @@
+# Post blog announcements to X (Twitter)
+#
+# This workflow automatically creates X posts when blog posts
+# are created or modified in the repository.
+#
+# Posts are formatted to be engaging and include:
+# - Catchy hook
+# - Key hashtags from post tags
+# - Link with UTM parameters
+#
+# Required secrets:
+# - TWITTER_API_KEY: X API key
+# - TWITTER_API_SECRET: X API secret
+# - TWITTER_ACCESS_TOKEN: X access token
+# - TWITTER_ACCESS_SECRET: X access token secret
+
+name: Post to X (Twitter)
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "src/content/blog/**/*.mdx"
+      - "src/content/blog/**/*.md"
+  workflow_dispatch:
+
+jobs:
+  post-twitter:
+    name: Post to X
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pip install tweepy
+
+      - name: Generate post aliases
+        run: |
+          # Check if commit message allows mutations
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          ALLOW_MUTATIONS=""
+
+          if echo "$COMMIT_MSG" | grep -qi "\[allow-alias-mutation\]"; then
+            echo "✅ Alias mutations allowed by commit message"
+            ALLOW_MUTATIONS="--allow-mutations"
+          fi
+
+          # Generate aliases and check for mutations
+          node scripts/generate-aliases.js generate $ALLOW_MUTATIONS
+
+          # If aliases changed, commit them
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add src/data/post-aliases.json
+
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update post aliases [skip ci]"
+            git push
+            echo "✅ Aliases updated and committed"
+          else
+            echo "✅ No alias changes"
+          fi
+
+      - name: Get changed blog posts
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post to X (Twitter)
+        if: steps.changed-files.outputs.files != ''
+        env:
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: |
+          chmod +x scripts/publish-twitter.sh
+          ./scripts/publish-twitter.sh
+
+      - name: Summary
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "✅ Successfully posted to X (Twitter)"

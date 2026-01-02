@@ -1,0 +1,111 @@
+# Generate Medium import URLs for blog posts
+#
+# Medium no longer provides API tokens for new users.
+# This workflow generates import URLs that can be used to
+# import content into Medium via their web interface at:
+# https://medium.com/p/import
+#
+# Per-post configuration:
+# Add 'mediumPublication' to post frontmatter to specify
+# which Medium publication to submit to after importing.
+
+name: Generate Medium Import URLs
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "src/content/blog/**/*.mdx"
+      - "src/content/blog/**/*.md"
+  workflow_dispatch:
+    inputs:
+      publish_mode:
+        description: "Publish mode"
+        required: true
+        type: choice
+        options:
+          - draft
+          - published
+        default: "draft"
+
+env:
+  PUBLISH_MODE: ${{ github.event.inputs.publish_mode || 'draft' }}
+
+jobs:
+  publish-medium:
+    name: Publish to Medium
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate post aliases
+        run: |
+          # Check if commit message allows mutations
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          ALLOW_MUTATIONS=""
+
+          if echo "$COMMIT_MSG" | grep -qi "\[allow-alias-mutation\]"; then
+            echo "✅ Alias mutations allowed by commit message"
+            ALLOW_MUTATIONS="--allow-mutations"
+          fi
+
+          # Generate aliases and check for mutations
+          node scripts/generate-aliases.js generate $ALLOW_MUTATIONS
+
+          # If aliases changed, commit them
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add src/data/post-aliases.json
+
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update post aliases [skip ci]"
+            git push
+            echo "✅ Aliases updated and committed"
+          else
+            echo "✅ No alias changes"
+          fi
+
+      - name: Get changed blog posts
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Medium import URLs
+        if: steps.changed-files.outputs.files != ''
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: |
+          chmod +x scripts/publish-medium.sh
+          ./scripts/publish-medium.sh
+
+      - name: Summary
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "✅ Medium import URLs generated"
+          echo "Check the workflow logs for import URLs"
+          echo "Visit the URLs to import posts into Medium"

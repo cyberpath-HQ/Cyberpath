@@ -1,0 +1,112 @@
+# Publish blog posts to dev.to
+#
+# This workflow automatically publishes or updates blog posts on dev.to
+# when blog posts are created or modified in the repository.
+#
+# Required secrets:
+# - DEVTO_API_KEY: dev.to API key from https://dev.to/settings/extensions
+
+name: Publish to dev.to
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "src/content/blog/**/*.mdx"
+      - "src/content/blog/**/*.md"
+  workflow_dispatch:
+    inputs:
+      publish_mode:
+        description: "Publish mode"
+        required: true
+        type: choice
+        options:
+          - draft
+          - published
+        default: "draft"
+
+env:
+  PUBLISH_MODE: ${{ github.event.inputs.publish_mode || 'draft' }}
+
+jobs:
+  publish-devto:
+    name: Publish to dev.to
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Fetch last 2 commits to detect changes
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate post aliases
+        run: |
+          # Check if commit message allows mutations
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          ALLOW_MUTATIONS=""
+
+          if echo "$COMMIT_MSG" | grep -qi "\[allow-alias-mutation\]"; then
+            echo "✅ Alias mutations allowed by commit message"
+            ALLOW_MUTATIONS="--allow-mutations"
+          fi
+
+          # Generate aliases and check for mutations
+          node scripts/generate-aliases.js generate $ALLOW_MUTATIONS
+
+          # If aliases changed, commit them
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add src/data/post-aliases.json
+
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update post aliases [skip ci]"
+            git push
+            echo "✅ Aliases updated and committed"
+          else
+            echo "✅ No alias changes"
+          fi
+
+      - name: Get changed blog posts
+        id: changed-files
+        run: |
+          # Get list of changed blog post files
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Manual trigger - process all blog posts
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            find src/content/blog -type f \( -name "*.md" -o -name "*.mdx" \) >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # Automatic trigger - only changed files
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish posts to dev.to
+        if: steps.changed-files.outputs.files != ''
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+          PUBLISH_MODE: ${{ env.PUBLISH_MODE }}
+        run: |
+          chmod +x scripts/publish-devto.sh
+          ./scripts/publish-devto.sh
+
+      - name: Summary
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "✅ Successfully processed dev.to publishing"
+          echo "Mode: ${{ env.PUBLISH_MODE }}"
