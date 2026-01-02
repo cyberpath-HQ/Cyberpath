@@ -22,6 +22,8 @@ import getReadingTime from "reading-time";
 import { Button } from "@/components/ui/button";
 import path from "path";
 
+import postAliases from "@/data/post-aliases.json";
+
 interface Props {
   entry: CollectionEntry<"blog">;
 }
@@ -32,6 +34,9 @@ const { Content } = await render(entry);
 const { title, description, pubDate, updatedDate, heroImage, heroClass, tags, author: authorId } = entry.data;
 const readingTime = getReadingTime(entry.body!).text;
 const author = getAuthor(authorId);
+
+const alias = postAliases[entry.id];
+const shortUrl = alias ? new URL(`/p/${alias}`, Astro.site).toString() : undefined;
 
 if (!author) {
   throw new Error(`Author with ID "${authorId}" not found`);
@@ -307,7 +312,7 @@ const sourcePath = path.normalize(path.join(__dirname, "../..", entry.filePath!)
 
       <!-- Share Buttons -->
       <div class="mb-8">
-        <ShareButtons client:only="react" title={title} url={canonicalURL.toString()} tags={tags} />
+        <ShareButtons client:only="react" title={title} url={canonicalURL.toString()} tags={tags} shortUrl={shortUrl} />
       </div>
 
       <!-- Article Content -->
