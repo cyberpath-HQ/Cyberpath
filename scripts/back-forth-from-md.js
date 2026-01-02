@@ -11,10 +11,16 @@ export async function backForthFromMd(filePath, platform) {
     };
 }
 
-const {
+/* const {
     content,
 } = await backForthFromMd(
     `src/content/blog/orbis-plugin-driven-desktop-platform.mdx`,
+    `devto`
+); */
+const {
+    content,
+} = await backForthFromMd(
+    `src/content/blog/red-team-vs-blue-team-strategies-for-advanced-penetration-testing.mdx`,
     `devto`
 );
 
