@@ -1,10 +1,6 @@
-// import aspectRatio from "@tailwindcss/aspect-ratio";
-// import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
-
-// import animate from "tailwindcss-animate";
 
 export default {
     darkMode: `class`,
