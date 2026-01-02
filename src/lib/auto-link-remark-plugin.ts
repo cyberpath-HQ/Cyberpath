@@ -5,7 +5,7 @@
 import { visit } from 'unist-util-visit';
 import {
     getLinkMappings, type LinkDefinition, type LinkMappings
-} from '../data/auto-link-mappings';
+} from '../data/auto-link-mappings.ts';
 import path from 'path';
 
 const LINK_MAPPINGS = await getLinkMappings();
@@ -37,6 +37,9 @@ export interface AutoLinkPluginOptions {
 
     /** Enable debug logging (default: false) */
     is_debug?: boolean
+
+    /** Suppress all console output (default: false) */
+    silence?: boolean
 }
 
 /**
