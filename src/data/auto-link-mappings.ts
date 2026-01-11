@@ -32,6 +32,14 @@ export type LinkMappings = Record<string, LinkDefinition>;
  * Static link mappings for common cybersecurity terms and resources
  */
 const STATIC_MAPPINGS: LinkMappings = {
+    Ebalo: {
+        url:   `https://ebalo.xyz/`,
+        title: `Ebalo - Cybersecurity, Software Development & Entrepreneurship`,
+    },
+    ebalo: {
+        aliasOf: `Ebalo`,
+    },
+
     // CyberPath Properties
     "CyberPath - Cybersecurity Tools & Resources": {
         url:   `/`,
@@ -42,6 +50,18 @@ const STATIC_MAPPINGS: LinkMappings = {
     },
     CyberPath: {
         aliasOf: `CyberPath - Cybersecurity Tools & Resources`,
+    },
+
+    // Cyberpath Quant
+    "Cyberpath Quant": {
+        url:   `https://quant.cyberpath-hq.com/`,
+        title: `Cyberpath Quant - Next-Generation CVSS Calculator`,
+    },
+    "CyberPath Quant": {
+        aliasOf: `Cyberpath Quant`,
+    },
+    Quant: {
+        aliasOf: `Cyberpath Quant`,
     },
 
     // CertDb
