@@ -64,6 +64,21 @@ const STATIC_MAPPINGS: LinkMappings = {
         aliasOf: `Cyberpath Quant`,
     },
 
+    // Sentinel
+    "Sentinel - Filesystem-Backed Database": {
+        url:   `https://sentinel.cyberpath-hq.com/`,
+        title: `Sentinel - Filesystem-Backed Database`,
+    },
+    Sentinel: {
+        aliasOf: `Sentinel - Filesystem-Backed Database`,
+    },
+    "sentinel database": {
+        aliasOf: `Sentinel - Filesystem-Backed Database`,
+    },
+    "cyberpath sentinel": {
+        aliasOf: `Sentinel - Filesystem-Backed Database`,
+    },
+
     // CertDb
     "CertDb - Cybersecurity Certification Database": {
         url:   `https://certdb.cyberpath-hq.com/`,
@@ -1154,6 +1169,9 @@ const STATIC_MAPPINGS: LinkMappings = {
         title: `TLS - Transport Layer Security`,
     },
     TLS: {
+        aliasOf: `TLS - Transport Layer Security`,
+    },
+    "SSL/TLS": {
         aliasOf: `TLS - Transport Layer Security`,
     },
 
