@@ -5,6 +5,7 @@ import type { WebPage } from "schema-dts";
 import certdbLogo from "@/assets/blog/logo-certdb.svg";
 import orbisLogo from "@/assets/blog/logo-orbis.svg";
 import quantLogo from "@/assets/blog/logo-quant.svg";
+import sentinelLogo from "@/assets/blog/logo-sentinel.svg";
 import OptimizedImage from "@/components/astro/common/OptimizedImage.astro";
 
 const date = new Date();
@@ -73,7 +74,19 @@ const projects = [
         borderColor: "border-[#0284C7]/60",
         hoverBorder: "hover:border-[#0284C7]",
         delay: "delay-500"
-    }
+    },
+    {
+        name: "Sentinel",
+        description: "A document-based DBMS written in Rust that stores all data as files on disk, prioritizing trust, transparency, and compliance for audit logs, certificate management, and more.",
+        github: "https://github.com/cyberpath-HQ/sentinel",
+        website: "https://sentinel.cyberpath-hq.com/",
+        logo: sentinelLogo,
+        tags: ["DBMS", "Document DB", "Auditability", "Compliance", "Open Source"],
+        color: "",
+        borderColor: "border-[#34d399]/60",
+        hoverBorder: "hover:border-[#34d399]",
+        delay: "delay-600"
+    },
 ];
 ---
 
