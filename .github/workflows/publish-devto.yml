@@ -46,7 +46,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Fetch last 2 commits to detect changes
+          fetch-depth: 0 # Fetch full history to access all commits in the push
 
       - uses: pnpm/action-setup@v4
         with:
@@ -104,9 +104,23 @@ jobs:
             echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
-            # Automatic trigger - only changed files
+            # Automatic trigger - get all changed blog posts from this push
             echo "files<<EOF" >> $GITHUB_OUTPUT
-            git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+            # Compare the base SHA before the push with the current HEAD to get all changes in the push
+            if [ -n "${{ github.event.before }}" ]; then
+              # Check if the before SHA exists in the current history (for force pushes, it might not)
+              if git rev-parse --verify "${{ github.event.before }}" >/dev/null 2>&1; then
+                # Use the 'before' SHA from the push event to compare with current HEAD
+                git diff --name-only "${{ github.event.before }}" HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+              else
+                # If before SHA is not available (e.g., force push), fall back to checking the last few commits
+                # Use git log to find all unique changed files in recent commits
+                git log --name-only --max-count=10 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' | sort -u >> $GITHUB_OUTPUT || true
+              fi
+            else
+              # Fallback for cases where 'before' SHA is not available
+              git diff --name-only HEAD~1 HEAD | grep -E '^src/content/blog/.*\.(md|mdx)$' >> $GITHUB_OUTPUT || true
+            fi
             echo "EOF" >> $GITHUB_OUTPUT
           fi
 
