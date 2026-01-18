@@ -1,7 +1,8 @@
 # Publish blog posts to dev.to
 #
-# This workflow automatically publishes or updates blog posts on dev.to
+# This workflow automatically publishes new blog posts on dev.to
 # when blog posts are created or modified in the repository.
+# Posts are only published if no post with the exact same title already exists.
 #
 # Required secrets:
 # - DEVTO_API_KEY: dev.to API key from https://dev.to/settings/extensions

@@ -1,5 +1,6 @@
 #!/bin/bash
-# Script to publish blog posts to dev.to
+# Script to publish new blog posts to dev.to
+# Posts are only published if no post with the exact same title already exists
 
 set -e
 
@@ -94,89 +95,54 @@ echo "$CHANGED_FILES" | while IFS= read -r file; do
 
 $CONTENT"
   
-  # Check if article already exists on dev.to
+  # Check if article with the exact same title already exists on dev.to
   ARTICLE_ID=""
   ARTICLES_RESPONSE=$(retry_api_call "https://dev.to/api/articles/me/all")
   
   if echo "$ARTICLES_RESPONSE" | jq empty 2>/dev/null; then
     EXISTING=$(echo "$ARTICLES_RESPONSE" | \
-      jq -r --arg slug "$SLUG" '.[] | select(.slug | contains($slug)) | .id' | head -1)
+      jq -r --arg title "$TITLE" '.[] | select(.title == $title) | .id' | head -1)
   else
     echo "Invalid JSON response from dev.to articles API: $ARTICLES_RESPONSE"
     exit 1
   fi
   
   if [ -n "$EXISTING" ]; then
-    echo "Updating existing article ID: $EXISTING"
-    ARTICLE_ID="$EXISTING"
+    echo "Skipping: Post with title \"$TITLE\" already exists on dev.to (ID: $EXISTING)"
+    continue
   fi
   
-  # Prepare JSON payload
-  if [ -n "$ARTICLE_ID" ]; then
-    # Update existing article
-    PAYLOAD=$(jq -n \
-      --arg title "$TITLE" \
-      --arg body "$FULL_CONTENT" \
-      --argjson tags "$TAG_ARRAY" \
-      --arg canonical "$CANONICAL_URL" \
-      --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
-      --arg description "$DESCRIPTION" \
-      '{
-        article: {
-          title: $title,
-          body_markdown: $body,
-          published: ($published == "true"),
-          tags: $tags,
-          canonical_url: $canonical,
-          description: $description,
-          series: "Cyberpath Blog"
-        }
-      }')
-    
-    if [ -n "$MAIN_IMAGE_URL" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg image "$MAIN_IMAGE_URL" '.article.main_image = $image')
-    fi
-    
-    if [ -n "$ORGANIZATION_ID" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
-    fi
-    
-    RESPONSE=$(retry_api_call "https://dev.to/api/articles/$ARTICLE_ID" "PUT" "$PAYLOAD")
-    
-    echo "Updated article: $(echo "$RESPONSE" | jq -r '.url // "Error"')"
-  else
-    # Create new article
-    PAYLOAD=$(jq -n \
-      --arg title "$TITLE" \
-      --arg body "$FULL_CONTENT" \
-      --argjson tags "$TAG_ARRAY" \
-      --arg canonical "$CANONICAL_URL" \
-      --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
-      --arg description "$DESCRIPTION" \
-      '{
-        article: {
-          title: $title,
-          body_markdown: $body,
-          published: ($published == "true"),
-          tags: $tags,
-          canonical_url: $canonical,
-          description: $description,
-          series: "Cyberpath Blog"
-        }
-      }')
-    
-    if [ -n "$MAIN_IMAGE_URL" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg image "$MAIN_IMAGE_URL" '.article.main_image = $image')
-    fi
-    
-    if [ -n "$ORGANIZATION_ID" ]; then
-      PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
-    fi
-    
-    RESPONSE=$(retry_api_call "https://dev.to/api/articles" "POST" "$PAYLOAD")
-    
-    echo "Created article: $(echo "$RESPONSE" | jq -r '.url // "Error"')"
+  # Create new article
+  PAYLOAD=$(jq -n \
+    --arg title "$TITLE" \
+    --arg body "$FULL_CONTENT" \
+    --argjson tags "$TAG_ARRAY" \
+    --arg canonical "$CANONICAL_URL" \
+    --arg published "$([[ $PUBLISH_MODE == 'published' ]] && echo 'true' || echo 'false')" \
+    --arg description "$DESCRIPTION" \
+    '{
+      article: {
+        title: $title,
+        body_markdown: $body,
+        published: ($published == "true"),
+        tags: $tags,
+        canonical_url: $canonical,
+        description: $description,
+        series: "Cyberpath Blog"
+      }
+    }')
+  
+  if [ -n "$MAIN_IMAGE_URL" ]; then
+    PAYLOAD=$(echo "$PAYLOAD" | jq --arg image "$MAIN_IMAGE_URL" '.article.main_image = $image')
   fi
+  
+  if [ -n "$ORGANIZATION_ID" ]; then
+    PAYLOAD=$(echo "$PAYLOAD" | jq --arg org "$ORGANIZATION_ID" '.article.organization_id = $org')
+  fi
+  
+  RESPONSE=$(retry_api_call "https://dev.to/api/articles" "POST" "$PAYLOAD")
+  
+  echo "Created article: $(echo "$RESPONSE" | jq -r '.url // "Error"')"
   
   # Check for errors
   if echo "$RESPONSE" | jq empty 2>/dev/null; then
@@ -192,5 +158,5 @@ $CONTENT"
   fi
   
 done
-
-echo "✅ Successfully published/updated posts to dev.to"
+ 
+echo "✅ Successfully published new posts to dev.to"
