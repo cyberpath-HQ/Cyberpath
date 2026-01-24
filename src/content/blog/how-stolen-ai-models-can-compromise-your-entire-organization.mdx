@@ -433,11 +433,11 @@ Fingerprinting is only effective if you deploy systematic monitoring to detect c
 
 | Detection Method                | Technical Approach                                                                                                        | Tools                                                         | False Positives |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------- |
-| **Static Weight Registry**      | Hash all production models, maintain database of hashes and metadata                                                      | Custom fingerprint DB + Merkle tree for fast lookup           | Very Low (<1%)  |
+| **Static Weight Registry**      | Hash all production models, maintain database of hashes and metadata                                                      | Custom fingerprint DB + Merkle tree for fast lookup           | Very Low (&lt;1%)  |
 | **Public Model Monitoring**     | Automated scraping of Hugging Face, Model Zoo, GitHub; fingerprint-match against private registry                         | Hugging Face API, GitHub search automation, custom crawler    | Low (5%)        |
 | **API Behavior Monitoring**     | Monitor inference endpoints for unusual latency patterns, layer-wise output distributions that suggest model distillation | Datadog APM, Splunk, CloudTrail + custom inference monitoring | Medium (15%)    |
 | **Trigger Set Validation**      | Periodically inject trigger-set inputs through your own APIs and external test harnesses; compare outputs to baseline     | Custom trigger-set harness, Pytest CI/CD integration          | Low (3%)        |
-| **Supply Chain Fingerprinting** | Hash models at build time, sign with cryptographic keys, embed fingerprint in model registry for automated verification   | GUARDRAILS, MLflow Model Registry + custom signing layer      | Very Low (<1%)  |
+| **Supply Chain Fingerprinting** | Hash models at build time, sign with cryptographic keys, embed fingerprint in model registry for automated verification   | GUARDRAILS, MLflow Model Registry + custom signing layer      | Very Low (&lt;1%)  |
 
 ### Implementation: Automated Fingerprint Verification Pipeline
 
