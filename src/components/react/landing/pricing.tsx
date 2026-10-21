@@ -215,6 +215,9 @@ export function Pricing({
                                 </div>
 
                                 <div className="mb-2">
+                                    <p className={`text-xs mt-1 md:mt-2 ${ isHighlighted ? `text-blue-400` : `text-blue-600` }`}>
+                                        {plan.starting_at}
+                                    </p>
                                     <div className="flex items-baseline gap-1">
                                         <span className={`text-3xl md:text-4xl lg:text-5xl font-extrabold ${ isHighlighted ? `text-white` : `text-neutral-900` }`}>
                                             {plan.price}

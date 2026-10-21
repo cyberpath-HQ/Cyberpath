@@ -90,7 +90,7 @@ export function ReservationSection({ locale }: ReservationSectionProps) {
                                 variants={itemVariants}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                href="https://cal.eu/emanuele-balsamo-hzrxfr/introduzione-a-cyberpath-bastion"
+                                href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1zibCOv-HLIBvbUPnlaQQUies_LJ4gr6SUGnBfi4ccJDAA1obOUCqs5KIkwMlo8BDbNSQT-vlI"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/25 text-sm md:text-base"
