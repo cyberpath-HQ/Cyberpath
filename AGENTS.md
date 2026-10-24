@@ -186,6 +186,20 @@ export type CertificationPost = CollectionEntry<'certifications'>;
 
 ## Content Management
 
+### Markdown for Agents
+Every HTML page has a markdown twin at `<path>/index.md` (e.g. `/blog/my-post/index.md`),
+generated at build time by `src/pages/**/index.md.ts` endpoints. The Cloudflare Worker in
+`worker/` serves that twin for `Accept: text/markdown` on `cyberpath-hq.com` and
+`www.cyberpath-hq.com` only (the site is static, GitHub Pages cannot inspect headers).
+
+- New page? Add `<path>/index.md.ts` next to it and return `createMarkdownResponse(...)`
+  from `@/lib/agent-markdown/response`. `pnpm run check:markdown` fails when a built page
+  has no markdown variant.
+- Shared helpers live in `src/lib/agent-markdown/`.
+- Page-only redirects (CertDb, short links) get markdown redirect documents instead of a
+  meta-refresh HTML shell.
+- Worker details, deployment and alternatives: `worker/README.md`.
+
 ### Blog Posts
 - Location: `src/content/blog/`
 - Format: MDX with frontmatter

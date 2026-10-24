@@ -125,6 +125,36 @@ pnpm run build
 
 This will generate the static site and take screenshots for preview purposes.
 
+### Markdown for Agents
+
+Every page is published twice: the HTML page and a markdown variant at `<path>/index.md`
+(for example `/blog/my-post/index.md`). The variants are generated during the build from
+the MDX sources and the translation files, so agents get the article text without the site
+chrome.
+
+The site is static and GitHub Pages cannot read request headers, so a Cloudflare Worker
+(`worker/`) in front of it serves the variant when a request sends `Accept: text/markdown`.
+It is attached to `cyberpath-hq.com/*` and `www.cyberpath-hq.com/*` only, and browsers keep
+receiving HTML.
+
+```bash
+# validate the generated variants (after a build)
+pnpm run check:markdown
+
+# run the worker locally against `astro preview`
+# (wrangler reads worker/.dev.vars, not shell variables)
+pnpm run preview
+pnpm run worker:dev
+
+# deploy the worker (needs CLOUDFLARE_API_TOKEN with Workers Routes edit)
+pnpm run worker:deploy
+
+# verify negotiation on the live site
+pnpm run check:markdown:remote
+```
+
+See [worker/README.md](./worker/README.md) for the deployment details and headers.
+
 ## Contributing
 
 We welcome contributions from everyone! Whether you have ideas for improvements, new features, want to add blog

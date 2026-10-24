@@ -1,0 +1,48 @@
+name: Deploy markdown negotiation worker
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "worker/**"
+      - "src/lib/agent-markdown/negotiation.ts"
+      - "src/lib/agent-markdown/document.ts"
+      - "src/lib/agent-markdown/frontmatter.ts"
+      - "src/lib/agent-markdown/types.ts"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: "worker"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck worker
+        run: pnpm run worker:check
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: .
+          command: deploy --config worker/wrangler.jsonc
