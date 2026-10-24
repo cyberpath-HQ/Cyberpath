@@ -8,6 +8,15 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "public/**"
+      - ".github/workflows/astro.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "tailwind.config.ts"
+      - "astro.config.ts"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
