@@ -9,6 +9,7 @@ on:
       - "src/lib/agent-markdown/document.ts"
       - "src/lib/agent-markdown/frontmatter.ts"
       - "src/lib/agent-markdown/types.ts"
+      - "src/lib/agent-discovery/**"
       - ".github/workflows/deploy-worker.yml"
   workflow_dispatch:
 

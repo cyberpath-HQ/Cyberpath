@@ -7,7 +7,9 @@
  * asks for `Accept: text/markdown`.
  *
  * Everything else is forwarded to the origin untouched, so browsers keep
- * receiving HTML.
+ * receiving HTML. HTML responses get RFC 8288 `Link` headers advertising the
+ * site's machine-readable documents, and `/.well-known/api-catalog` resolves to
+ * the RFC 9727 API catalog generated at build time.
  */
 import { estimateTokens } from "../src/lib/agent-markdown/document";
 import {
@@ -16,6 +18,13 @@ import {
     prefersMarkdown,
     toMarkdownPath,
 } from "../src/lib/agent-markdown/negotiation";
+import {
+    API_CATALOG_DOCUMENT_PATH,
+    API_CATALOG_MEDIA_TYPE,
+    API_CATALOG_PATH,
+    API_CATALOG_PROFILE,
+    discoveryLinkHeader,
+} from "../src/lib/agent-discovery/links";
 
 export interface Env {
     /**
@@ -46,6 +55,13 @@ const LOCAL_HOSTS = new Set([
 
 const MARKDOWN_CACHE_CONTROL = `public, max-age=3600`;
 const MARKDOWN_CACHE_TTL_SECONDS = 3600;
+
+/**
+ * GitHub Pages picks the media type from the file extension, so the
+ * extensionless `/.well-known/api-catalog` is served from its JSON twin and
+ * relabelled here.
+ */
+const API_CATALOG_CONTENT_TYPE = `${ API_CATALOG_MEDIA_TYPE }; profile="${ API_CATALOG_PROFILE }"`;
 
 function isAllowedHost(hostname: string): boolean {
     const normalized = hostname.toLowerCase();
@@ -88,11 +104,18 @@ function fetchOrigin(request: Request, env: Env): Promise<Response> {
 
 /**
  * Advertising `Vary: Accept` keeps shared caches from mixing the HTML and
- * markdown variants.
+ * markdown variants. HTML responses also carry the RFC 8288 `Link` headers
+ * that point agents at the machine-readable documents.
  */
 async function withVary(response: Response): Promise<Response> {
     const headers = new Headers(response.headers);
     appendVary(headers, `Accept`);
+
+    const contentType = (response.headers.get(`content-type`) ?? ``).toLowerCase();
+
+    if (response.ok && contentType.includes(`text/html`)) {
+        headers.set(`Link`, discoveryLinkHeader());
+    }
 
     return new Response(response.body, {
         status:     response.status,
@@ -107,6 +130,37 @@ function isMarkdownResponse(response: Response): boolean {
     return response.status === 200 && !contentType.includes(`text/html`);
 }
 
+/**
+ * Serve the RFC 9727 API catalog at its well-known URI.
+ *
+ * Returns `null` when the origin does not have the document (for example an
+ * old deployment), so the caller can fall back to the normal origin response.
+ */
+async function serveApiCatalog(request: Request, env: Env): Promise<Response | null> {
+    const headers = new Headers(request.headers);
+    headers.delete(`if-none-match`);
+    headers.delete(`if-modified-since`);
+
+    const target = originUrl(new URL(API_CATALOG_DOCUMENT_PATH, request.url), env);
+    const catalogResponse = await fetch(buildRequest(`GET`, target, headers));
+
+    if (!catalogResponse.ok) {
+        await catalogResponse.body?.cancel();
+        return null;
+    }
+
+    const catalog = await catalogResponse.text();
+
+    return new Response(request.method === `HEAD` ? null : catalog, {
+        status: 200,
+        headers: new Headers({
+            "Content-Type":  API_CATALOG_CONTENT_TYPE,
+            "Cache-Control": catalogResponse.headers.get(`cache-control`) ?? MARKDOWN_CACHE_CONTROL,
+            "Link":          discoveryLinkHeader(),
+        }),
+    });
+}
+
 export default {
     async fetch(request: Request, env: Env): Promise<Response> {
         if (request.method !== `GET` && request.method !== `HEAD`) {
@@ -117,6 +171,14 @@ export default {
 
         if (!isAllowedHost(url.hostname)) {
             return fetchOrigin(request, env);
+        }
+
+        if (url.pathname === API_CATALOG_PATH) {
+            const catalog = await serveApiCatalog(request, env);
+
+            if (catalog) {
+                return catalog;
+            }
         }
 
         if (!prefersMarkdown(request.headers.get(`Accept`))) {

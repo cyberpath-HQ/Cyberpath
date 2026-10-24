@@ -16,6 +16,7 @@
         "../src/lib/agent-markdown/negotiation.ts",
         "../src/lib/agent-markdown/document.ts",
         "../src/lib/agent-markdown/frontmatter.ts",
-        "../src/lib/agent-markdown/types.ts"
+        "../src/lib/agent-markdown/types.ts",
+        "../src/lib/agent-discovery/links.ts"
     ]
 }

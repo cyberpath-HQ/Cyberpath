@@ -200,6 +200,22 @@ generated at build time by `src/pages/**/index.md.ts` endpoints. The Cloudflare 
   meta-refresh HTML shell.
 - Worker details, deployment and alternatives: `worker/README.md`.
 
+### Link Headers for Agents
+Homepage HTML responses carry RFC 8288 `Link` headers pointing at `/.well-known/api-catalog`
+(RFC 9727), `/openapi.json`, `/blog/` and `/llms.txt`.
+
+- The paths, relation types and header serialization live in
+  `src/lib/agent-discovery/links.ts`; both the Worker and the build-time documents import
+  it, so add an advertised resource there first.
+- The catalog is built in `src/lib/agent-discovery/catalog.ts`, the OpenAPI document in
+  `src/lib/agent-discovery/openapi.ts`.
+- `/.well-known/api-catalog` is served by the Worker from `/api-catalog.json` (GitHub
+  Pages sets the media type from the extension); the Worker relabels it
+  `application/linkset+json`.
+- Adding a resource means: constant in `links.ts`, an endpoint under `src/pages`, an entry
+  in the catalog, and a line in `worker/README.md`. The Worker is deployed by
+  `deploy-worker.yml` when `worker/**` or `src/lib/agent-discovery/**` changes.
+
 ### Blog Posts
 - Location: `src/content/blog/`
 - Format: MDX with frontmatter

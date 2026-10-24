@@ -32,7 +32,7 @@ export const AUTHORS: Record<string, Author> = {
         website:  `https://ebalo.xyz`,
         medium:   `https://ebalo.medium.com/`,
         devto:    `https://dev.to/ebalo`,
-        email:    `emanuele.balsamo@cyberpath-hq.com`,
+        email:    `it@cyberpath-hq.com`,
         avatar:   await prepareAuthorAvatar(ebalo_avatar),
     },
 };
