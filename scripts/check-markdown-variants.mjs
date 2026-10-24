@@ -147,9 +147,12 @@ async function checkLocal() {
 async function checkRemote(baseUrl) {
     const markdownFiles = await walk(DIST, (file) => file.endsWith(`${ path.sep }index.md`) || file.endsWith(`/index.md`));
     const base = baseUrl.replace(/\/+$/, ``);
+    const baseOrigin = new URL(base).origin;
     let failures = 0;
     let redirected = 0;
     let direct = 0;
+    /** Sections whose requests are redirected off-site before the worker sees them. */
+    const offSite = new Map();
 
     const queue = [ ...markdownFiles ];
     const concurrency = 8;
@@ -176,13 +179,25 @@ async function checkRemote(baseUrl) {
                 });
                 const contentType = (response.headers.get(`content-type`) ?? ``).toLowerCase();
                 const body = await response.text();
+                const finalUrl = new URL(response.url);
                 const problems = [];
 
                 if (!response.ok) {
                     problems.push(`status ${ response.status }`);
                 }
                 if (!contentType.startsWith(`text/markdown`)) {
-                    problems.push(`content-type "${ contentType || `missing` }"`);
+                    const offSiteRedirect = response.redirected && finalUrl.origin !== baseOrigin;
+
+                    problems.push(
+                        offSiteRedirect
+                            ? `redirected off-site to ${ finalUrl.origin } before the worker could negotiate`
+                            : `content-type "${ contentType || `missing` }"`
+                    );
+
+                    if (offSiteRedirect) {
+                        const section = urlPath.split(`/`).slice(0, 2).join(`/`) || `/`;
+                        offSite.set(section, (offSite.get(section) ?? 0) + 1);
+                    }
                 }
                 if (body.length < 20) {
                     problems.push(`empty body`);
@@ -194,7 +209,7 @@ async function checkRemote(baseUrl) {
                     continue;
                 }
 
-                if (new URL(response.url).pathname === urlPath) {
+                if (finalUrl.pathname === urlPath) {
                     direct += 1;
                 }
                 else {
@@ -234,6 +249,25 @@ async function checkRemote(baseUrl) {
     console.log(`Checked ${ markdownFiles.length } markdown URLs against ${ base }.`);
     console.log(`  served at the requested URL: ${ direct }`);
     console.log(`  served through a redirect:   ${ redirected }`);
+    console.log(`  redirected off-site:         ${ [ ...offSite.values() ].reduce((total, count) => total + count, 0) }`);
+
+    if (offSite.size > 0) {
+        console.error(
+            [
+                ``,
+                `These sections are redirected to another origin before the Worker runs, so they`,
+                `never reach the markdown negotiation:`,
+                ...[ ...offSite.entries() ].map(([ section, count ]) => `  ${ section }  (${ count } URLs)`),
+                ``,
+                `Fix: in the Cloudflare redirect rule for those sections, keep the rule from`,
+                `matching markdown requests:`,
+                ``,
+                `  and not any(http.request.headers["accept"][*] contains "text/markdown")`,
+                ``,
+                `See docs/markdown-for-agents.md#sections-redirected-at-the-edge`,
+            ].join(`\n`)
+        );
+    }
 
     if (failures > 0) {
         console.error(`\nContent negotiation check failed (${ failures } problems).`);

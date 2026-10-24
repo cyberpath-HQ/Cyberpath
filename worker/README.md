@@ -17,6 +17,12 @@ preview URLs are disabled, and `worker/index.ts` also checks `url.hostname` agai
 allowlist: any other hostname is forwarded untouched. `localhost` / `127.0.0.1` are allowed
 so local development works.
 
+GitHub Pages answers `www` with a `301` to the apex domain, so the worker reads markdown
+variants and the API catalog from the canonical apex origin (`CANONICAL_ORIGIN` in
+`worker/index.ts`). Agents calling `www` therefore get the markdown document directly at
+`www`, with no redirect hop, while plain `www` HTML keeps the origin's `301` (unchanged
+behaviour for browsers).
+
 | Request                                        | Result                                                |
 | ---------------------------------------------- | ----------------------------------------------------- |
 | `GET /blog/my-post/` + `Accept: text/html`      | Origin HTML, untouched                                |
@@ -94,7 +100,9 @@ the zone: Cloudflare only runs one Worker per route, so if another Worker alread
 `cyberpath-hq.com/*`, add the markdown logic there instead of deploying a second script.
 
 After the first deploy, purge the Cloudflare cache so cached HTML is not served for
-markdown requests.
+markdown requests. Purge after every deploy that adds a file too: a `404` cached before the
+file existed keeps being served (`/openapi.json` hit this), and a cache-busting query string
+is the quickest way to confirm the file itself is fine.
 
 ### Alternative: the zone setting
 

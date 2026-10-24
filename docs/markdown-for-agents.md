@@ -58,6 +58,11 @@ variant, so coverage cannot silently regress.
 misconfigured custom domain) is forwarded untouched instead of being served a markdown
 variant. `localhost` / `127.0.0.1` are allowed so `wrangler dev` works.
 
+GitHub Pages redirects `www` to the apex domain, so the worker reads the markdown variants
+and the API catalog from the canonical apex origin and serves them on whichever hostname was
+called: `Accept: text/markdown` on `www` returns the document with no redirect hop. Plain
+`www` HTML keeps the origin `301`.
+
 | Request | Result |
 | --- | --- |
 | `Accept: text/markdown` | `200`, `content-type: text/markdown; charset=utf-8` |
@@ -72,6 +77,41 @@ Markdown responses carry `vary: accept`, `x-markdown-tokens` (estimated `chars /
 representations apart.
 
 Full deployment details live in [worker/README.md](../worker/README.md).
+
+### Sections redirected at the edge
+
+`/database/**` and `/career-paths/**` are answered by a Cloudflare redirect rule with a
+`301` to `https://certdb.cyberpath-hq.com/...`. Redirect rules run **before** Workers, so
+those requests never reach the negotiation: an agent asking for markdown currently gets the
+HTML redirect destination instead.
+
+The build already publishes markdown redirect documents for those paths
+(`/database/<provider>/<title>/index.md`, `/career-paths/<path>/index.md`, with
+`redirect_url` frontmatter). To serve them, keep the redirect rule from matching markdown
+requests. Add this clause to the rule's expression:
+
+```
+and not any(http.request.headers["accept"][*] contains "text/markdown")
+```
+
+The rule then keeps `301`-ing browsers to CertDb, while `Accept: text/markdown` falls
+through to the Worker and returns the markdown redirect document.
+
+`pnpm run check:markdown:remote` groups any remaining off-site redirects at the end of its
+output, so a failed rule change is easy to spot.
+
+### Stale edge cache
+
+Cloudflare caches HTML, `robots.txt`, and even `404`s for up to a day (`cache-control:
+max-age=86400` on the origin responses). After a deploy, content that did not exist before
+stays missing until the cache expires — `/openapi.json` and the `Content-Signal` line in
+`robots.txt` both hit this.
+
+- Purge after deploying: Dashboard → Caching → Purge Everything, or by API.
+- `.github/workflows/astro.yml` does it automatically when the `CLOUDFLARE_PURGE_TOKEN`
+  and `CLOUDFLARE_ZONE_ID` secrets exist (token needs `Cache Purge` permission).
+- To check whether a response is stale, append a cache-busting query string:
+  `curl -s "https://cyberpath-hq.com/openapi.json?cb=$RANDOM"`.
 
 ## Deployment
 

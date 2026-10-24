@@ -57,6 +57,14 @@ const MARKDOWN_CACHE_CONTROL = `public, max-age=3600`;
 const MARKDOWN_CACHE_TTL_SECONDS = 3600;
 
 /**
+ * GitHub Pages answers the `www` hostname with a `301` to the apex domain, so
+ * every document the worker fetches upstream is read from the canonical origin.
+ * The response is still served on whichever of the two allowed hostnames the
+ * agent called, so `www` works without a redirect hop.
+ */
+const CANONICAL_ORIGIN = `https://cyberpath-hq.com`;
+
+/**
  * GitHub Pages picks the media type from the file extension, so the
  * extensionless `/.well-known/api-catalog` is served from its JSON twin and
  * relabelled here.
@@ -141,7 +149,7 @@ async function serveApiCatalog(request: Request, env: Env): Promise<Response | n
     headers.delete(`if-none-match`);
     headers.delete(`if-modified-since`);
 
-    const target = originUrl(new URL(API_CATALOG_DOCUMENT_PATH, request.url), env);
+    const target = originUrl(new URL(API_CATALOG_DOCUMENT_PATH, CANONICAL_ORIGIN), env);
     const catalogResponse = await fetch(buildRequest(`GET`, target, headers));
 
     if (!catalogResponse.ok) {
@@ -196,7 +204,7 @@ export default {
         headers.delete(`if-none-match`);
         headers.delete(`if-modified-since`);
 
-        const target = originUrl(new URL(`${ markdownPath }${ url.search }`, url.origin), env);
+        const target = originUrl(new URL(`${ markdownPath }${ url.search }`, CANONICAL_ORIGIN), env);
         const markdownResponse = await fetch(buildRequest(`GET`, target, headers));
 
         if (!isMarkdownResponse(markdownResponse)) {
