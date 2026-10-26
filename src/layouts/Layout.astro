@@ -8,72 +8,47 @@ import { AstroSeo } from "@astrolib/seo";
 import type { Locale } from "@/lib/i18n/translations";
 
 interface Props {
-    JSON_LD?: string;
-    seo?: AstroSeoProps;
-    locale?: Locale;
+  JSON_LD?: string;
+  seo?: AstroSeoProps;
+  locale?: Locale;
 }
 
-const {
-          seo,
-          JSON_LD,
-          locale = "en",
-      } = Astro.props;
+const { seo, JSON_LD, locale = "en" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={locale}
-      class="scroll-smooth scroll-pt-32 overflow-x-hidden"
->
-    <head>
-        <!-- Google Tag Manager -->
-        <script src="/gtm.js" async defer
-                is:inline/>
-        <!-- End Google Tag Manager -->
-        {JSON_LD && (
-        <script is:inline
-                type="application/ld+json"
-                set:html={ JSON_LD }
-        />
-        )}
-        <slot name="head" />
-        <meta charset="UTF-8"/>
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0"
-        />
-        <link rel="icon"
-              type="image/svg+xml"
-              href="/favicon.svg"
-        />
-        <link rel="sitemap"
-              href="/sitemap-index.xml"
-        />
-        <link rel="alternate"
-              type="application/rss+xml"
-              title="RSS Feed for Blog"
-              href="/rss.xml"
-        />
-        <link rel="preconnect"
-              href="https://termly.io"
-        />
-        <link rel="preconnect"
-              href="https://www.googletagmanager.com"
-        />
-        {seo && <AstroSeo {...seo}/>}
-        <script src="https://analytics.ahrefs.com/analytics.js" data-key="JBZV/VIldomcmgT9E8p5Ag" async defer is:inline/>
-    </head>
-    <body class="font-sans bg-white text-zinc-900">
-        <!-- Google Tag Manager (noscript) -->
-        <noscript>
-            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MZ2LDS5P"
-                    height="0"
-                    width="0"
-                    style="display:none;visibility:hidden"></iframe>
-        </noscript>
-        <!-- End Google Tag Manager (noscript) -->
-        <Header locale={locale}/>
-        <main>
-            <slot/>
-        </main>
-        <Footer locale={locale}/>
-    </body>
+<html lang={locale} class="scroll-smooth scroll-pt-32 overflow-x-hidden">
+  <head>
+    <!-- Google Tag Manager -->
+    <script src="/gtm.js" async defer is:inline></script>
+    <!-- End Google Tag Manager -->
+    {JSON_LD && <script is:inline type="application/ld+json" set:html={JSON_LD} />}
+    <slot name="head" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Blog" href="/rss.xml" />
+    <link rel="preconnect" href="https://termly.io" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://app.termly.io" />
+    {seo && <AstroSeo {...seo} />}
+    <script src="https://app.termly.io/resource-blocker/51948732-9ca3-4ff2-8610-42f94a5f32e9?autoBlock=on"></script>
+  </head>
+  <body class="font-sans bg-white text-zinc-900">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-WG62N3DV"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"></iframe></noscript
+    >
+    <!-- End Google Tag Manager (noscript) -->
+    <Header locale={locale} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
 </html>
