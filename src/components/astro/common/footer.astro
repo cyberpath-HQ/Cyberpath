@@ -1,11 +1,11 @@
 ---
-import MadeInEu from '@/assets/made-in-eu.svg';
-import { Image } from 'astro:assets';
+import MadeInEu from "@/assets/made-in-eu.svg";
+import { Image } from "astro:assets";
 import { translations } from "@/lib/i18n/translations";
 import type { Locale } from "@/lib/i18n/translations";
 
 interface Props {
-    locale?: Locale;
+  locale?: Locale;
 }
 
 const { locale = "en" } = Astro.props;
@@ -13,38 +13,50 @@ const t = translations[locale].nav;
 ---
 
 <footer class="bg-white/25 border-t z-50 relative overflow-hidden">
-    <div class="mx-auto max-w-7xl overflow-hidden px-4 md:px-6 py-12 md:py-20 space-y-6">
-        <nav class="grid grid-cols-2 sm:flex sm:justify-center sm:gap-x-8 md:gap-x-12 gap-y-4"
-             aria-label="Footer"
-        >
-            <a href={`/${locale}/`}
-               class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center"
-               title={t.home}
-            >
-                {t.home}
-            </a>
-            <a href="/blog"
-               class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center"
-               title={t.blog}
-            >
-                {t.blog}
-            </a>
-            <a href={`/${locale}/services`}
-               class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center"
-               title={t.services}
-            >
-                {t.services}
-            </a>
-            <a href="#"
-               class="termly-display-preferences text-sm leading-6 text-gray-600 hover:text-gray-900 text-center md:col-span-2 sm:col-span-1"
-               title="Consent preferences"
-            >
-                {translations[locale].footer.consent_preferences}
-            </a>
-        </nav>
-        <p class="text-center text-xs leading-5 text-gray-500 flex items-center justify-center flex-wrap">
-            &copy; {new Date().getFullYear()} CyberPath. {translations[locale].footer.copyright}
-        </p>
+  <div class="mx-auto max-w-7xl overflow-hidden px-4 md:px-6 py-12 md:py-20 space-y-6">
+    <nav class="grid grid-cols-2 sm:flex sm:justify-center sm:gap-x-8 md:gap-x-12 gap-y-4" aria-label="Footer">
+      <a href={`/${locale}/`} class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center" title={t.home}>
+        {t.home}
+      </a>
+      <a href="/blog" class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center" title={t.blog}>
+        {t.blog}
+      </a>
+      <a
+        href={`/${locale}/services`}
+        class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center"
+        title={t.services}
+      >
+        {t.services}
+      </a>
+      <a
+        href="#"
+        class="termly-display-preferences text-sm leading-6 text-gray-600 hover:text-gray-900 text-center md:col-span-2 sm:col-span-1"
+        title="Consent preferences"
+      >
+        {translations[locale].footer.consent_preferences}
+      </a>
+      <a
+        href="https://app.termly.io/policy-viewer/policy.html?policyUUID=995561ac-a21c-40aa-801e-5e87d6ed788e"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center md:col-span-2 sm:col-span-1"
+        title="Privacy Policy"
+      >
+        {translations[locale].footer.privacy_policy}
+      </a>
+      <a
+        href="https://app.termly.io/policy-viewer/policy.html?policyUUID=42046084-35ba-4e19-a632-6e20689f7944"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm leading-6 text-gray-600 hover:text-gray-900 text-center md:col-span-2 sm:col-span-1"
+        title="Terms and Conditions"
+      >
+        {translations[locale].footer.terms_and_conditions}
+      </a>
+    </nav>
+    <p class="text-center text-xs leading-5 text-gray-500 flex items-center justify-center flex-wrap">
+      &copy; {new Date().getFullYear()} CyberPath. {translations[locale].footer.copyright}
+    </p>
     <Image src={MadeInEu} alt="Made in Europe" class="mx-auto max-h-10" />
-    </div>
+  </div>
 </footer>

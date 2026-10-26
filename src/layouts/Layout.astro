@@ -19,9 +19,7 @@ const { seo, JSON_LD, locale = "en" } = Astro.props;
 <!doctype html>
 <html lang={locale} class="scroll-smooth scroll-pt-32 overflow-x-hidden">
   <head>
-    <!-- Google Tag Manager -->
-    <script src="/gtm.js" async defer is:inline></script>
-    <!-- End Google Tag Manager -->
+    <script src="https://app.termly.io/resource-blocker/51948732-9ca3-4ff2-8610-42f94a5f32e9?autoBlock=on"></script>
     {JSON_LD && <script is:inline type="application/ld+json" set:html={JSON_LD} />}
     <slot name="head" />
     <meta charset="UTF-8" />
@@ -32,8 +30,10 @@ const { seo, JSON_LD, locale = "en" } = Astro.props;
     <link rel="preconnect" href="https://termly.io" />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://app.termly.io" />
+    <!-- Google Tag Manager -->
+    <script src="/gtm.js" async defer is:inline></script>
+    <!-- End Google Tag Manager -->
     {seo && <AstroSeo {...seo} />}
-    <script src="https://app.termly.io/resource-blocker/51948732-9ca3-4ff2-8610-42f94a5f32e9?autoBlock=on"></script>
   </head>
   <body class="font-sans bg-white text-zinc-900">
     <!-- Google Tag Manager (noscript) -->

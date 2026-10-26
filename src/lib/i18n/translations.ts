@@ -351,8 +351,10 @@ export const translations = {
             ],
         },
         footer: {
-            copyright:           `All rights reserved.`,
-            consent_preferences: `Cookie Preferences`,
+            copyright:            `All rights reserved.`,
+            consent_preferences:  `Cookie Preferences`,
+            privacy_policy:       `Privacy Policy`,
+            terms_and_conditions: `Terms and Conditions`,
         },
     },
     it: {
@@ -702,8 +704,10 @@ export const translations = {
             ],
         },
         footer: {
-            copyright:           `Tutti i diritti riservati.`,
-            consent_preferences: `Preferenze dei Cookie`,
+            copyright:            `Tutti i diritti riservati.`,
+            consent_preferences:  `Preferenze dei Cookie`,
+            privacy_policy:       `Informativa sulla Privacy`,
+            terms_and_conditions: `Termini e Condizioni`,
         },
     },
 } as const;
