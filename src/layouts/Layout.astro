@@ -30,20 +30,18 @@ const { seo, JSON_LD, locale = "en" } = Astro.props;
     <link rel="preconnect" href="https://termly.io" />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://app.termly.io" />
-    <!-- Google Tag Manager -->
     <script src="/gtm.js" async defer is:inline></script>
-    <!-- End Google Tag Manager -->
     {seo && <AstroSeo {...seo} />}
   </head>
   <body class="font-sans bg-white text-zinc-900">
     <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
+    <noscript>
+      <iframe
         src="https://www.googletagmanager.com/ns.html?id=GTM-WG62N3DV"
         height="0"
         width="0"
-        style="display:none;visibility:hidden"></iframe></noscript
-    >
+        style="display:none;visibility:hidden"></iframe>
+    </noscript>
     <!-- End Google Tag Manager (noscript) -->
     <Header locale={locale} />
     <main>
