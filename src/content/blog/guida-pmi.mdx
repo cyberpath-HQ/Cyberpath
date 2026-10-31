@@ -1,0 +1,329 @@
+---
+title: "NIS2 PMI: obblighi, scadenze e misure di sicurezza"
+description:
+  "La NIS2 si applica alle PMI italiane in base a settore e dimensione. Obblighi, scadenze 2026 e 2027, misure di base
+  ACN e sanzioni massime, con fonti ufficiali."
+pubDate: 2026-11-06T08:00:00Z
+heroImage: ../../assets/blog/nis2-pmi-guida.jpeg
+tags: ["NIS2", "Compliance", "PMI", "ACN"]
+author: ebalo
+---
+
+> **Risposta in breve.** La NIS2, recepita in Italia con il D.Lgs. 138/2024 in vigore dal 16 ottobre 2024, impone ai
+> soggetti essenziali e importanti di diciotto settori misure di gestione del rischio, la notifica degli incidenti
+> significativi e la responsabilità degli organi direttivi. Per una PMI l'applicabilità dipende da settore e dimensione,
+> mentre i termini dipendono dalla data di inserimento nell'elenco ACN.
+
+Ultimo aggiornamento: 31 ottobre 2026. Verificato sulle fonti ACN e Normative.
+
+Per molte PMI italiane la NIS2 è diventata una questione pratica: bisogna capire se l'azienda è nel perimetro, quale
+regime si applica e entro quando agire. Questa guida ricostruisce obblighi, scadenze e misure di base della NIS2 per le
+PMI, a partire dal D.Lgs. 138/2024 e dagli atti dell'Agenzia per la Cybersicurezza Nazionale (ACN). Separa ciò che la
+norma richiede da ciò che è buona pratica e indica ciò che è ancora in consultazione.
+
+## Sommario
+
+- [Una PMI rientra nella NIS2?](#una-pmi-rientra-nella-nis2)
+- [Soggetto essenziale o importante: che cosa cambia?](#soggetto-essenziale-o-importante-che-cosa-cambia)
+- [Come si entra nell'elenco dei soggetti NIS?](#come-si-entra-nellelenco-dei-soggetti-nis)
+- [Quali obblighi prevede il decreto?](#quali-obblighi-prevede-il-decreto)
+- [Che cosa sono le misure di sicurezza di base ACN?](#che-cosa-sono-le-misure-di-sicurezza-di-base-acn)
+- [Quali scadenze valgono per una PMI?](#quali-scadenze-valgono-per-una-pmi)
+- [Come funzionano vigilanza e sanzioni?](#come-funzionano-vigilanza-e-sanzioni)
+- [Che ruolo hanno SOC e penetration test?](#che-ruolo-hanno-soc-e-penetration-test)
+- [Un piano in cinque passi per una PMI](#un-piano-in-cinque-passi-per-una-pmi)
+- [Domande frequenti](#domande-frequenti)
+- [Fonti](#fonti)
+- [Come può supportare CyberPath](#come-può-supportare-cyberpath)
+
+## Una PMI rientra nella NIS2?
+
+Una PMI rientra nella NIS2 se opera in uno dei settori elencati negli Allegati I e II del D.Lgs. 138/2024 ed è, in linea
+generale, almeno di media dimensione. Le micro e le piccole imprese restano di norma fuori, ma non sempre. Il decreto
+include a prescindere dalla dimensione alcune categorie specifiche, come gli operatori di reti pubbliche di
+comunicazione elettronica e i gestori di registri di nomi di dominio di primo livello. ACN può inoltre individuare
+ulteriori soggetti ritenuti critici. La verifica richiede quindi di leggere l'articolo 3 insieme agli allegati.
+
+Il decreto copre diciotto settori: undici altamente critici nell'Allegato I e sette critici nell'Allegato II. Le
+tipologie di soggetti coinvolte sono oltre ottanta, pubbliche e private. Gli Allegati III e IV completano il quadro con
+ulteriori tipologie, tra cui le pubbliche amministrazioni.
+
+Per la dimensione il decreto rinvia alla raccomandazione 2003/361/CE. Secondo i criteri della raccomandazione, una
+piccola impresa ha meno di 50 persone e un fatturato o un totale di bilancio annuo non superiori a 10 milioni di euro.
+Una microimpresa ha meno di 10 persone e non supera i 2 milioni. Il calcolo tiene conto anche delle imprese associate e
+collegate, quindi un'azienda appartenente a un gruppo può risultare più grande di quanto appaia da sola. Chi ritiene
+sproporzionato il risultato può chiedere l'applicazione della clausola di salvaguardia dell'articolo 3, comma 12,
+durante la registrazione e non dopo.
+
+### Albero decisionale: la mia azienda è nel perimetro?
+
+Lo schema che segue è uno strumento di orientamento e non sostituisce una verifica giuridica sul testo del decreto.
+
+1. L'azienda svolge un'attività o un servizio riconducibile a una tipologia degli Allegati I o II? Se no, di norma è
+   fuori dal perimetro, salvo identificazione da parte di ACN. Se sì, si passa al punto 2.
+2. L'azienda appartiene a una categoria inclusa a prescindere dalla dimensione, per esempio operatore di reti pubbliche
+   di comunicazione elettronica o gestore di registri di nomi di dominio di primo livello? Se sì, è nel perimetro. Se
+   no, si passa al punto 3.
+3. Considerando anche imprese associate e collegate, l'azienda è almeno di media dimensione, cioè non rientra tra le
+   piccole e le microimprese? Se no, di norma è fuori. Se sì, si passa al punto 4.
+4. L'azienda è nel perimetro. In linea generale è soggetto essenziale se è una grande impresa di un settore
+   dell'Allegato I, è soggetto importante negli altri casi. L'articolo 3 e la comunicazione di ACN confermano la
+   classificazione.
+5. Se si ricade nel perimetro, occorre registrarsi sulla piattaforma ACN nella finestra annuale, che nel 2027 va dal 1°
+   gennaio al 28 febbraio.
+
+## Soggetto essenziale o importante: che cosa cambia?
+
+La classificazione incide su tre aspetti: le misure di sicurezza di base da adottare, l'intensità della vigilanza e il
+massimo delle sanzioni. In linea generale sono essenziali le grandi imprese dei settori ad alta criticità, mentre sono
+importanti le medie imprese di quei settori e i soggetti degli altri settori critici. I soggetti essenziali hanno
+requisiti più estesi e possono essere controllati anche in via preventiva. La classificazione definitiva dipende
+dall'articolo 3 e dalla comunicazione di ACN.
+
+| Aspetto                                                    | Soggetti essenziali                                                | Soggetti importanti                                                 |
+| ---------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Misure di sicurezza di base                                | Allegato 2: 43 misure, 116 requisiti                               | Allegato 1: 37 misure, 87 requisiti                                 |
+| Incidenti significativi di base                            | Quattro fattispecie                                                | Tre fattispecie                                                     |
+| Vigilanza                                                  | Controlli anche preventivi                                         | Controlli prevalentemente successivi                                |
+| Sanzione massima per le violazioni più gravi (art. 38)     | 10 milioni di euro o 2% del fatturato mondiale annuo, se superiore | 7 milioni di euro o 1,4% del fatturato mondiale annuo, se superiore |
+| Sanzione massima per mancata registrazione o comunicazione | Fino allo 0,1% del fatturato annuo                                 | Fino allo 0,07% del fatturato annuo                                 |
+
+I numeri di misure e requisiti provengono dalla Determinazione ACN 379907/2025. Gli importi sono massimi edittali e non
+sanzioni automatiche.
+
+## Come si entra nell'elenco dei soggetti NIS?
+
+Si entra nell'elenco con la registrazione sulla piattaforma digitale di ACN, prevista dall'articolo 7, comma 1, del
+decreto. Ogni anno, dal 1° gennaio al 28 febbraio, i soggetti nel campo di applicazione si registrano oppure aggiornano
+la registrazione. ACN redige poi l'elenco dei soggetti essenziali e importanti e invia a ciascun soggetto una
+comunicazione individuale di inserimento. Da quella comunicazione decorrono i termini per le misure di sicurezza.
+
+La registrazione richiede quattro informazioni minime: ragione sociale, indirizzo e recapiti aggiornati, un punto di
+contatto con ruolo e recapiti e, ove applicabile, settori, sottosettori e tipologie di soggetto degli allegati. Il punto
+di contatto può essere il rappresentante legale, un procuratore generale censito nel registro delle imprese o un
+dipendente delegato. Solo nel terzo caso occorre caricare il titolo giuridico che abilita a operare per conto del
+soggetto. L'accesso avviene con SPID o CIE.
+
+La dichiarazione si compone di quattro sezioni: contesto, caratterizzazione, tipologie di soggetto e autovalutazione.
+Dopo la trasmissione resta modificabile per dieci giorni solari, poi si intende definitivamente acquisita, e ogni
+dichiarazione inviata o modificata oltre il 28 febbraio è considerata tardiva. Le regole operative sono nella
+Determinazione ACN 127437/2026, applicabile dal 15 aprile 2026.
+
+Una novità è stata annunciata da ACN il 23 ottobre 2026 con la Determinazione 314287/2026, firmata il 20 ottobre e
+applicabile dal 25 ottobre. Secondo le ricostruzioni pubblicate, chi è già in elenco e non ha modifiche da comunicare
+non deve trasmettere una nuova dichiarazione per il 2027. La piattaforma propone una bozza precompilata, e il controllo
+dei dati già dichiarati resta a carico del soggetto. Sempre secondo le stesse ricostruzioni, dal 31 ottobre 2026 non è
+più possibile trasmettere dichiarazioni tardive.
+
+## Quali obblighi prevede il decreto?
+
+Il decreto prevede tre blocchi di obblighi: la governance degli organi di amministrazione e direttivi (articolo 23), le
+misure di gestione del rischio (articolo 24) e la notifica degli incidenti significativi (articolo 25). Valgono per
+soggetti essenziali e importanti, con intensità diversa. Gli obblighi di sicurezza non si esauriscono nell'adozione di
+un catalogo di misure: richiedono responsabilità assegnate, misure documentate e prove che funzionano.
+
+### Governance: articolo 23
+
+L'articolo 23 attribuisce agli organi di amministrazione e direttivi il compito di approvare le modalità di attuazione
+delle misure, di sovrintendere alla loro applicazione e di seguire una formazione specifica. Servono quindi delibere
+formali, registri della formazione e flussi di reporting verso il vertice. Le FAQ di ACN aggiornate il 14 luglio 2026
+chiariscono, secondo quanto riportato, che l'approvazione dei documenti previsti dall'articolo 23 spetta in via
+esclusiva all'organo e non è delegabile, mentre l'attuazione operativa lo è.
+
+### Misure di gestione del rischio: articolo 24
+
+L'articolo 24 impone misure tecniche, operative e organizzative adeguate e proporzionate, con un approccio multirischio.
+Tra i temi elencati compaiono l'analisi del rischio, la gestione degli incidenti e la continuità operativa. Ci sono
+anche la sicurezza della catena di approvvigionamento, la valutazione dell'efficacia delle misure, la formazione, la
+crittografia, il controllo degli accessi, la gestione degli asset e l'autenticazione a più fattori. Il livello di
+dettaglio nazionale è affidato alle misure di base ACN, descritte nella sezione successiva.
+
+### Notifica degli incidenti: articolo 25
+
+Per gli incidenti significativi l'articolo 25, comma 5, prevede un percorso in più fasi, indirizzato al CSIRT Italia. La
+pre-notifica va inviata entro 24 ore dalla conoscenza dell'evento. La notifica, con valutazione iniziale e indicatori di
+compromissione ove disponibili, va inviata entro 72 ore. La relazione finale va trasmessa entro un mese; se l'incidente
+è ancora in corso, si invia prima una relazione sui progressi e poi quella finale entro un mese dalla chiusura.
+
+La notifica resta in capo al soggetto NIS. Un fornitore di servizi gestiti può supportare la raccolta delle evidenze, ma
+non sostituisce il soggetto nell'obbligo.
+
+## Che cosa sono le misure di sicurezza di base ACN?
+
+Le misure di sicurezza di base sono il catalogo di requisiti minimi che ACN ha definito con la Determinazione
+379907/2025 del 19 dicembre 2025, applicabile dal 15 gennaio 2026. Sono differenziate per categoria: 37 misure e 87
+requisiti per i soggetti importanti, 43 misure e 116 requisiti per i soggetti essenziali. Valgono per tutti i soggetti,
+a prescindere dalla dimensione. Sono dovute tutte, non se ne può scegliere un sottoinsieme in base al rischio.
+
+L'analisi del rischio non serve a decidere quali misure di base applicare: serve a modulare profondità e configurazione
+di quelle dovute. Un soggetto non può disapplicare una misura invocando una bassa esposizione. Deve invece dimostrare di
+averla attuata in modo coerente con il proprio contesto. ACN ha pubblicato anche una Guida alla lettura delle specifiche
+di base per interpretare struttura, requisiti e clausole di personalizzazione.
+
+| Allegato   | Contenuto                       | Destinatari         |
+| ---------- | ------------------------------- | ------------------- |
+| Allegato 1 | 37 misure, 87 requisiti         | Soggetti importanti |
+| Allegato 2 | 43 misure, 116 requisiti        | Soggetti essenziali |
+| Allegato 3 | Incidenti significativi di base | Soggetti importanti |
+| Allegato 4 | Incidenti significativi di base | Soggetti essenziali |
+
+Alcune fonti secondarie numerano gli allegati in modo diverso. Per questa tabella fa fede la numerazione della
+Determinazione 379907/2025, da verificare sul testo ufficiale.
+
+Le misure rafforzate sono cosa diversa. ACN ha avviato la consultazione con i tavoli settoriali il 18 settembre 2026:
+integreranno e sostituiranno quelle di base, ma non esistono un catalogo definitivo né una data di decorrenza. Non sono
+quindi un obbligo. Una cronologia aggiornata è nell'articolo sulle
+[misure di sicurezza rafforzate NIS](/blog/misure-sicurezza-rafforzate-nis).
+
+## Quali scadenze valgono per una PMI?
+
+Le scadenze dipendono dalla data in cui il soggetto è stato inserito nell'elenco e non sono uguali per tutti. I soggetti
+inseriti nel 2025 hanno diciotto mesi dalla comunicazione di inserimento per adottare le misure di base e nove mesi per
+la notifica degli incidenti, operativa da gennaio 2026. I soggetti inseriti per la prima volta nel 2026 seguono la
+Determinazione 127434/2026: notifica dal 1° gennaio 2027 e misure di base entro il 31 luglio 2027. Ogni organizzazione
+deve verificare il proprio termine sulla data della comunicazione ricevuta.
+
+Per la coorte 2025 le comunicazioni sono partite il 12 e 13 aprile 2025 e sono proseguite nelle settimane seguenti. Per
+la gran parte dei soggetti il termine è quindi caduto in ottobre 2026, e a fine mese risulta in molti casi già decorso.
+Da quel momento ACN passa, secondo quanto comunicato, dall'accompagnamento alla vigilanza. Il passaggio non cancella il
+percorso: chi non ha completato le misure deve documentare lo stato dei lavori e chiudere le non conformità note.
+
+Per la coorte 2026 contano anche altri termini. Il referente CSIRT va designato entro il 31 dicembre dell'anno di
+inserimento, quindi entro il 31 dicembre 2026 per chi è entrato nel 2026. Il sostituto del punto di contatto va indicato
+entro il 31 maggio dell'anno di inserimento, salvo che il punto di contatto sia l'unica persona fisica
+dell'organizzazione.
+
+| Data                               | Adempimento                                                                               | Chi è interessato                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 1° gennaio 2027                    | Notifica degli incidenti operativa                                                        | Soggetti inseriti nel 2026                                                          |
+| Dal 1° gennaio al 28 febbraio 2027 | Registrazione o aggiornamento sulla piattaforma ACN                                       | Tutti i soggetti, con la semplificazione per chi è già in elenco e non ha modifiche |
+| Entro il 31 marzo 2027             | ACN redige l'elenco dei soggetti NIS                                                      | Soggetti registrati                                                                 |
+| Dal 15 aprile al 31 maggio 2027    | Aggiornamento annuale delle informazioni, con l'elenco dei fornitori rilevanti            | Soggetti NIS                                                                        |
+| Dal 1° maggio al 30 giugno 2027    | Categorizzazione di attività e servizi (dieci macro-aree, quattro categorie di rilevanza) | Soggetti NIS                                                                        |
+| 31 luglio 2027                     | Misure di sicurezza di base                                                               | Soggetti inseriti nel 2026                                                          |
+| 31 dicembre 2027                   | Designazione del referente CSIRT                                                          | Soggetti inseriti nel 2027                                                          |
+
+La categorizzazione di attività e servizi segue il modello della Determinazione ACN 155238/2026 e anticipa le misure
+rafforzate, che saranno modulate sulla categoria assegnata.
+
+### Come calcolare il termine di diciotto mesi
+
+Il calcolo indicativo è semplice: si parte dalla data di ricezione della comunicazione di inserimento e si aggiungono
+diciotto mesi, mantenendo lo stesso giorno del mese. Una comunicazione ricevuta il 12 aprile 2025 porta a un termine al
+12 ottobre 2026, una ricevuta il 13 aprile 2025 al 13 ottobre 2026. Per la notifica degli incidenti la stessa regola
+vale con nove mesi.
+
+Questo calcolo è un'indicazione di orientamento. La data che conta è quella riportata nella comunicazione di ACN, da
+confrontare con le FAQ ufficiali.
+
+## Come funzionano vigilanza e sanzioni?
+
+ACN vigila sul rispetto degli obblighi, con intensità diversa per categoria. Sui soggetti essenziali i controlli possono
+essere anche preventivi, sugli importanti sono prevalentemente successivi, per esempio dopo un incidente o una
+segnalazione. Da ottobre 2026, secondo quanto comunicato, ACN passa dalla fase di accompagnamento a quella di vigilanza.
+Le evidenze diventano quindi il centro della verifica.
+
+L'articolo 38 gradua le sanzioni amministrative. Le violazioni più gravi riguardano obblighi degli organi di
+amministrazione, misure di sicurezza e notifica. Il massimo è di 10 milioni di euro o il 2% del fatturato mondiale annuo
+per i soggetti essenziali, e di 7 milioni di euro o l'1,4% per gli importanti, in entrambi i casi se superiore. Per le
+violazioni meno gravi, come la mancata registrazione o comunicazione dei dati, il massimo scende allo 0,1% del fatturato
+per gli essenziali e allo 0,07% per gli importanti. Il decreto fissa anche minimi edittali e prevede sanzioni accessorie
+di natura personale in caso di inottemperanza alle diffide.
+
+Si tratta di importi massimi. L'entità concreta dipende dalla gravità della violazione e dalle circostanze.
+
+## Che ruolo hanno SOC e penetration test?
+
+SOC e penetration test sono strumenti con cui una PMI può supportare e dimostrare alcuni requisiti, ma non sono
+presentati per nome come obbligo dal decreto. L'articolo 24 chiede una gestione degli incidenti efficace e la
+valutazione dell'efficacia delle misure, mentre l'articolo 25 impone termini precisi di notifica. Un SOC as a Service
+(SOCaaS) aiuta a rilevare e classificare gli eventi in tempi compatibili con le 24 e le 72 ore. Un penetration test
+produce evidenze sull'efficacia delle misure tecniche.
+
+Le misure rafforzate sono in consultazione dal 18 settembre 2026 e il loro contenuto non è pubblico. Per questo non si
+può affermare che richiederanno un SOC o un penetration test. Si può invece osservare che rilevamento, gestione degli
+incidenti e verifica di efficacia sono già temi delle misure di base: evidenze costruite bene oggi saranno probabilmente
+riutilizzabili domani.
+
+## Un piano in cinque passi per una PMI
+
+Un piano ragionevole parte dall'applicabilità e arriva alle evidenze, senza saltare i passaggi formali. La sequenza
+seguente è una proposta di metodo e non un obbligo di legge. Ogni passo ha un responsabile, una scadenza e una prova
+attesa.
+
+1. **Verificare perimetro e categoria.** Si controllano settore, dimensione e gruppo di appartenenza, e si conferma se
+   l'azienda è soggetto essenziale o importante.
+2. **Preparare gli atti formali.** Si individuano punto di contatto, eventuale delega, sostituto e referente CSIRT, e si
+   ottiene la delibera dell'organo di amministrazione.
+3. **Fare una gap analysis sulle misure di base.** Si confronta lo stato reale con l'Allegato 1 o 2, indicando per ogni
+   requisito responsabile, azione e prova.
+4. **Organizzare rilevamento, risposta e notifica.** Si definiscono ruoli, canali e procedure per rispettare le 24 e le
+   72 ore, e si provano con un esercizio.
+5. **Conservare le evidenze e verificare l'efficacia.** Si raccolgono documenti, log e report di test in un fascicolo, e
+   si aggiornano ogni anno insieme alle informazioni sulla piattaforma ACN.
+
+## Domande frequenti
+
+### La NIS2 vale per le micro imprese?
+
+Di norma no, ma il decreto prevede eccezioni. Alcune categorie rientrano a prescindere dalla dimensione, per esempio gli
+operatori di reti pubbliche di comunicazione elettronica, e ACN può individuare ulteriori soggetti critici. La
+conclusione dipende da settore e categoria, quindi occorre leggere l'articolo 3 e gli allegati prima di escludere
+un'azienda.
+
+### Come so se sono soggetto essenziale o importante?
+
+La classificazione deriva dal settore degli Allegati e dalla dimensione, e viene confermata dalla comunicazione di
+inserimento di ACN. In linea generale sono essenziali le grandi imprese dei settori ad alta criticità, mentre sono
+importanti le medie imprese di quei settori e i soggetti degli altri settori critici. La comunicazione ricevuta da ACN
+riporta la categoria assegnata.
+
+### Quando scade il mio termine?
+
+Dipende dalla coorte. Per i soggetti inseriti nel 2025 il termine per le misure di base è di diciotto mesi dalla
+comunicazione di inserimento, per la gran parte in ottobre 2026. Per quelli inseriti nel 2026 è il 31 luglio 2027, con
+notifica degli incidenti dal 1° gennaio 2027. Il termine esatto si calcola dalla data della propria comunicazione.
+
+### Chi controlla il rispetto della NIS2?
+
+La vigilanza spetta ad ACN, che è l'autorità nazionale competente, in raccordo con le autorità di settore. I soggetti
+essenziali possono essere controllati anche in via preventiva, gli importanti prevalentemente dopo un incidente o una
+segnalazione. Gli incidenti significativi vanno notificati al CSIRT Italia, che ha sede presso ACN.
+
+### Posso delegare gli obblighi a un fornitore?
+
+L'attuazione operativa di molte misure può essere affidata a fornitori. La responsabilità resta però al soggetto:
+l'approvazione dei documenti dell'articolo 23 compete all'organo di amministrazione e la notifica degli incidenti resta
+in capo al soggetto NIS. Un fornitore può supportare la raccolta delle evidenze e il rilevamento, ma non sostituisce il
+soggetto negli obblighi.
+
+### Se sono già in elenco devo registrarmi di nuovo nel 2027?
+
+Secondo la Determinazione ACN 314287/2026, annunciata il 23 ottobre 2026, chi è già in elenco e non ha modifiche da
+comunicare non deve trasmettere una nuova dichiarazione. Occorre però confrontare i dati già dichiarati con la
+situazione attuale e conservare traccia della verifica. Le istruzioni aggiornate della piattaforma ACN restano il
+riferimento.
+
+## Fonti
+
+- [D.Lgs. 4 settembre 2024, n. 138 su Normattiva](https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Adecreto.legislativo%3A2024-09-04%3B138),
+  pubblicato nella Gazzetta Ufficiale n. 230 del 1° ottobre 2024.
+- [Direttiva (UE) 2022/2555 su EUR-Lex](http://data.europa.eu/eli/dir/2022/2555/oj/ita/pdf).
+- [Area informativa NIS di ACN](https://www.acn.gov.it/portale/nis).
+- [Vademecum NIS di ACN, settembre 2026](https://www.acn.gov.it/portale/w/online-il-vademecum-per-i-soggetti-nis).
+- [Determinazione ACN 379907/2025 con gli Allegati 1, 2, 3 e 4](https://www.acn.gov.it/portale/documents/d/guest/detacn_misuresicurezza-v4_post).
+- [ACN, Le novità per i soggetti NIS, 18 settembre 2026](https://www.acn.gov.it/portale/w/le-novita-per-i-soggetti-nis).
+
+Le Determinazioni 127434/2026, 127437/2026, 155238/2026 e 314287/2026 sono consultabili nell'area informativa NIS di
+ACN.
+
+## Come può supportare CyberPath
+
+CyberPath, società italiana che eroga SOC as a Service e penetration test per le PMI, aiuta le aziende a trasformare gli
+obblighi della NIS2 in attività misurabili. Noi non siamo un'autorità e non rilasciamo certificazioni di conformità
+NIS2: supportiamo il rispetto delle misure e aiutiamo a produrre evidenze utili in caso di verifica. Il primo passo è
+una verifica preliminare di applicabilità, che chiarisce se e con quale categoria un'azienda rientra nel perimetro e
+quali termini la riguardano. Dopo la verifica proponiamo un perimetro di monitoraggio e di test proporzionato al
+rischio. Per approfondire il servizio di monitoraggio e risposta agli incidenti si veda la pagina
+[SOC as a Service](https://cyberpath-hq.com), mentre per richiedere una verifica preliminare è disponibile
+[questo link](https://calendar.google.com/calendar/appointments/schedules/AcZssZ1zibCOv-HLIBvbUPnlaQQUies_LJ4gr6SUGnBfi4ccJDAA1obOUCqs5KIkwMlo8BDbNSQT-vlI).
