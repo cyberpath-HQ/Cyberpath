@@ -57,7 +57,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - name: Setup puppeteer
-        run: npx puppeteer browsers install chrome
+        run: npx puppeteer browsers install chrome@latest
       - name: Build with Astro
         run: pnpm run build
         working-directory: ${{ env.BUILD_PATH }}

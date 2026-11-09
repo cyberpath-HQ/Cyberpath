@@ -17,5 +17,8 @@
             "pattern": "www.cyberpath-hq.com/*",
             "zone_name": "cyberpath-hq.com"
         }
-    ]
+    ],
+    "cache": {
+        "enabled": true
+    }
 }
