@@ -568,3 +568,9 @@ La SEO richiede in genere diversi mesi e le citazioni AI non sono garantibili. U
 - Aggiornare gli articoli 1, 2 e 10 almeno ogni trenta giorni e ogni volta che ACN pubblica un atto rilevante.
 - Riesaminare ogni trimestre gli altri articoli, controllando date, numeri di determinazione e link.
 - Annotare ogni modifica sostanziale nel registro in fondo all'articolo. Un contenuto che mostra di essere mantenuto viene preferito a uno non aggiornato.
+
+# 6 Divieti
+- Sono vietati formule del tipo "nei testi che abbiamo letto". il testo deve essere scritto da un'esperto, accurato e completo
+- puoi collegare solamente articoli già pubblicati precedentemente
+- devi generare un prompt per la generazione dell'immagine di copertina, con stile coerente alla materia trattata, senza riferimenti a marchi o loghi di terzi, e con un soggetto che rappresenti visivamente il tema dell'articolo.
+- devi creare un post per linkedin
