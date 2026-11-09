@@ -1,14 +1,18 @@
 ---
 title: "SOC obbligatorio per la NIS2? Cosa chiede la norma"
 description:
-  "Il D.Lgs. 138/2024 non impone un SOC per nome, ma richiede rilevamento e notifica degli incidenti. Ecco cosa chiede ACN e come un SOC aiuta a dimostrarlo."
+  "Il D.Lgs. 138/2024 non impone un SOC per nome, ma richiede rilevamento e notifica degli incidenti. Ecco cosa chiede
+  ACN e come un SOC aiuta a dimostrarlo."
 pubDate: 2026-11-09T08:00:00Z
 heroImage: ../../assets/blog/soc-obbligatorio-nis2.jpeg
 tags: ["NIS2", "SOC", "Security", "Compliance"]
 author: ebalo
 ---
 
-> **Risposta in breve.** Il D.Lgs. 138/2024 non prevede per nome l'obbligo di istituire un SOC. Richiede però la gestione degli incidenti e la notifica entro termini precisi, e le misure di base ACN chiedono strumenti per rilevare tempestivamente gli incidenti significativi. Un SOC è uno dei modi per soddisfare e dimostrare questi requisiti, ma non è una via obbligata.
+> **Risposta in breve.** Il D.Lgs. 138/2024 non prevede per nome l'obbligo di istituire un SOC. Richiede però la
+> gestione degli incidenti e la notifica entro termini precisi, e le misure di base ACN chiedono strumenti per rilevare
+> tempestivamente gli incidenti significativi. Un SOC è uno dei modi per soddisfare e dimostrare questi requisiti, ma
+> non è una via obbligata.
 
 Ultimo aggiornamento: 9 novembre 2026. Verificato sulle fonti ACN e Normattiva in data 9 novembre 2026.
 
@@ -21,7 +25,6 @@ Ultimo aggiornamento: 9 novembre 2026. Verificato sulle fonti ACN e Normattiva i
 - [SOC interno, esterno o ibrido per una PMI](#soc-interno-esterno-o-ibrido-per-una-pmi)
 - [Come un SOC aiuta a rispettare pre-notifica e notifica](#come-un-soc-aiuta-a-rispettare-pre-notifica-e-notifica)
 - [Quali evidenze produce un SOC](#quali-evidenze-produce-un-soc)
-- [Dodici domande da porre a un fornitore SOC](#dodici-domande-da-porre-a-un-fornitore-soc)
 - [Sette errori comuni](#sette-errori-comuni)
 - [Domande frequenti](#domande-frequenti)
 - [Fonti](#fonti)
@@ -29,33 +32,64 @@ Ultimo aggiornamento: 9 novembre 2026. Verificato sulle fonti ACN e Normattiva i
 
 ## Che cos'è un SOC e che cosa fa
 
-Un Security Operations Center (SOC) è la funzione che raccoglie ed esamina in modo continuativo log ed eventi di sicurezza di un'organizzazione, individua gli incidenti e coordina la risposta. Si compone di persone, processi e strumenti: gli analisti valutano gli allarmi, i playbook stabiliscono cosa fare e una piattaforma di raccolta fornisce i dati. Il SIEM (Security Information and Event Management) è la piattaforma che centralizza e correla i log: è uno strumento del SOC, non il SOC. Il servizio MDR (Managed Detection and Response) si concentra su rilevamento e risposta a partire da endpoint e altre fonti. Il SOC as a Service (SOCaaS) è il modello con cui un fornitore esterno eroga la funzione SOC a chi non vuole costruirla internamente. I confini tra MDR e SOCaaS cambiano da fornitore a fornitore, quindi conta il perimetro scritto nel contratto più del nome del servizio.
+Un Security Operations Center (SOC) è la funzione che raccoglie ed esamina in modo continuativo log ed eventi di
+sicurezza di un'organizzazione, individua gli incidenti e coordina la risposta. Si compone di persone, processi e
+strumenti: gli analisti valutano gli allarmi, i playbook stabiliscono cosa fare e una piattaforma di raccolta fornisce i
+dati. Il SIEM (Security Information and Event Management) è la piattaforma che centralizza e correla i log: è uno
+strumento del SOC, non il SOC. Il servizio MDR (Managed Detection and Response) si concentra su rilevamento e risposta a
+partire da endpoint e altre fonti. Il SOC as a Service (SOCaaS) è il modello con cui un fornitore esterno eroga la
+funzione SOC a chi non vuole costruirla internamente. I confini tra MDR e SOCaaS cambiano da fornitore a fornitore,
+quindi conta il perimetro scritto nel contratto più del nome del servizio.
 
 ## Il SOC è obbligatorio per la NIS2? Cosa dicono gli articoli 24 e 25
 
-No, nei testi consultati il decreto non prevede per nome un SOC. Il D.Lgs. 4 settembre 2024, n. 138 impone all'articolo 24 misure tecniche, operative e organizzative proporzionate al rischio e ne elenca gli ambiti minimi, tra cui la gestione degli incidenti e le politiche per valutare l'efficacia delle misure. L'articolo 25 disciplina la notifica degli incidenti significativi al CSIRT Italia: pre-notifica entro 24 ore, notifica entro 72 ore e relazione finale entro un mese. Il decreto stabilisce quindi risultati da ottenere e non uno strumento da acquistare. Gli organi di amministrazione e direttivi approvano le modalità di attuazione delle misure (articolo 23) e ne rispondono.
+No, nei testi consultati il decreto non prevede per nome un SOC. Il D.Lgs. 4 settembre 2024, n. 138 impone all'articolo
+24 misure tecniche, operative e organizzative proporzionate al rischio e ne elenca gli ambiti minimi, tra cui la
+gestione degli incidenti e le politiche per valutare l'efficacia delle misure. L'articolo 25 disciplina la notifica
+degli incidenti significativi al CSIRT Italia: pre-notifica entro 24 ore, notifica entro 72 ore e relazione finale entro
+un mese. Il decreto stabilisce quindi risultati da ottenere e non uno strumento da acquistare. Gli organi di
+amministrazione e direttivi approvano le modalità di attuazione delle misure (articolo 23) e ne rispondono.
 
-Le misure di sicurezza rafforzate non modificano oggi questo quadro. L'Agenzia per la Cybersicurezza Nazionale (ACN) ha avviato la consultazione con i tavoli settoriali il 18 settembre 2026, con l'obiettivo di integrare e sostituire le misure di base, ma non ha pubblicato né un catalogo definitivo né una data di decorrenza. Il loro contenuto non è pubblico, quindi non si può affermare che richiederanno un SOC. Lo stato aggiornato è nell'articolo [Misure di sicurezza rafforzate NIS: stato e preparazione](/blog/misure-sicurezza-rafforzate-nis). Per capire se un'azienda rientra nel perimetro e con quale qualifica, vale la guida [NIS2 per le PMI italiane: obblighi, scadenze e misure](/blog/guida-pmi).
+Le misure di sicurezza rafforzate non modificano oggi questo quadro. L'Agenzia per la Cybersicurezza Nazionale (ACN) ha
+avviato la consultazione con i tavoli settoriali il 18 settembre 2026, con l'obiettivo di integrare e sostituire le
+misure di base, ma non ha pubblicato né un catalogo definitivo né una data di decorrenza. Il loro contenuto non è
+pubblico, quindi non si può affermare che richiederanno un SOC. Lo stato aggiornato è nell'articolo
+[Misure di sicurezza rafforzate NIS: stato e preparazione](/blog/misure-sicurezza-rafforzate-nis). Per capire se
+un'azienda rientra nel perimetro e con quale qualifica, vale la guida
+[NIS2 per le PMI italiane: obblighi, scadenze e misure](/blog/guida-pmi).
 
 ## Che cosa chiedono le misure di base ACN su monitoraggio e rilevamento
 
-Le misure di base chiedono strumenti tecnici per rilevare tempestivamente gli incidenti significativi e log conservati in modo sicuro, ma non nominano il SOC. La Determinazione ACN 379907/2025, applicabile dal 15 gennaio 2026, le raccoglie nell'Allegato 1 per i soggetti importanti e nell'Allegato 2 per i soggetti essenziali. Il requisito DE.CM-01.1 vale per entrambe le categorie e si applica almeno ai sistemi rilevanti, cioè a quelli che l'azienda individua nell'elenco richiesto dalla misura GV.OC-04. Nella tabella la colonna centrale riassume il requisito, le altre due indicano il contributo possibile di un SOC e la prova che ne deriva.
+Le misure di base chiedono strumenti tecnici per rilevare tempestivamente gli incidenti significativi e log conservati
+in modo sicuro, ma non nominano il SOC. La Determinazione ACN 379907/2025, applicabile dal 15 gennaio 2026, le raccoglie
+nell'Allegato 1 per i soggetti importanti e nell'Allegato 2 per i soggetti essenziali. Il requisito DE.CM-01.1 vale per
+entrambe le categorie e si applica almeno ai sistemi rilevanti, cioè a quelli che l'azienda individua nell'elenco
+richiesto dalla misura GV.OC-04. Nella tabella la colonna centrale riassume il requisito, le altre due indicano il
+contributo possibile di un SOC e la prova che ne deriva.
 
-| Requisito ACN | Che cosa richiede, in sintesi | Funzione del SOC | Evidenza prodotta |
-| --- | --- | --- | --- |
-| DE.CM-01.1 (importanti ed essenziali) | Strumenti presenti, aggiornati e configurati per rilevare tempestivamente gli incidenti significativi, almeno sui sistemi rilevanti | Monitoraggio e rilevamento sulle sorgenti collegate | Elenco delle sorgenti, report periodici, ticket di allarme |
-| DE.CM-01.2 (importanti ed essenziali) | Livelli di servizio attesi dei servizi, definiti e documentati | Allarmi sulla degradazione dei servizi, se i livelli sono forniti dal cliente | Documento dei livelli attesi con le regole di allarme collegate |
-| DE.CM-01.4 (solo essenziali) | Analisi e filtraggio del traffico in ingresso, posta elettronica compresa | Parziale: il SOC osserva gli allarmi, lo strumento di filtraggio resta separato | Configurazione dei filtri, allarmi gestiti |
-| DE.CM-01.5 (solo essenziali) | Monitoraggio di accessi remoti, attività di firewall e router, eventi amministrativi, accessi riusciti o falliti | Raccolta e correlazione dei log di queste fonti | Elenco delle fonti monitorate, regole attive |
-| DE.CM-01.6 (solo essenziali) | Parametri quali-quantitativi per rilevare accessi non autorizzati o abuso dei privilegi | Definizione e taratura delle regole di rilevamento | Parametri e soglie documentati, esiti del monitoraggio |
-| PR.PS-04.2 e PR.PS-04.3 (importanti ed essenziali) | Log di sicurezza acquisiti e conservati in modo sicuro, possibilmente centralizzato, con tempi di conservazione definiti | Piattaforma centralizzata di raccolta e conservazione | Schema di raccolta, politica di conservazione |
-| RS.MA-01.1 (importanti ed essenziali) | Piano di gestione degli incidenti e di notifica al CSIRT Italia | Playbook di risposta e supporto alla raccolta degli elementi | Piano con fasi e ruoli, rapporti sugli incidenti gestiti |
+| Requisito ACN                                      | Che cosa richiede, in sintesi                                                                                                       | Funzione del SOC                                                                | Evidenza prodotta                                               |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| DE.CM-01.1 (importanti ed essenziali)              | Strumenti presenti, aggiornati e configurati per rilevare tempestivamente gli incidenti significativi, almeno sui sistemi rilevanti | Monitoraggio e rilevamento sulle sorgenti collegate                             | Elenco delle sorgenti, report periodici, ticket di allarme      |
+| DE.CM-01.2 (importanti ed essenziali)              | Livelli di servizio attesi dei servizi, definiti e documentati                                                                      | Allarmi sulla degradazione dei servizi, se i livelli sono forniti dal cliente   | Documento dei livelli attesi con le regole di allarme collegate |
+| DE.CM-01.4 (solo essenziali)                       | Analisi e filtraggio del traffico in ingresso, posta elettronica compresa                                                           | Parziale: il SOC osserva gli allarmi, lo strumento di filtraggio resta separato | Configurazione dei filtri, allarmi gestiti                      |
+| DE.CM-01.5 (solo essenziali)                       | Monitoraggio di accessi remoti, attività di firewall e router, eventi amministrativi, accessi riusciti o falliti                    | Raccolta e correlazione dei log di queste fonti                                 | Elenco delle fonti monitorate, regole attive                    |
+| DE.CM-01.6 (solo essenziali)                       | Parametri quali-quantitativi per rilevare accessi non autorizzati o abuso dei privilegi                                             | Definizione e taratura delle regole di rilevamento                              | Parametri e soglie documentati, esiti del monitoraggio          |
+| PR.PS-04.2 e PR.PS-04.3 (importanti ed essenziali) | Log di sicurezza acquisiti e conservati in modo sicuro, possibilmente centralizzato, con tempi di conservazione definiti            | Piattaforma centralizzata di raccolta e conservazione                           | Schema di raccolta, politica di conservazione                   |
+| RS.MA-01.1 (importanti ed essenziali)              | Piano di gestione degli incidenti e di notifica al CSIRT Italia                                                                     | Playbook di risposta e supporto alla raccolta degli elementi                    | Piano con fasi e ruoli, rapporti sugli incidenti gestiti        |
 
-Questa mappatura è un'interpretazione di CyberPath: non è una valutazione di conformità né un parere ACN. Nei requisiti consultati non compare una fascia oraria di copertura, ma solo l'espressione "tempestivamente". C'è poi un legame poco notato: gli incidenti significativi IS-3 (violazione dei livelli di servizio attesi) e IS-4 (accesso non autorizzato, previsto per i soli soggetti essenziali) rinviano ai parametri definiti con DE.CM-01. Senza livelli di servizio documentati, quindi, un soggetto non ha un metro per riconoscere che l'incidente IS-3 si è verificato.
+Questa mappatura è un'interpretazione di CyberPath: non è una valutazione di conformità né un parere ACN. Nei requisiti
+consultati non compare una fascia oraria di copertura, ma solo l'espressione "tempestivamente". C'è poi un legame poco
+notato: gli incidenti significativi IS-3 (violazione dei livelli di servizio attesi) e IS-4 (accesso non autorizzato,
+previsto per i soli soggetti essenziali) rinviano ai parametri definiti con DE.CM-01. Senza livelli di servizio
+documentati, quindi, un soggetto non ha un metro per riconoscere che l'incidente IS-3 si è verificato.
 
 ## Esistono alternative a un SOC?
 
-Sì, perché i requisiti ACN descrivono ciò che deve essere in funzione e non l'organizzazione che lo gestisce. Un soggetto importante con pochi sistemi rilevanti può soddisfare DE.CM-01.1 con strumenti sugli endpoint, filtri su posta e perimetro, log centralizzati e un referente interno formato, purché siano configurati, aggiornati e presidiati. Il punto debole è sempre il presidio: uno strumento che genera allarmi che nessuno legge non rileva nulla in tempo utile. La scelta tra queste soluzioni dipende da quattro criteri.
+Sì, perché i requisiti ACN descrivono ciò che deve essere in funzione e non l'organizzazione che lo gestisce. Un
+soggetto importante con pochi sistemi rilevanti può soddisfare DE.CM-01.1 con strumenti sugli endpoint, filtri su posta
+e perimetro, log centralizzati e un referente interno formato, purché siano configurati, aggiornati e presidiati. Il
+punto debole è sempre il presidio: uno strumento che genera allarmi che nessuno legge non rileva nulla in tempo utile.
+La scelta tra queste soluzioni dipende da quattro criteri.
 
 1. Numero e criticità dei sistemi rilevanti individuati con GV.OC-04.
 2. Competenze di sicurezza disponibili in azienda, anche per l'analisi degli allarmi.
@@ -64,23 +98,38 @@ Sì, perché i requisiti ACN descrivono ciò che deve essere in funzione e non l
 
 ## SOC interno, esterno o ibrido per una PMI
 
-Una PMI priva di un team di sicurezza dedicato valuta in genere un modello esterno o ibrido, perché costruire turni di analisti richiede competenze difficili da reperire e costi fissi elevati. Un SOC interno offre il controllo più diretto sui dati e sui processi. Un SOCaaS sposta l'analisi sul fornitore e rende i costi ricorrenti. Il modello ibrido affida al fornitore l'analisi di primo livello e lascia all'azienda le decisioni e gli interventi sui sistemi. In ogni caso la responsabilità verso ACN non si trasferisce al fornitore: cambia solo chi svolge le attività operative.
+Una PMI priva di un team di sicurezza dedicato valuta in genere un modello esterno o ibrido, perché costruire turni di
+analisti richiede competenze difficili da reperire e costi fissi elevati. Un SOC interno offre il controllo più diretto
+sui dati e sui processi. Un SOCaaS sposta l'analisi sul fornitore e rende i costi ricorrenti. Il modello ibrido affida
+al fornitore l'analisi di primo livello e lascia all'azienda le decisioni e gli interventi sui sistemi. In ogni caso la
+responsabilità verso ACN non si trasferisce al fornitore: cambia solo chi svolge le attività operative.
 
-| Modello | Competenze richieste | Copertura oraria | Tempi di risposta | Costi (qualitativi) |
-| --- | --- | --- | --- | --- |
-| Interno | Analisti, ingegneri di rilevamento, gestione della piattaforma | Da costruire con turni, e una copertura estesa richiede più persone | Dipendono dall'organizzazione dei turni | Elevati e fissi: personale, piattaforma, formazione |
-| Esterno (SOCaaS) | Quelle del fornitore, più un referente interno | Definita dal contratto | Definiti dagli SLA contrattuali | Ricorrenti, legati a sorgenti e volumi |
-| Ibrido | Analisi di primo livello esterna, decisioni e interventi interni | Concordata tra le parti | Dipendono dal passaggio di consegne | Intermedi, con un costo di coordinamento |
+| Modello          | Competenze richieste                                             | Copertura oraria                                                    | Tempi di risposta                       | Costi (qualitativi)                                 |
+| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------- | --------------------------------------------------- |
+| Interno          | Analisti, ingegneri di rilevamento, gestione della piattaforma   | Da costruire con turni, e una copertura estesa richiede più persone | Dipendono dall'organizzazione dei turni | Elevati e fissi: personale, piattaforma, formazione |
+| Esterno (SOCaaS) | Quelle del fornitore, più un referente interno                   | Definita dal contratto                                              | Definiti dagli SLA contrattuali         | Ricorrenti, legati a sorgenti e volumi              |
+| Ibrido           | Analisi di primo livello esterna, decisioni e interventi interni | Concordata tra le parti                                             | Dipendono dal passaggio di consegne     | Intermedi, con un costo di coordinamento            |
 
 ## Come un SOC aiuta a rispettare pre-notifica e notifica
 
-Un SOC aiuta riducendo il tempo che passa tra un evento e la sua qualificazione come incidente significativo. L'articolo 25 prevede pre-notifica entro 24 ore, notifica entro 72 ore e relazione finale entro un mese. Secondo le FAQ di ACN, il termine della pre-notifica decorre da quando il soggetto dispone, anche dopo un'analisi sommaria, di elementi oggettivi da cui risulta che si è verificata una delle fattispecie di incidente significativo. Il SOC non sposta la responsabilità: la notifica resta del soggetto NIS, che può farsi assistere dal fornitore nella raccolta di cronologia, sistemi coinvolti e indicatori.
+Un SOC aiuta riducendo il tempo che passa tra un evento e la sua qualificazione come incidente significativo. L'articolo
+25 prevede pre-notifica entro 24 ore, notifica entro 72 ore e relazione finale entro un mese. Secondo le FAQ di ACN, il
+termine della pre-notifica decorre da quando il soggetto dispone, anche dopo un'analisi sommaria, di elementi oggettivi
+da cui risulta che si è verificata una delle fattispecie di incidente significativo. Il SOC non sposta la
+responsabilità: la notifica resta del soggetto NIS, che può farsi assistere dal fornitore nella raccolta di cronologia,
+sistemi coinvolti e indicatori.
 
-Le fattispecie sono quattro: perdita di riservatezza verso l'esterno (IS-1), perdita di integrità con impatto verso l'esterno (IS-2), violazione dei livelli di servizio attesi (IS-3) e, per i soli soggetti essenziali, accesso non autorizzato o con abuso dei privilegi (IS-4). Per riconoscerle serve un monitoraggio definito prima che l'incidente accada, non durante.
+Le fattispecie sono quattro: perdita di riservatezza verso l'esterno (IS-1), perdita di integrità con impatto verso
+l'esterno (IS-2), violazione dei livelli di servizio attesi (IS-3) e, per i soli soggetti essenziali, accesso non
+autorizzato o con abuso dei privilegi (IS-4). Per riconoscerle serve un monitoraggio definito prima che l'incidente
+accada, non durante.
 
 ## Quali evidenze produce un SOC
 
-Un SOC produce evidenze sostanziali, cioè prove che il monitoraggio funziona e che gli incidenti vengono gestiti. Da ottobre 2026 ACN passa dall'accompagnamento alla vigilanza, quindi conservare queste prove con data e responsabile ha un valore pratico. Nessuna evidenza dimostra da sola la conformità: la valutazione spetta all'autorità. Le registrazioni più utili da richiedere al fornitore sono queste.
+Un SOC produce evidenze sostanziali, cioè prove che il monitoraggio funziona e che gli incidenti vengono gestiti. Da
+ottobre 2026 ACN passa dall'accompagnamento alla vigilanza, quindi conservare queste prove con data e responsabile ha un
+valore pratico. Nessuna evidenza dimostra da sola la conformità: la valutazione spetta all'autorità. Le registrazioni
+più utili da richiedere al fornitore sono queste.
 
 - Elenco delle sorgenti di log collegate e delle regole di rilevamento attive.
 - Report periodici di monitoraggio, con allarmi ricevuti, gestiti e chiusi.
@@ -90,26 +139,10 @@ Un SOC produce evidenze sostanziali, cioè prove che il monitoraggio funziona e 
 - Verbali di test del piano o di esercitazioni.
 - Rapporto conclusivo di ogni incidente, con le lezioni apprese.
 
-## Dodici domande da porre a un fornitore SOC
-
-Prima di firmare è utile verificare dodici punti, perché dalle risposte dipende la qualità dell'evidenza che il servizio produrrà. Le domande seguono i requisiti visti sopra e sono una checklist di CyberPath, non un elenco ufficiale di ACN.
-
-1. Quali sorgenti di log copre il servizio e quali restano escluse?
-2. Qual è la copertura oraria effettiva del presidio e in quali fasce risponde un analista?
-3. Quali tempi di presa in carico e di aggiornamento valgono per gli allarmi critici e dove sono scritti nel contratto?
-4. Dove sono conservati i log, in quale giurisdizione e chi ne è titolare?
-5. Per quanto tempo vengono conservati e come si recuperano a fine contratto?
-6. Il fornitore dispone di playbook per pre-notifica e notifica e supporta la raccolta degli elementi?
-7. Chi decide se un evento è un incidente significativo e chi invia la notifica al CSIRT Italia?
-8. Quali report vengono consegnati, con quale frequenza e in che formato?
-9. Quali azioni di risposta il fornitore esegue direttamente e quali richiedono l'approvazione del cliente?
-10. Quali metriche di rilevamento e risposta comunica, per esempio tempo medio di rilevamento e di risposta, e come le misura?
-11. Quali condizioni di uscita sono previste e come avviene la restituzione dei dati?
-12. Il fornitore applica a sé le misure di sicurezza e può mostrare referenze verificabili?
-
 ## Sette errori comuni
 
-Gli errori più frequenti nascono dall'acquisto di un servizio prima di avere definito che cosa deve coprire. Questi sette ricorrono nei progetti di monitoraggio per le PMI.
+Gli errori più frequenti nascono dall'acquisto di un servizio prima di avere definito che cosa deve coprire. Questi
+sette ricorrono nei progetti di monitoraggio per le PMI.
 
 1. Acquistare un SOC senza avere elencato i sistemi rilevanti (GV.OC-04).
 2. Confondere il SIEM con il SOC e ritenere coperto il rilevamento perché esiste una piattaforma.
@@ -123,23 +156,35 @@ Gli errori più frequenti nascono dall'acquisto di un servizio prima di avere de
 
 ### Un SIEM basta?
 
-Un SIEM raccoglie e correla i log e può contribuire a DE.CM-01.1 e PR.PS-04.2. Da solo non produce un rilevamento tempestivo: servono regole di rilevamento, persone che esaminano gli allarmi e procedure per reagire. Un SIEM non presidiato lascia debole l'evidenza di monitoraggio, perché mancano le tracce di cosa è stato analizzato e deciso.
+Un SIEM raccoglie e correla i log e può contribuire a DE.CM-01.1 e PR.PS-04.2. Da solo non produce un rilevamento
+tempestivo: servono regole di rilevamento, persone che esaminano gli allarmi e procedure per reagire. Un SIEM non
+presidiato lascia debole l'evidenza di monitoraggio, perché mancano le tracce di cosa è stato analizzato e deciso.
 
 ### Serve un SOC h24?
 
-Nei requisiti consultati si parla di rilevamento tempestivo, senza indicare una fascia oraria. La copertura adeguata dipende dalla valutazione del rischio e dal fatto che i termini di notifica sono espressi in ore. Conviene documentare la scelta e le sue ragioni nel piano di gestione degli incidenti, così da poterla spiegare in caso di verifica.
+Nei requisiti consultati si parla di rilevamento tempestivo, senza indicare una fascia oraria. La copertura adeguata
+dipende dalla valutazione del rischio e dal fatto che i termini di notifica sono espressi in ore. Conviene documentare
+la scelta e le sue ragioni nel piano di gestione degli incidenti, così da poterla spiegare in caso di verifica.
 
 ### Il SOC può inviare la notifica al posto mio?
 
-La responsabilità della notifica al CSIRT Italia resta del soggetto NIS. Il fornitore può raccogliere cronologia, sistemi coinvolti e indicatori e preparare le bozze. La qualificazione dell'incidente come significativo e l'invio spettano al soggetto, attraverso i referenti designati nella propria organizzazione di sicurezza, tra cui il referente CSIRT previsto dalla misura GV.RR-02.
+La responsabilità della notifica al CSIRT Italia resta del soggetto NIS. Il fornitore può raccogliere cronologia,
+sistemi coinvolti e indicatori e preparare le bozze. La qualificazione dell'incidente come significativo e l'invio
+spettano al soggetto, attraverso i referenti designati nella propria organizzazione di sicurezza, tra cui il referente
+CSIRT previsto dalla misura GV.RR-02.
 
 ### Che differenza c'è con un MDR?
 
-L'MDR si concentra sul rilevamento e sulla risposta a partire da endpoint e altre fonti, in genere con un perimetro più circoscritto. Il SOC as a Service eroga la funzione SOC in forma più ampia, con raccolta centralizzata dei log, reportistica e supporto ai processi di incidente. I confini variano da fornitore a fornitore, quindi va letto il perimetro contrattuale.
+L'MDR si concentra sul rilevamento e sulla risposta a partire da endpoint e altre fonti, in genere con un perimetro più
+circoscritto. Il SOC as a Service eroga la funzione SOC in forma più ampia, con raccolta centralizzata dei log,
+reportistica e supporto ai processi di incidente. I confini variano da fornitore a fornitore, quindi va letto il
+perimetro contrattuale.
 
 ### Quanto tempo serve per attivarlo?
 
-I tempi dipendono dal numero e dal tipo di sorgenti, dalla qualità dei log e dall'integrazione con i sistemi esistenti. Il fornitore dovrebbe indicare per iscritto fasi, responsabilità e date, non una stima generica. Chi ha scadenze vicine fa bene a chiedere un calendario di attivazione e a verificare quali sorgenti saranno coperte per prime.
+I tempi dipendono dal numero e dal tipo di sorgenti, dalla qualità dei log e dall'integrazione con i sistemi esistenti.
+Il fornitore dovrebbe indicare per iscritto fasi, responsabilità e date, non una stima generica. Chi ha scadenze vicine
+fa bene a chiedere un calendario di attivazione e a verificare quali sorgenti saranno coperte per prime.
 
 ## Fonti
 
@@ -152,4 +197,11 @@ I tempi dipendono dal numero e dal tipo di sorgenti, dalla qualità dei log e da
 
 ## Come può supportare CyberPath
 
-CyberPath, società italiana che eroga SOC as a Service e penetration test per le PMI, supporta i soggetti NIS nel costruire il monitoraggio e le evidenze descritte in questo articolo. Il servizio [SOC as a Service](/servizi/soc-as-a-service) aiuta a produrre evidenze per i requisiti di rilevamento, conservazione dei log e gestione degli incidenti, con report e registrazioni che l'azienda può conservare. Restano in capo al soggetto NIS la notifica al CSIRT Italia, l'approvazione dei piani da parte degli organi di amministrazione e direttivi e la valutazione finale di conformità. CyberPath non è un'autorità e non rilascia certificazioni di conformità NIS2. Chi vuole capire quali evidenze ha già a disposizione può chiedere un colloquio tecnico per un primo confronto con i requisiti ACN.
+CyberPath, società italiana che eroga SOC as a Service e penetration test per le PMI, supporta i soggetti NIS nel
+costruire il monitoraggio e le evidenze descritte in questo articolo. Il servizio
+[SOC as a Service](/servizi/soc-as-a-service) aiuta a produrre evidenze per i requisiti di rilevamento, conservazione
+dei log e gestione degli incidenti, con report e registrazioni che l'azienda può conservare. Restano in capo al soggetto
+NIS la notifica al CSIRT Italia, l'approvazione dei piani da parte degli organi di amministrazione e direttivi e la
+valutazione finale di conformità. CyberPath non è un'autorità e non rilascia certificazioni di conformità NIS2. Chi
+vuole capire quali evidenze ha già a disposizione può chiedere un colloquio tecnico per un primo confronto con i
+requisiti ACN.
