@@ -201,7 +201,7 @@ I dieci articoli formano un hub: un pillar sulla NIS2 per le PMI, otto articoli 
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Misure di sicurezza rafforzate NIS: stato e preparazione | Attualità | IT e EN | misure di sicurezza rafforzate NIS | 1 | FATTO |
 | 2 | NIS2 per le PMI italiane: obblighi, scadenze e misure | Pillar | IT e EN | NIS2 PMI | 2 | FATTO |
-| 3 | Il SOC è obbligatorio per la NIS2? | Cluster | IT | SOC obbligatorio NIS2 | 3 | DA FARE |
+| 3 | Il SOC è obbligatorio per la NIS2? | Cluster | IT | SOC obbligatorio NIS2 | 3 | FATTO |
 | 4 | Penetration test e NIS2: quando serve | Cluster | IT | penetration test NIS2 | 4 | DA FARE |
 | 5 | Misure di base ACN: mappatura su SOC e penetration test | Cluster originale | IT | misure di sicurezza di base ACN | 5 | DA FARE |
 | 6 | SOC as a Service per PMI: cosa include e come sceglierlo | Cluster | IT e EN | SOC as a Service PMI | 6 | DA FARE |
