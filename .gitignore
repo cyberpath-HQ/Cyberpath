@@ -31,3 +31,4 @@ pnpm-debug.log*
 *.prompt
 BLOG_FEATURES.md
 .opencode
+.cache
