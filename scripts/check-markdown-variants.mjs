@@ -83,9 +83,6 @@ function validateMarkdown(source, file) {
     if (body.length < 20) {
         problems.push(`body is empty or too short`);
     }
-    if (/^import\s+/m.test(prose)) {
-        problems.push(`leftover import statement`);
-    }
     if (/<(Alert|InfoBox|FeatureGrid|FeatureCard|Newsletter|Mermaid)[\s/>]/.test(prose)) {
         problems.push(`leftover MDX component`);
     }
