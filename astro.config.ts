@@ -448,7 +448,8 @@ export default defineConfig({
     compressHTML:   true,
     output:        `static`,
     image:        {
-        domains: [ `githubusercontent.com` ],
+        dangerouslyProcessSVG: true,
+        domains:               [ `githubusercontent.com` ],
     },
     prefetch: {
         defaultStrategy: `viewport`,
