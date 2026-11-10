@@ -8,7 +8,6 @@ heroImage: ../../assets/blog/Gemini_Generated_Image_u8cpx9u8cpx9u8cp.png
 tags: ["ai", "security", "llm", "deepsecurity"]
 author: ebalo
 ---
-import Newsletter from "@/components/astro/blog/newsletter.astro";
 
 ## The Hook: Why Your Model Theft Detection Starts Here
 
@@ -48,8 +47,6 @@ quantizing it (reducing 32-bit floating-point weights to 8-bit integers), the we
 detectable. When they apply layer-wise pruning to reduce model size, the remaining weights' fingerprint persists. The
 attacker cannot remove the fingerprint without destroying model functionality. This creates an asymmetric cost: stealing
 your model is easy; erasing all traces is nearly impossible.
-
-<Newsletter />
 
 **Dynamic Fingerprinting** operates differently. It embeds imperceptible patterns into the model's outputs. You
 construct a "trigger set"—carefully crafted inputs that produce unique, deterministic outputs only your legitimate model
