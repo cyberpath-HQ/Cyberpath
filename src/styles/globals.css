@@ -126,3 +126,14 @@
 foreignObject {
   width: 100%;
 }
+
+/*
+ * No-op declaration, on purpose: the csso pass in `@playform/compress` used to
+ * drop Tailwind v4's breakpoints (`@media (width >= 64rem)`) and pin every
+ * viewport to the mobile layout. CSS compression is now disabled in
+ * `astro.config.ts`; this rule only changes the hashed stylesheet URL so cached
+ * copies of the broken build are not reused.
+ */
+:root {
+  --cyberpath-breakpoints: kept;
+}

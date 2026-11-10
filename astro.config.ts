@@ -81,13 +81,11 @@ export default defineConfig({
             },
         }), */
         playformCompress({
-            CSS: {
-                csso: {
-                    comments:    false,
-                    sourceMap:   false,
-                    restructure: true,
-                },
-            },
+            // Tailwind v4 emits breakpoints as `@media (width >= 64rem)`, and the
+            // csso pass in @playform/compress drops those queries entirely, which
+            // leaves every viewport with the mobile layout. Tailwind's own
+            // `optimize: true` (lightningcss) already minifies the stylesheet.
+            CSS: false,
             HTML: {
                 "html-minifier-terser": {
                     caseSensitive:                 false,
