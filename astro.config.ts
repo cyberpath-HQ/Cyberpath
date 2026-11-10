@@ -22,6 +22,8 @@ import playformCompress from "@playform/compress";
 import postAliases from "./src/data/post-aliases.json";
 import type { RedirectConfig } from "astro";
 
+import { unified } from "@astrojs/markdown-remark";
+
 // Generate redirects from aliases
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const redirects: Record<string, RedirectConfig> = {};
@@ -66,6 +68,7 @@ export default defineConfig({
             gfm:                  true,
             optimize:             true,
         }),
+
         /* playformInline({
             Beasties: {
                 minimumExternalSize: 1024, // 1 KB
@@ -429,16 +432,18 @@ export default defineConfig({
             },
             wrap:         false,
         },
-        remarkPlugins: [
-            [
-                remarkAutoLink,
-                {},
+        processor: unified({
+            remarkPlugins: [
+                [
+                    remarkAutoLink,
+                    {},
+                ],
+                [
+                    remarkUtmParams,
+                    {},
+                ],
             ],
-            [
-                remarkUtmParams,
-                {},
-            ],
-        ],
+        }),
     },
     compressHTML:   true,
     output:        `static`,
