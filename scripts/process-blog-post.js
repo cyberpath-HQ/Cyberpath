@@ -122,7 +122,9 @@ async function processBlogPost(filePath, platform = `devto`) {
 
     const remarkAutoLink = (await import(`../src/lib/auto-link-remark-plugin.ts`)).default;
     const remarkUtmParams = (await import(`../src/lib/utm-remark-plugin.ts`)).default;
-    const remarkToPlainMarkdown = (await import(`../src/lib/to-plain-markdown-remark-plugin.ts`)).default;
+    const {
+        mdxToMarkdown,
+    } = await import(`../src/lib/mdx-to-markdown.ts`);
     const {
         remark,
     } = await import(`remark`);
@@ -146,9 +148,6 @@ async function processBlogPost(filePath, platform = `devto`) {
             medium:        platform,
             campaignField: `title`,
             is_silent:     true,
-        })
-        .use(remarkToPlainMarkdown, {
-            fileSlug:     filename,
         });
 
     // Create a mock vfile structure for the plugins
@@ -161,7 +160,8 @@ async function processBlogPost(filePath, platform = `devto`) {
         },
     };
 
-    // Process the content
+    // Process the content (MDX → plain markdown happens afterwards, on the
+    // original source, so the formatting is preserved)
     const result = await processor.process({
         value: markdownContent,
         ...mockFile,
@@ -169,15 +169,9 @@ async function processBlogPost(filePath, platform = `devto`) {
 
     restoreConsole();
 
-    // Remove JSX/MDX components from the output for external platforms
-    let processedContent = String(result);
-
-    // Remove import statements
-    processedContent = processedContent.replace(/^import\s+.*?from\s+['"].*?['"];?\s*$/gm, ``);
-
-    // Remove JSX components (basic removal - may need refinement)
-    processedContent = processedContent.replace(/<[A-Z][A-Za-z0-9]*(\s+[^>]*)?\s*\/>/g, ``);
-    processedContent = processedContent.replace(/<[A-Z][A-Za-z0-9]*(\s+[^>]*)?>(.*?)<\/[A-Z][A-Za-z0-9]*>/gs, ``);
+    let processedContent = await mdxToMarkdown(String(result), {
+        fileSlug: filename,
+    });
 
     // Clean up extra whitespace
     processedContent = processedContent.trim();

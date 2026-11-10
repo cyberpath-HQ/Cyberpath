@@ -1,11 +1,9 @@
 import path from "node:path";
 import type { CollectionEntry } from "astro:content";
 import getReadingTime from "reading-time";
-import { remark } from "remark";
-import remarkMdx from "remark-mdx";
 
 import { getAuthor } from "../../data/authors";
-import remarkToPlainMarkdown from "../to-plain-markdown-remark-plugin";
+import { mdxToMarkdown } from "../mdx-to-markdown";
 import {
     SITE_URL, siteUrl
 } from "./redirect";
@@ -45,39 +43,21 @@ function resolveTarget(target: string): string | null {
     return `${ REPOSITORY_RAW_BASE }${ resolved }`;
 }
 
-function rewriteLinksAndImages(markdown: string): string {
-    return markdown.replace(
-        /(!?\[[^\]]*\]\()([^)\s]+)([^)]*\))/g,
-        (match, prefix: string, target: string, suffix: string) => {
-            const resolved = resolveTarget(target);
-
-            return resolved === null
-                ? match
-                : `${ prefix }${ resolved }${ suffix }`;
-        }
-    );
-}
-
 /**
  * Convert a blog entry (MDX) into the markdown served to agents.
  *
  * The MDX source is reused instead of the rendered HTML, so the output keeps
- * readable code blocks and drops the site chrome entirely.
+ * readable code blocks and drops the site chrome entirely. Only the MDX
+ * specific parts (imports, components, expressions) are rewritten, the rest of
+ * the article is served exactly as it was authored.
  */
 export async function blogEntryToMarkdown(entry: CollectionEntry<`blog`>): Promise<MarkdownDocument> {
     const source = entry.body ?? ``;
 
-    const processor = remark()
-        .use(remarkMdx)
-        .use(remarkToPlainMarkdown, {
-            fileSlug: entry.id,
-        });
-
-    const processed = String(await processor.process(source));
-    const body = rewriteLinksAndImages(processed)
-        .replace(/^import\s+.*?from\s+['"].*?['"];?\s*$/gm, ``)
-        .replace(/\n{3,}/g, `\n\n`)
-        .trim();
+    const body = await mdxToMarkdown(source, {
+        fileSlug:      entry.id,
+        resolveTarget,
+    });
 
     const heading = entry.data.title.trim();
 
