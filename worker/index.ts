@@ -64,6 +64,9 @@ const MARKDOWN_CACHE_TTL_SECONDS = 3600;
  */
 const CANONICAL_ORIGIN = `https://cyberpath-hq.com`;
 
+/** Upper bound on same-site origin redirects followed inside the Worker. */
+const MAX_ORIGIN_REDIRECTS = 3;
+
 /**
  * GitHub Pages picks the media type from the file extension, so the
  * extensionless `/.well-known/api-catalog` is served from its JSON twin and
@@ -78,11 +81,7 @@ function isAllowedHost(hostname: string): boolean {
 }
 
 function originUrl(url: URL, env: Env): URL {
-    if (!env.ORIGIN_URL) {
-        return url;
-    }
-
-    return new URL(`${ url.pathname }${ url.search }`, env.ORIGIN_URL);
+    return new URL(`${ url.pathname }${ url.search }`, env.ORIGIN_URL ?? CANONICAL_ORIGIN);
 }
 
 function buildRequest(method: string, target: URL, headers: Headers): Request {
@@ -99,15 +98,81 @@ function buildRequest(method: string, target: URL, headers: Headers): Request {
 /**
  * Forward a request to the origin (GitHub Pages).
  *
+ * Every `GET`/`HEAD` is rewritten to the canonical apex origin before it leaves
+ * the Worker. GitHub Pages answers `www` with a `301` to the apex, and an edge
+ * rule that sends the apex back to `www` then closes the loop
+ * (`www → 301 apex → 303 www → …`). Reading the content from the canonical
+ * origin once and serving it under whichever hostname the client asked for
+ * removes the origin half of that loop entirely.
+ *
  * A subrequest to the same zone is not routed back into this Worker, so the
  * HTML branch never negotiates again.
  */
 function fetchOrigin(request: Request, env: Env): Promise<Response> {
-    if (!env.ORIGIN_URL) {
+    if (request.method !== `GET` && request.method !== `HEAD`) {
         return fetch(request);
     }
 
-    return fetch(buildRequest(request.method, originUrl(new URL(request.url), env), new Headers(request.headers)));
+    return fetchCanonical(request, env);
+}
+
+async function fetchCanonical(request: Request, env: Env): Promise<Response> {
+    let target = originUrl(new URL(request.url), env);
+
+    for (let hop = 0; ; hop += 1) {
+        const response = await fetch(buildOriginRequest(request, target));
+        const next = hop < MAX_ORIGIN_REDIRECTS ? sameSiteRedirectTarget(response) : null;
+
+        if (next === null) {
+            return response;
+        }
+
+        await response.body?.cancel();
+        target = originUrl(next, env);
+    }
+}
+
+function buildOriginRequest(request: Request, target: URL): Request {
+    const headers = new Headers(request.headers);
+    headers.delete(`host`);
+
+    return new Request(target.toString(), {
+        method: request.method,
+        headers,
+        redirect: `manual`,
+    });
+}
+
+function isRedirect(response: Response): boolean {
+    return response.status >= 300 && response.status < 400;
+}
+
+/**
+ * Resolve a redirect that stays inside the site to its target URL, or `null`
+ * when the response is not a redirect or points somewhere else. Redirecting
+ * `www` to the apex (or the other way round) must never reach the browser: the
+ * other half of the loop may be a zone rule this Worker cannot see.
+ */
+function sameSiteRedirectTarget(response: Response): URL | null {
+    if (!isRedirect(response)) {
+        return null;
+    }
+
+    const location = response.headers.get(`location`);
+
+    if (!location) {
+        return null;
+    }
+
+    let target: URL;
+
+    try {
+        target = new URL(location, CANONICAL_ORIGIN);
+    } catch {
+        return null;
+    }
+
+    return isAllowedHost(target.hostname) ? target : null;
 }
 
 /**

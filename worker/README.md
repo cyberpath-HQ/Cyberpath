@@ -17,11 +17,17 @@ preview URLs are disabled, and `worker/index.ts` also checks `url.hostname` agai
 allowlist: any other hostname is forwarded untouched. `localhost` / `127.0.0.1` are allowed
 so local development works.
 
-GitHub Pages answers `www` with a `301` to the apex domain, so the worker reads markdown
-variants and the API catalog from the canonical apex origin (`CANONICAL_ORIGIN` in
-`worker/index.ts`). Agents calling `www` therefore get the markdown document directly at
-`www`, with no redirect hop, while plain `www` HTML keeps the origin's `301` (unchanged
-behaviour for browsers).
+GitHub Pages answers `www` with a `301` to the apex domain, so the worker never asks
+the origin for `www`: every `GET`/`HEAD` (HTML included) is rewritten to the canonical apex
+origin (`CANONICAL_ORIGIN` in `worker/index.ts`) and served back under whichever of the two
+hostnames the client used. `www` therefore returns `200` with the page content instead of
+relaying GitHub's `301`, and any redirect the origin still emits to one of our own hostnames
+is followed inside the Worker (max 3 hops) rather than handed to the browser.
+
+That matters because a zone-level redirect in the other direction (`apex → www`) cannot be
+seen by this Worker: relaying the origin's `www → apex` `301` on top of such a rule produced
+an infinite `apex → www → apex` loop. Reading everything from the apex makes the loop
+impossible from the Worker side.
 
 | Request                                        | Result                                                |
 | ---------------------------------------------- | ----------------------------------------------------- |
@@ -103,6 +109,21 @@ After the first deploy, purge the Cloudflare cache so cached HTML is not served 
 markdown requests. Purge after every deploy that adds a file too: a `404` cached before the
 file existed keeps being served (`/openapi.json` hit this), and a cache-busting query string
 is the quickest way to confirm the file itself is fine.
+
+### Redirect loops
+
+The worker can only avoid redirect cycles it can see. Check the zone for anything that
+sends the apex to `www` (or the reverse) before the worker runs:
+
+- **Rules → Redirect Rules** and **Bulk Redirects** — a single rule on path `/` is enough
+  to bounce against GitHub Pages' `www → apex` `301`.
+- **Workers & Pages → Routes** — a rule at `/` on `cyberpath-hq.com` on another script
+  takes precedence over this worker's `cyberpath-hq.com/*` and never reaches this code.
+- **Snippets** on the zone run before Workers.
+
+Pick one canonical hostname (the apex, matching `site` in `astro.config.ts`), delete the
+redirect pointing the other way, and purge the cache: `301`/`303` responses are cached for
+`max-age=86400`, and browsers keep their own copy of a permanent redirect indefinitely.
 
 ### Alternative: the zone setting
 
