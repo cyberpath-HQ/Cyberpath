@@ -1,0 +1,274 @@
+---
+title: "Penetration test NIS2: quando serve e cosa chiede ACN"
+description:
+  "La NIS2 chiede di valutare l'efficacia delle misure. Per i soggetti essenziali le misure ACN richiedono test periodici,
+  ma nessun testo fissa una frequenza."
+pubDate: 2026-11-13T08:00:00Z
+heroImage: ../../assets/blog/penetration-test-nis2.jpeg
+tags: ["NIS2", "Penetration Test", "Security", "Compliance"]
+author: ebalo
+---
+
+> **Risposta in breve.** Il D.Lgs. 138/2024 non prevede per nome un obbligo di penetration test, ma chiede di
+> valutare l'efficacia delle misure di gestione del rischio. Per i soggetti essenziali, l'Allegato 2 della Determinazione
+> ACN 379907/2025 richiede attività periodiche di identificazione delle vulnerabilità che comprendano almeno vulnerability
+> assessment e/o penetration test, senza fissare una frequenza.
+
+Ultimo aggiornamento: 13 novembre 2026. Verificato sulle fonti ACN e Normattiva in data 13 novembre 2026.
+
+## Sommario
+
+- [Il penetration test è obbligatorio per la NIS2?](#il-penetration-test-è-obbligatorio-per-la-nis2)
+- [Che cosa chiede la norma sulla verifica dell'efficacia delle misure](#che-cosa-chiede-la-norma-sulla-verifica-dellefficacia-delle-misure)
+- [Che cosa prevedono gli allegati ACN](#che-cosa-prevedono-gli-allegati-acn)
+- [Quando ha senso eseguire un penetration test](#quando-ha-senso-eseguire-un-penetration-test)
+- [Quali tipi di test esistono](#quali-tipi-di-test-esistono)
+- [Come definire il perimetro per una PMI](#come-definire-il-perimetro-per-una-pmi)
+- [Cosa deve contenere il report per servire da evidenza](#cosa-deve-contenere-il-report-per-servire-da-evidenza)
+- [Retest, registro delle vulnerabilità e piano di rimedio](#retest-registro-delle-vulnerabilità-e-piano-di-rimedio)
+- [Da cosa dipende il costo di un penetration test](#da-cosa-dipende-il-costo-di-un-penetration-test)
+- [Cinque errori comuni](#cinque-errori-comuni)
+- [Domande frequenti](#domande-frequenti)
+- [Fonti](#fonti)
+- [Come può supportare CyberPath](#come-può-supportare-cyberpath)
+
+## Il penetration test è obbligatorio per la NIS2?
+
+Non esiste un obbligo generalizzato di penetration test, ma non sarebbe corretto dire che la NIS2 se ne disinteressa.
+Il D.Lgs. 4 settembre 2024, n. 138 non prevede per nome un obbligo di penetration test: all'articolo 24, comma 2,
+lettera f, chiede politiche e procedure per valutare l'efficacia delle misure di gestione dei rischi. La risposta
+dipende dalla qualifica del soggetto. Per i soggetti essenziali, l'Allegato 2 della Determinazione ACN 379907/2025
+richiede attività periodiche di identificazione delle vulnerabilità che comprendano almeno vulnerability assessment
+e/o penetration test. Per i soggetti importanti, l'Allegato 1 non contiene un requisito equivalente. La qualifica
+dipende da settore e dimensione, come spiega la guida
+[NIS2 per le PMI italiane: obblighi, scadenze e misure](/blog/guida-pmi).
+
+## Che cosa chiede la norma sulla verifica dell'efficacia delle misure
+
+La norma chiede di dimostrare che le misure funzionano, non soltanto di averle scritte. L'articolo 24, comma 2, lettera
+f, del D.Lgs. 138/2024 richiede politiche e procedure per valutare l'efficacia delle misure di gestione dei rischi. La
+lettera e dello stesso comma include, tra gli elementi minimi, la sicurezza dell'acquisizione, dello sviluppo e della
+manutenzione dei sistemi informativi e di rete, comprese la gestione e la divulgazione delle vulnerabilità.
+
+Una politica di valutazione risponde a tre domande: quali misure verificare, con quale metodo e con quale frequenza. Il
+penetration test copre una parte delle misure tecniche e produce una prova che difficilmente si ottiene per altre vie,
+perché mostra che cosa un attaccante riesce a fare davvero. Non è l'unico strumento: nello stesso piano trovano posto le
+esercitazioni di risposta agli incidenti, i test di ripristino dei backup e le verifiche di configurazione.
+
+| Riferimento                                | Che cosa richiede, in sintesi                                                     | Come lo supporta un test                                            | Evidenza da conservare                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------- |
+| Art. 24, comma 2, lettera f                | Politiche e procedure per valutare l'efficacia delle misure                       | Verifica se i controlli resistono a un attacco simulato              | Report con data, perimetro ed esiti             |
+| Art. 24, comma 2, lettera e                | Gestione e divulgazione delle vulnerabilità nello sviluppo e nella manutenzione   | Individua debolezze non rilevate dagli strumenti automatici          | Report collegato al registro delle vulnerabilità |
+| Allegato 2, ID.RA-01, punto 2 (essenziali) | Attività periodiche e prima della messa in esercizio, con assessment e/o test     | È l'attività richiesta quando il soggetto sceglie il test            | Relazione prevista dal punto 3                   |
+| Allegato 2, ID.IM-01, punto 3 (essenziali) | Piano di valutazione dell'efficacia, con misure e metodi indicati                 | Offre metodo e misura per una parte delle misure tecniche           | Piano approvato e relazioni agli organi          |
+| Allegati 1 e 2, ID.RA-08, punto 3          | Piano di gestione delle vulnerabilità                                             | Stabilisce quando eseguire i test e come collegarli alle correzioni | Piano e report datati                            |
+
+Questa mappatura è un'interpretazione di CyberPath: non è una valutazione di conformità né un parere ACN. Le misure
+indicano che cosa deve esistere e funzionare, non quale fornitore scegliere.
+
+## Che cosa prevedono gli allegati ACN
+
+I due allegati alla Determinazione ACN 379907/2025 non coincidono: l'Allegato 1 raccoglie 37 misure e 87 requisiti per i
+soggetti importanti, l'Allegato 2 raccoglie 43 misure e 116 requisiti per gli essenziali.
+
+Per i soggetti essenziali il requisito è esplicito. L'Allegato 2, misura ID.RA-01, punto 2, chiede che per almeno i
+sistemi informativi e di rete rilevanti, in accordo al piano di gestione delle vulnerabilità di cui alla misura ID.RA-08,
+siano eseguite periodicamente e comunque prima della messa in esercizio attività per l'identificazione delle vulnerabilità
+che comprendano almeno vulnerability assessment e/o penetration test. Il punto 3 richiede relazioni con la descrizione
+delle attività, degli esiti e delle vulnerabilità rilevate con il relativo livello di impatto. La clausola "fatte salve
+motivate e documentate ragioni normative o tecniche" consente di derogare, ma solo motivando e documentando la scelta.
+
+Due precisazioni evitano errori frequenti. Il testo dice "e/o": ammette entrambe le attività senza imporle a ogni ciclo,
+e la scelta dipende dall'obiettivo. Nessun allegato indica un intervallo numerico, quindi "periodicamente" va interpretato
+nel piano di gestione delle vulnerabilità, con criteri documentati.
+
+Per i soggetti importanti l'Allegato 1, misura ID.RA-01, si ferma al primo punto: le informazioni raccolte con ID.RA-08
+servono a identificare le vulnerabilità presenti sui sistemi. ID.RA-08 richiede un piano con modalità di identificazione,
+monitoraggio, analisi e risposta, ruoli e responsabilità, approvato dagli organi di amministrazione e direttivi. Un
+penetration test resta utile per questo impianto e per la verifica dell'efficacia dell'articolo 24, ma non è nominato.
+
+Le misure di sicurezza rafforzate non cambiano il quadro. L'Agenzia per la Cybersicurezza Nazionale (ACN) ha avviato la
+consultazione con i tavoli settoriali il 18 settembre 2026 e non ha pubblicato né un catalogo definitivo né una data di
+decorrenza, quindi non si può affermare che imporranno un test. Lo stato aggiornato è nell'articolo
+[Misure di sicurezza rafforzate NIS: stato e preparazione](/blog/misure-sicurezza-rafforzate-nis).
+
+## Quando ha senso eseguire un penetration test
+
+Un test ha senso ogni volta che cambia l'esposizione dell'azienda. Un periodo di calma apparente non è un buon motivo per
+rimandare: le vulnerabilità sfruttabili compaiono con gli aggiornamenti, le nuove integrazioni e i cambi di
+configurazione. La tabella collega alcune situazioni ricorrenti al tipo di test più adatto.
+
+| Situazione                                    | Tipo di test consigliato                        | Motivazione                                             |
+| --------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------- |
+| Nuovo servizio esposto su internet            | Applicativo esterno, in modalità grey box       | Verifica prima della messa in esercizio                 |
+| Cambio di architettura o nuovo fornitore      | Infrastrutturale esterno e interno              | La superficie cambia e compaiono percorsi non previsti   |
+| Incidente significativo già chiuso            | Test mirato sulle cause accertate               | Conferma che la correzione chiuda la via utilizzata      |
+| Evidenze richieste da un cliente o da un ente | Esterno con report completo                     | Un terzo deve leggere data, perimetro ed esiti           |
+| Nuovi accessi remoti o identità cloud         | Test su identità e servizi esposti              | Le credenziali sono tra le vie di accesso più usate      |
+| Perimetro esterno poco conosciuto             | Analisi dell'esposizione esterna prima del test | Prima si stabilisce che cosa è visibile                  |
+
+Due casi meritano attenzione. Per i soggetti essenziali l'Allegato 2 chiede l'identificazione delle vulnerabilità anche
+prima della messa in esercizio di un nuovo servizio: il test va inserito nel progetto, non dopo il rilascio. Dopo un
+incidente significativo, un test mirato conferma che la correzione abbia chiuso la via utilizzata, senza rifare l'analisi
+completa.
+
+## Quali tipi di test esistono
+
+Un penetration test esterno simula un attaccante che parte da internet e non ha credenziali. Un test interno parte da una
+posizione già presente nella rete, come quella di un dipendente o di un fornitore. Un test applicativo analizza una
+singola applicazione, in genere web o API, mentre un test infrastrutturale copre reti, apparati e servizi esposti.
+
+La modalità definisce quante informazioni riceve chi esegue il test. Nel black box il tester lavora come un estraneo. Nel
+grey box riceve informazioni parziali, per esempio un account con privilegi limitati. Nel white box ha accesso a codice,
+configurazioni e personale tecnico, e in genere copre più aree in meno tempo.
+
+Il red team è un'attività più ampia, con obiettivi specifici e periodi lunghi; l'ingegneria sociale richiede un accordo
+separato, perché coinvolge le persone. In ogni caso il test va eseguito in un ambiente concordato: la produzione è
+ammessa solo con finestre definite e un piano per sospendere l'attività.
+
+## Come definire il perimetro per una PMI
+
+Perimetro significa due cose: l'elenco scritto di ciò che il test può toccare e l'elenco di ciò che resta fuori. Un
+perimetro scritto protegge l'azienda e il fornitore, che non può eccedere il mandato. Per una PMI il punto di partenza
+sono i sistemi rilevanti individuati con la misura GV.OC-04, gli inventari richiesti da ID.AM-01 e ID.AM-02, i sistemi
+accessibili da remoto e i servizi erogati dai fornitori.
+
+Il perimetro reale è quasi sempre più ampio del dichiarato: portali di fornitori, ambienti cloud aperti per una prova e
+mai chiusi, indirizzi dimenticati e applicazioni gestite da terzi raramente compaiono negli elenchi iniziali. Conviene
+confrontare un'analisi dell'esposizione esterna con l'inventario prima di firmare il contratto. Gli elementi da mettere
+per iscritto sono questi.
+
+1. Elenco di domini, indirizzi, applicazioni e account inclusi, con le esclusioni scritte.
+2. Riferimento ai sistemi rilevanti e agli inventari, così che il test sia collegabile alle misure ACN.
+3. Finestra temporale e contatti raggiungibili durante il test.
+4. Regole sulle tecniche ammesse e su quelle vietate, per esempio gli attacchi di negazione del servizio.
+5. Gestione delle credenziali di test, dei dati copiati e della loro cancellazione alla fine.
+6. Procedura da seguire se durante il test emerge un accesso reale o un incidente in corso.
+7. Destinatari del report, tempi di consegna e canale protetto per la trasmissione.
+8. Autorizzazione firmata da chi ha il potere di concederla, con data e riferimenti contrattuali.
+
+## Cosa deve contenere il report per servire da evidenza
+
+Un report serve da evidenza quando un terzo può capire che cosa è stato testato, quando e con quale esito. L'Allegato 2
+chiede, per i soggetti essenziali, una relazione con la descrizione delle attività e degli esiti e con l'indicazione delle
+vulnerabilità rilevate e del relativo livello di impatto. Un elenco di segnalazioni tecniche soddisfa la forma ma non
+l'uso pratico.
+
+Il documento dovrebbe contenere l'identificazione del cliente e le date, il perimetro con le esclusioni, la metodologia
+applicata, per esempio OWASP Web Security Testing Guide, NIST SP 800-115 e PTES, le vulnerabilità ordinate per severità
+con la prova che le dimostra, l'impatto, le raccomandazioni e un piano di rimedio con priorità. La severità va letta con il
+contesto: una vulnerabilità critica su un sistema isolato non pesa come una vulnerabilità media su un portale con i dati
+dei clienti.
+
+### La scheda evidenza di un penetration test
+
+Per l'archivio conviene una scheda sintetica per ogni test, collegata al report completo. Rende confrontabili test
+eseguiti in anni diversi e riduce i tempi quando qualcuno chiede una prova.
+
+- Identificativo del test, versione del report e data di consegna.
+- Date di inizio e fine, perimetro e riferimento all'autorizzazione firmata.
+- Metodologia, strumenti principali e nominativi del team.
+- Numero di vulnerabilità per severità e sintesi delle tre più rilevanti.
+- Piano di rimedio con responsabili e termini, e stato di avanzamento.
+- Esito del retest, con data e riferimento al report aggiornato.
+- Responsabile della conservazione, luogo di archiviazione e periodo di conservazione.
+
+## Retest, registro delle vulnerabilità e piano di rimedio
+
+Un test senza correzioni produce un documento, non un miglioramento. L'Allegato 2, misura ID.RA-08, punto 2, richiede che
+le vulnerabilità siano risolte prontamente con aggiornamenti di sicurezza o misure di mitigazione, oppure accettate e
+documentate come rischio secondo il piano di trattamento di cui alla misura ID.RA-06. La misura PR.PS-02, punto 2, chiede
+di installare gli ultimi aggiornamenti di sicurezza senza ingiustificato ritardo.
+
+Il registro delle vulnerabilità tiene insieme tutto: identificativo, sistema, severità, data di rilevazione, responsabile
+della correzione, termine, stato e riferimento all'evidenza. Il retest non compare come parola nei testi citati, ma è la
+prova naturale che la correzione ha funzionato, ed è ciò che distingue un piano di rimedio eseguito da un elenco di
+intenzioni. Il riesame annuale delle politiche richiesto da GV.PO-02 è il momento in cui verificare che il registro sia
+aggiornato e che le voci accettate abbiano ancora una motivazione valida.
+
+## Da cosa dipende il costo di un penetration test
+
+Il costo dipende dal lavoro necessario a coprire il perimetro, non dal numero di vulnerabilità trovate. Un test che scopre
+poco non è necessariamente inutile: può indicare che i controlli funzionano o che il perimetro era troppo stretto. Vale
+la pena diffidare dei preventivi costruiti sul numero di problemi attesi.
+
+I fattori che spostano il prezzo sono riconoscibili: ampiezza del perimetro e numero di applicazioni; profondità, perché
+un black box richiede più tempo di un white box; tipo di ambiente; finestra di esecuzione, se il test deve svolgersi fuori
+orario; retest e supporto alla correzione; competenze richieste; regole di ingaggio e coperture assicurative. Un preventivo
+leggibile indica giornate uomo, perimetro, esclusioni, date e se il retest è compreso.
+
+## Cinque errori comuni
+
+Gli errori più costosi non riguardano la tecnica, ma il modo in cui il test viene inserito nell'organizzazione. Questi
+cinque ricorrono spesso nelle PMI.
+
+1. Acquistare il test senza stabilire chi corregge le vulnerabilità e con quali scadenze.
+2. Scambiare una scansione automatica per un penetration test e conservare il risultato come prova.
+3. Escludere dal perimetro i sistemi esposti di cui nessuno ricorda l'esistenza, come portali di fornitori o ambienti di prova.
+4. Archiviare un report privo di data, perimetro e prove, che non è utilizzabile come evidenza.
+5. Non eseguire il retest, lasciando il registro delle vulnerabilità aperto su voci mai verificate.
+
+## Domande frequenti
+
+### Ogni quanto va eseguito un penetration test?
+
+Nessun testo ufficiale fissa una frequenza numerica. Per i soggetti essenziali l'Allegato 2 chiede attività periodiche e
+comunque prima della messa in esercizio; la periodicità va definita nel piano di gestione delle vulnerabilità in base al
+rischio. Cadenze annuali o semestrali sono buone pratiche diffuse, non termini di legge: chi le adotta fa bene a
+dichiararle come scelta interna.
+
+### Basta un vulnerability assessment?
+
+L'Allegato 2 ammette vulnerability assessment e/o penetration test per l'identificazione delle vulnerabilità, quindi
+l'assessment può bastare a quel requisito. Non basta però a dimostrare l'efficacia di tutte le misure: l'assessment elenca
+le vulnerabilità note, il test verifica quali siano sfruttabili e con quale impatto. Con una scadenza vicina, l'assessment
+è un primo passo utile, ma il test va pianificato subito dopo.
+
+### Posso usare uno strumento automatico?
+
+Uno scanner produce un elenco di segnalazioni, non un penetration test. È utile per alimentare la misura ID.RA-01 e per
+la scansione periodica, e aiuta a tenere aggiornato il registro delle vulnerabilità. Senza validazione manuale, però,
+l'elenco contiene falsi positivi e non dice che cosa un attaccante otterrebbe combinando più debolezze. Il report
+automatico vale come evidenza solo se qualcuno lo ha verificato.
+
+### Chi può eseguirlo?
+
+I testi non richiedono una certificazione specifica. Contano la competenza dimostrabile, l'indipendenza di chi esegue e
+un'autorizzazione scritta che definisca perimetro e regole di ingaggio. Un team interno può eseguire i test se ha le
+competenze e se il conflitto di ruolo è gestito; altrimenti conviene un fornitore esterno. Chiedete referenze, metodologia
+e copertura assicurativa, non soltanto un elenco di certificazioni.
+
+### Il report va inviato ad ACN?
+
+Non è previsto un invio sistematico. Il report è un'evidenza interna: l'Allegato 2 chiede che le attività siano
+documentate con relazioni, e l'articolo 36 del D.Lgs. 138/2024 consente ad ACN, nell'esercizio dei poteri di verifica e
+ispettivi, di chiedere l'accesso a dati e documenti. Conviene conservarlo in modo ordinato, con data, versione e
+responsabile della tenuta.
+
+### Un penetration test rende conformi alla NIS2?
+
+No. Un test verifica una parte delle misure tecniche in un momento preciso e produce un'evidenza. La conformità dipende
+dall'insieme degli obblighi: governance, valutazione e trattamento del rischio, gestione degli incidenti, continuità
+operativa, catena di approvvigionamento, formazione. Un report positivo non copre ciò che non è stato testato né la
+documentazione organizzativa. CyberPath non rilascia certificazioni di conformità NIS2.
+
+## Fonti
+
+- [ACN, Modalità e specifiche di base](https://www.acn.gov.it/portale/nis/modalita-specifiche-base)
+- [ACN, Allegato 1 della Determinazione 379907/2025, soggetti importanti](https://www.acn.gov.it/portale/documents/d/guest/allegato-1-v2)
+- [ACN, Allegato 2 della Determinazione 379907/2025, soggetti essenziali](https://www.acn.gov.it/portale/documents/d/guest/allegato-2-v2)
+- [ACN, Domande frequenti NIS su misure di sicurezza e notifica di incidenti](https://www.acn.gov.it/portale/faq/nis/misure-di-sicurezza-e-notifica-di-incidenti)
+- [D.Lgs. 4 settembre 2024, n. 138, articolo 24 su Normattiva](https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.legislativo:2024-09-04;138~art24)
+- [NIST SP 800-115, Technical Guide to Information Security Testing and Assessment](https://csrc.nist.gov/pubs/sp/800/115/final)
+- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
+
+## Come può supportare CyberPath
+
+CyberPath, società italiana che eroga SOC as a Service (SOCaaS) e penetration test per le PMI, affianca le aziende che
+devono produrre evidenze tecniche per le misure di base ACN. I test esterni, interni e applicativi sono preceduti da
+un'analisi dell'esposizione esterna (External Threat Landscape), che chiarisce che cosa è visibile da internet prima di
+definire il perimetro, e si chiudono con un report strutturato per essere conservato. Il retest verifica che le
+correzioni abbiano chiuso le vie individuate. Il servizio è presentato nella pagina [Servizi](/it/), dove si può
+chiedere un preventivo con perimetro, giornate e date. Restano in capo al soggetto NIS l'approvazione dei piani, la
+valutazione del rischio e la dimostrazione della conformità: CyberPath non è un'autorità e non rilascia certificazioni
+NIS2.

@@ -202,7 +202,7 @@ I dieci articoli formano un hub: un pillar sulla NIS2 per le PMI, otto articoli 
 | 1 | Misure di sicurezza rafforzate NIS: stato e preparazione | Attualità | IT e EN | misure di sicurezza rafforzate NIS | 1 | FATTO |
 | 2 | NIS2 per le PMI italiane: obblighi, scadenze e misure | Pillar | IT e EN | NIS2 PMI | 2 | FATTO |
 | 3 | Il SOC è obbligatorio per la NIS2? | Cluster | IT | SOC obbligatorio NIS2 | 3 | FATTO |
-| 4 | Penetration test e NIS2: quando serve | Cluster | IT | penetration test NIS2 | 4 | DA FARE |
+| 4 | Penetration test e NIS2: quando serve | Cluster | IT | penetration test NIS2 | 4 | FATTO |
 | 5 | Misure di base ACN: mappatura su SOC e penetration test | Cluster originale | IT | misure di sicurezza di base ACN | 5 | DA FARE |
 | 6 | SOC as a Service per PMI: cosa include e come sceglierlo | Cluster | IT e EN | SOC as a Service PMI | 6 | DA FARE |
 | 7 | Vulnerability assessment o penetration test | Cluster | IT | vulnerability assessment penetration test differenza | 7 | DA FARE |
@@ -569,7 +569,7 @@ La SEO richiede in genere diversi mesi e le citazioni AI non sono garantibili. U
 - Riesaminare ogni trimestre gli altri articoli, controllando date, numeri di determinazione e link.
 - Annotare ogni modifica sostanziale nel registro in fondo all'articolo. Un contenuto che mostra di essere mantenuto viene preferito a uno non aggiornato.
 
-# 6 Divieti
+# 6 Obblighi e Divieti
 - Sono vietati formule del tipo "nei testi che abbiamo letto". il testo deve essere scritto da un'esperto, accurato e completo
 - puoi collegare solamente articoli già pubblicati precedentemente
 - devi generare un prompt per la generazione dell'immagine di copertina, con stile coerente alla materia trattata, senza riferimenti a marchi o loghi di terzi, e con un soggetto che rappresenti visivamente il tema dell'articolo.
