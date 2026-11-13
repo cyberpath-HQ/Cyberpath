@@ -163,7 +163,7 @@ export const translations = {
                     name:        `FORTEZZA`,
                     description: `For small businesses requiring comprehensive protection`,
                     starting_at:  `Starting at`,
-                    price:       `€9`,
+                    price:       `€10`,
                     period:      `/ month`,
                     endpoints:   `per endpoint included`,
                     features:    [
@@ -521,7 +521,7 @@ export const translations = {
                     name:        `FORTEZZA`,
                     description: `Per tutte le aziende che richiedono una protezione completa`,
                     starting_at:  `A partire da`,
-                    price:       `€9`,
+                    price:       `€10`,
                     period:      `/ mese`,
                     endpoints:   `per endpoint incluso`,
                     features:    [
