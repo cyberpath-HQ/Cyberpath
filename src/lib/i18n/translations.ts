@@ -307,7 +307,7 @@ export const translations = {
                     ],
                     addons:   [],
                     cta:      `Get Quote`,
-                    cta_link: `https://cal.eu/emanuele-balsamo-hzrxfr/penetration-test-preventivo`,
+                    cta_link: `https://calendar.app.google/tRBvKH4TReXi6PsP8`,
                     popular:  false,
                 },
                 {
@@ -660,7 +660,7 @@ export const translations = {
                     ],
                     addons:   [],
                     cta:      `Richiedi Preventivo`,
-                    cta_link: `https://cal.eu/emanuele-balsamo-hzrxfr/penetration-test-preventivo`,
+                    cta_link: `https://calendar.app.google/tRBvKH4TReXi6PsP8`,
                     popular:  false,
                 },
                 {
