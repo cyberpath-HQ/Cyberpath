@@ -214,7 +214,7 @@ export function Pricing({
                                     </p>
                                 </div>
 
-                                <div className="mb-2">
+                                {/* <div className="mb-2">
                                     <p className={`text-xs mt-1 md:mt-2 ${ isHighlighted ? `text-blue-400` : `text-blue-600` }`}>
                                         {plan.starting_at}
                                     </p>
@@ -229,7 +229,7 @@ export function Pricing({
                                     <p className={`text-xs mt-1 md:mt-2 ${ isHighlighted ? `text-blue-400` : `text-blue-600` }`}>
                                         {plan.endpoints}
                                     </p>
-                                </div>
+                                </div> */}
 
                                 <ul className="flex-1 space-y-2 md:space-y-3 my-4 md:my-6">
                                     {plan.features.map((feature, fIdx) => (
