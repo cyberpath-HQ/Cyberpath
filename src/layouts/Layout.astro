@@ -19,7 +19,14 @@ const { seo, JSON_LD, locale = "en" } = Astro.props;
 <!doctype html>
 <html lang={locale} class="scroll-smooth scroll-pt-32 overflow-x-hidden">
   <head>
-    <script src="https://app.termly.io/resource-blocker/51948732-9ca3-4ff2-8610-42f94a5f32e9?autoBlock=on"></script>
+    <!--
+      `is:inline` keeps this a classic script. Without it Astro bundles the
+      third-party URL into a module chunk and loads it with `import`, which is
+      a CORS request; Termly's resource blocker does not send
+      `Access-Control-Allow-Origin`, so the consent script was blocked.
+      `data-cfasync="false"` stops Cloudflare Rocket Loader from re-fetching it.
+    -->
+    <script is:inline data-cfasync="false" src="https://app.termly.io/resource-blocker/51948732-9ca3-4ff2-8610-42f94a5f32e9?autoBlock=on"></script>
     {JSON_LD && <script is:inline type="application/ld+json" set:html={JSON_LD} />}
     <slot name="head" />
     <meta charset="UTF-8" />
