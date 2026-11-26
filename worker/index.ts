@@ -57,6 +57,30 @@ const MARKDOWN_CACHE_CONTROL = `public, max-age=3600`;
 const MARKDOWN_CACHE_TTL_SECONDS = 3600;
 
 /**
+ * An HTML page names the content-hashed bundles of the deployment that built
+ * it. GitHub Pages serves every file with `cache-control: max-age=86400`, so a
+ * browser or shared cache can keep the page for a day after a new deployment
+ * has replaced those bundles. The stale page then requests a chunk that no
+ * longer exists, GitHub Pages answers with its HTML 404 page, and the browser
+ * refuses to execute it as a module (`disallowed MIME type "text/html"`),
+ * leaving that island un-hydrated. Revalidate documents instead: unchanged
+ * pages cost a `304`, and the hashed assets keep the long cache below.
+ */
+const HTML_CACHE_CONTROL = `no-cache`;
+
+/** Build output under `/assets/` is content-hashed, so a new build changes its URL. */
+const HASHED_ASSET_CACHE_CONTROL = `public, max-age=31536000, immutable`;
+
+/** Error responses must not outlive the deployment that produced them. */
+const UNCACHEABLE_CACHE_CONTROL = `no-store`;
+
+/** Session key that keeps the stale-chunk recovery below from reloading in a loop. */
+const STALE_ASSET_RELOAD_KEY = `cyberpath:stale-asset-reload`;
+
+/** How long the recovery waits before it is willing to reload a page again. */
+const STALE_ASSET_RELOAD_COOLDOWN_MS = 30_000;
+
+/**
  * GitHub Pages answers the `www` hostname with a `301` to the apex domain, so
  * every document the worker fetches upstream is read from the canonical origin.
  * The response is still served on whichever of the two allowed hostnames the
@@ -175,20 +199,117 @@ function sameSiteRedirectTarget(response: Response): URL | null {
     return isAllowedHost(target.hostname) ? target : null;
 }
 
+function isHtml(contentType: string | null): boolean {
+    return (contentType ?? ``).toLowerCase().includes(`text/html`);
+}
+
+/**
+ * `true` for Astro's content-hashed island bundles, e.g.
+ * `/assets/pricing.B-PXVPav.js`. A `404` for one of these means the caller is
+ * holding an HTML page from an older deployment.
+ */
+function isHashedModulePath(pathname: string): boolean {
+    return /^\/assets\/[^/]+\.[A-Za-z0-9_-]{4,}\.m?js$/.test(pathname);
+}
+
+/**
+ * A document that outlived its bundles requests a module the origin no longer
+ * has. Browsers refuse the HTML `404` (`disallowed MIME type "text/html"`), so
+ * the island never hydrates and the section stays stuck in its server-rendered
+ * state. Answer the request with a valid module that reloads the page from a
+ * fresh cache entry, repairing the visitor without asking them to hard-refresh.
+ *
+ * The reload is rate-limited through `sessionStorage`: if a fresh document
+ * still requests missing chunks (a genuinely broken deployment, not a stale
+ * cache), the visitor is not trapped in a reload loop.
+ */
+const STALE_ASSET_RECOVERY = `(function () {
+    var key = ${ JSON.stringify(STALE_ASSET_RELOAD_KEY) };
+    var cooldown = ${ STALE_ASSET_RELOAD_COOLDOWN_MS };
+    var now = Date.now();
+    try {
+        var last = Number(sessionStorage.getItem(key)) || 0;
+        if (now - last < cooldown) return;
+        sessionStorage.setItem(key, String(now));
+    } catch (error) {}
+    var url = new URL(location.href);
+    url.searchParams.set("v", now.toString(36));
+    location.replace(url.toString());
+})();`;
+
+function isMissingHashedModule(url: URL, response: Response): boolean {
+    return isHashedModulePath(url.pathname) &&
+        (response.status === 404 || isHtml(response.headers.get(`content-type`)));
+}
+
+function staleAssetRecoveryResponse(request: Request): Response {
+    return new Response(request.method === `HEAD` ? null : STALE_ASSET_RECOVERY, {
+        status: 200,
+        headers: new Headers({
+            "Content-Type":  `text/javascript; charset=utf-8`,
+            "Cache-Control": UNCACHEABLE_CACHE_CONTROL,
+        }),
+    });
+}
+
+/**
+ * Forward a navigation (or any non-markdown request) to the origin, repairing
+ * stale-chunk requests before the browser can reject them.
+ */
+async function forward(request: Request, env: Env, url: URL): Promise<Response> {
+    const response = await fetchOrigin(request, env);
+
+    if (isMissingHashedModule(url, response)) {
+        await response.body?.cancel();
+        return staleAssetRecoveryResponse(request);
+    }
+
+    return withVary(response, url);
+}
+
+/**
+ * Cache policy is decided here rather than inherited from GitHub Pages: see
+ * `HTML_CACHE_CONTROL`, `HASHED_ASSET_CACHE_CONTROL` and
+ * `UNCACHEABLE_CACHE_CONTROL`.
+ */
+function applyCachePolicy(response: Response, url: URL, headers: Headers): void {
+    const revalidated = response.status === 304;
+
+    // A `304` refreshes the cached entity's headers, so it must repeat the
+    // policy chosen when the entity was first fetched: forwarding GitHub's
+    // `max-age=86400` here would undo the document policy below.
+    if (!response.ok && !revalidated) {
+        headers.delete(`expires`);
+        headers.set(`Cache-Control`, UNCACHEABLE_CACHE_CONTROL);
+        return;
+    }
+
+    if (url.pathname.startsWith(`/assets/`)) {
+        headers.delete(`expires`);
+        headers.set(`Cache-Control`, HASHED_ASSET_CACHE_CONTROL);
+        return;
+    }
+
+    if (revalidated || isHtml(response.headers.get(`content-type`))) {
+        headers.delete(`expires`);
+        headers.set(`Cache-Control`, HTML_CACHE_CONTROL);
+    }
+}
+
 /**
  * Advertising `Vary: Accept` keeps shared caches from mixing the HTML and
  * markdown variants. HTML responses also carry the RFC 8288 `Link` headers
  * that point agents at the machine-readable documents.
  */
-async function withVary(response: Response): Promise<Response> {
+function withVary(response: Response, url: URL): Response {
     const headers = new Headers(response.headers);
     appendVary(headers, `Accept`);
 
-    const contentType = (response.headers.get(`content-type`) ?? ``).toLowerCase();
-
-    if (response.ok && contentType.includes(`text/html`)) {
+    if (response.ok && isHtml(response.headers.get(`content-type`))) {
         headers.set(`Link`, discoveryLinkHeader());
     }
+
+    applyCachePolicy(response, url, headers);
 
     return new Response(response.body, {
         status:     response.status,
@@ -255,13 +376,13 @@ export default {
         }
 
         if (!prefersMarkdown(request.headers.get(`Accept`))) {
-            return withVary(await fetchOrigin(request, env));
+            return forward(request, env, url);
         }
 
         const markdownPath = toMarkdownPath(url.pathname);
 
         if (markdownPath === null) {
-            return withVary(await fetchOrigin(request, env));
+            return forward(request, env, url);
         }
 
         const headers = new Headers(request.headers);
@@ -274,7 +395,7 @@ export default {
 
         if (!isMarkdownResponse(markdownResponse)) {
             await markdownResponse.body?.cancel();
-            return withVary(await fetchOrigin(request, env));
+            return forward(request, env, url);
         }
 
         const markdown = await markdownResponse.text();

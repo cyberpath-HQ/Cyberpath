@@ -34,7 +34,7 @@ impossible from the Worker side.
 | `GET /blog/my-post/` + `Accept: text/html`      | Origin HTML, untouched                                |
 | `GET /blog/my-post/` + `Accept: text/markdown`  | `/blog/my-post/index.md` as `text/markdown`            |
 | `GET /blog/my-post/` + `Accept: */*`            | Origin HTML (`*/*` alone never selects markdown)       |
-| `GET /rss.xml`, `/favicon.svg`, `/assets/*`     | Origin response, untouched (already machine readable)  |
+| `GET /rss.xml`, `/favicon.svg`, `/assets/*`     | Origin response, cache policy applied (see below)      |
 | `GET /.well-known/api-catalog`                  | RFC 9727 linkset (`/.well-known/api-catalog.json`)     |
 | markdown variant missing (404)                  | Falls back to the HTML page                            |
 
@@ -50,6 +50,39 @@ cache-control: public, max-age=3600
 
 `x-markdown-tokens` is an estimate (`characters / 4`). `vary: accept` is also added to HTML
 responses so shared caches keep the two representations apart.
+
+## Cache policy
+
+GitHub Pages serves every file with `cache-control: max-age=86400`. For a static site whose
+HTML names content-hashed bundles that is risky: after a deployment deletes the previous
+bundles, a browser or shared cache can keep serving the old document for up to a day. The
+page then requests chunks that no longer exist, GitHub Pages answers with its HTML `404`
+page, and browsers refuse to execute it as a module:
+
+```text
+Loading module from ".../assets/pricing.B-PXVPav.js" was blocked because of a
+disallowed MIME type ("text/html").
+[astro-island] Error hydrating ... TypeError: error loading dynamically imported module
+```
+
+The worker overrides the origin headers so that cannot happen again:
+
+| Response            | `cache-control`                                                          |
+| ------------------- | ------------------------------------------------------------------------ |
+| HTML document (`200`) | `no-cache` — revalidate on every navigation, so a deployment is visible immediately |
+| `/assets/*` (`200`)   | `public, max-age=31536000, immutable` — the hash in the filename changes with the content |
+| Error or redirect     | `no-store` — a `404` must not outlive the deployment that produced it     |
+
+`vary: accept` is appended after these rules.
+
+### Stale chunks from an already-cached page
+
+A visitor can still hold an old document until their own copy expires. Instead of letting
+the browser fail on the removed chunk, the worker answers a `404` for
+`/assets/<name>.<hash>.js` with a tiny JavaScript module that reloads the page from a new
+cache entry (`?v=...`). That repairs the island without asking the visitor to hard-refresh.
+The reload is rate-limited through `sessionStorage`, so a genuinely broken deployment
+cannot trap anyone in a reload loop.
 
 ## Discovery Link headers and the API catalog
 
@@ -105,10 +138,12 @@ CLOUDFLARE_API_TOKEN=... pnpm run worker:deploy
 the zone: Cloudflare only runs one Worker per route, so if another Worker already owns
 `cyberpath-hq.com/*`, add the markdown logic there instead of deploying a second script.
 
-After the first deploy, purge the Cloudflare cache so cached HTML is not served for
-markdown requests. Purge after every deploy that adds a file too: a `404` cached before the
-file existed keeps being served (`/openapi.json` hit this), and a cache-busting query string
-is the quickest way to confirm the file itself is fine.
+Purge the Cloudflare cache **once** when this cache policy first ships. Edge entries cached
+under the previous `max-age=86400` policy keep being served until they expire, and that
+includes the HTML `404`s for deleted hashed chunks. Once the new headers are live, later
+deploys need no purge: documents are served with `no-cache` and revalidate, errors with
+`no-store`, and hashed assets change URL when they change. A cache-busting query string is
+still the quickest way to confirm a file itself is fine.
 
 ### Redirect loops
 
